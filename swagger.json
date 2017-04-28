@@ -1,0 +1,27 @@
+{
+    "swagger": {
+        "yaml": true,
+        "outputDirectory": "./dist",
+        "entryFile": "./test/data/apis.ts",
+        "host": "localhost:3000",
+        "version": "1.0",
+        "name": "Typescript-rest Test API",
+        "description": "a description",
+        "license": "MIT",
+        "basePath": "/v1",
+        "securityDefinitions": {
+            "api_key": {
+                "type": "apiKey",
+                "name": "access_token",
+                "in": "query"
+            }
+        },
+        "spec": {
+            "api_key": {
+                "type": "apiKey",
+                "name": "api_key",
+                "in": "header"
+            }
+        }
+    }
+}

@@ -1,0 +1,91 @@
+{
+  "name": "typescript-rest-swagger",
+  "version": "0.0.1",
+  "description": "Generate Swagger files from a typescript-rest project",
+  "keywords": [
+    "typescript",
+    "typescript-rest",
+    "swagger",
+    "open api",
+    "rest",
+    "microservice",
+    "codegen",
+    "generation"
+  ],
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "scripts": {
+    "start": "tsc -w",
+    "build": "npm run clean && tsc",
+    "clean": "rimraf dist",
+    "lint": "tslint --exclude=./node_modules/** ./src/**/*.ts ./test/**/*.ts",
+    "format": "tsfmt -r",
+    "prepublish": "npm run build",
+    "deploy": "npm version patch && npm publish",
+    "postversion": "git push origin master",
+    "swagger-gen": "node ./dist/cli.js -c ./swagger.json",
+    "pretest": "cross-env NODE_ENV=test npm build && npm run swagger-gen && npm run lint",
+    "test": "cross-env NODE_ENV=test mocha",
+    "test:coverage": "nyc npm test",
+    "tsc": "tsc"
+  },
+  "nyc": {
+    "include": [
+      "src/**/*.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text-summary",
+      "html"
+    ],
+    "sourceMap": true,
+    "instrument": true
+  },
+  "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "argparse": "^1.0.9",
+    "lodash": "^4.17.4",
+    "merge": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "path": "^0.12.7",
+    "typescript": "^2.2.2",
+    "typescript-rest": "^0.4.0",
+    "yamljs": "^0.2.10"
+  },
+  "devDependencies": {
+    "@types/argparse": "^1.0.30",
+    "@types/chai": "^3.5.1",
+    "@types/lodash": "^4.14.63",
+    "@types/mkdirp": "^0.3.29",
+    "@types/mocha": "^2.2.41",
+    "@types/yamljs": "^0.2.30",
+    "chai": "^3.5.0",
+    "coveralls": "^2.13.1",
+    "cross-env": "^4.0.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.3.0",
+    "nyc": "^10.2.0",
+    "rimraf": "^2.6.1",
+    "source-map-support": "^0.4.14",
+    "ts-node": "^3.0.2",
+    "tslint": "^5.1.0",
+    "typescript-formatter": "^5.1.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thiagobustamante/typescript-rest-swagger.git"
+  },
+  "bin": {
+    "swaggerGen": "dist/cli.js"
+  },
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "engineStrict": true
+}
