@@ -54,8 +54,8 @@
     "merge": "^1.2.0",
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
-    "typescript": "^2.2.2",
-    "typescript-rest": "^0.4.0",
+    "typescript": "^2.3.2",
+    "typescript-rest": "file:///Users/thiago/git/typescript-rest",
     "yamljs": "^0.2.10"
   },
   "devDependencies": {

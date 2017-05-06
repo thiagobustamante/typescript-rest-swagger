@@ -67,6 +67,7 @@ export interface Controller {
     methods: Method[];
     name: string;
     path: string;
+    consumes: string[];
 }
 
 export interface Method {
@@ -81,6 +82,7 @@ export interface Method {
     responses: ResponseType[];
     security?: Security;
     summary?: string;
+    consumes: string[];
 }
 
 export interface Parameter {
@@ -99,6 +101,7 @@ export interface Security {
 
 export interface Type {
     typeName: string;
+    typeArgument?: Type;
 }
 
 export interface EnumerateType extends Type {
@@ -117,7 +120,7 @@ export interface ArrayType extends Type {
 
 export interface ResponseType {
     description: string;
-    name: string;
+    status: string;
     schema?: Type;
     examples?: any;
 }
@@ -127,4 +130,9 @@ export interface Property {
     name: string;
     type: Type;
     required: boolean;
+}
+
+export interface ResponseData {
+    status: string;
+    type: Type;
 }

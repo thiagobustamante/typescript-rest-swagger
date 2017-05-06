@@ -20,7 +20,7 @@ export function getDecorators(node: ts.Node, isMatching: (identifier: DecoratorD
                 }
                 x = x.expression;
             }
-            result.text = x.text;
+            result.text = x.text || x.name.text;
             return result as DecoratorData;
         })
         .filter(isMatching);

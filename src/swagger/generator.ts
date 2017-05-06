@@ -7,6 +7,8 @@ import { Swagger } from './swagger';
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import * as YAML from 'yamljs';
+import * as pathUtil from 'path';
+import * as _ from 'lodash';
 
 export class SpecGenerator {
     constructor(private readonly metadata: Metadata, private readonly config: SwaggerConfig) { }
@@ -23,7 +25,7 @@ export class SpecGenerator {
                         reject(err);
                     }
                     if (yaml) {
-                        fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec), (errYaml: any) => {
+                        fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec ,1000), (errYaml: any) => {
                             if (errYaml) {
                                 reject(errYaml);
                             }
@@ -94,9 +96,12 @@ export class SpecGenerator {
 
         this.metadata.Controllers.forEach(controller => {
             controller.methods.forEach(method => {
-                const path = `${controller.path ? `/${controller.path}` : ''}${method.path}`;
+                const path = pathUtil.join('/', (controller.path ? controller.path : ''), method.path);
                 paths[path] = paths[path] || {};
+                method.consumes = _.union(controller.consumes, method.consumes);
+
                 this.buildPathMethod(controller.name, method, paths[path]);
+                // TODO concatenate consumes
             });
         });
 
@@ -109,6 +114,7 @@ export class SpecGenerator {
 
         if (method.deprecated) { pathMethod.deprecated = method.deprecated; }
         if (method.tags.length) { pathMethod.tags = method.tags; }
+        if (method.consumes.length) { pathMethod.consumes = method.consumes; }
         if (method.security) {
             const security: any = {};
             security[method.security.name] = method.security.scopes ? method.security.scopes : [];
@@ -199,14 +205,14 @@ export class SpecGenerator {
         const responses: any = {};
 
         method.responses.forEach((res: ResponseType) => {
-            responses[res.name] = {
+            responses[res.status] = {
                 description: res.description
             };
             if (res.schema && this.getSwaggerType(res.schema).type !== 'void') {
-                responses[res.name]['schema'] = this.getSwaggerType(res.schema);
+                responses[res.status]['schema'] = this.getSwaggerType(res.schema);
             }
             if (res.examples) {
-                responses[res.name]['examples'] = { 'application/json': res.examples };
+                responses[res.status]['examples'] = { 'application/json': res.examples };
             }
         });
 

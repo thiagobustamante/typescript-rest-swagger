@@ -18,9 +18,11 @@ interface Person {
     address?: Address;
 }
 
+@Accept('text/plain')
 @Path('mypath')
 export class MyService {
     @GET
+    @Accept('text/html')
     test( ): string {
         return 'OK';
     }
@@ -34,4 +36,26 @@ export class MyService {
     test2( @QueryParam('testParam')test?: string ): Person {
         return {name: 'OK'};
     }
+}
+
+@Path('promise')
+export class PromiseService {
+    /**
+     * Esta eh a da classe
+     * @param test Esta eh a description do param teste
+     */
+    @GET
+    test( @QueryParam('testParam')test?: string ): Promise<Person> {
+        return new Promise<Person>((resolve, reject) => {
+            resolve({name: 'OK'});
+        });
+    }
+
+    @POST
+    testPost( obj: Person ): Promise<Return.NewResource<Person>> {
+        return new Promise<Return.NewResource<Person>>((resolve, reject) => {
+            resolve(new Return.NewResource<Person>('id', {name: 'OK'}));
+        });
+    }
+
 }

@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import { Method, ResponseType, Type } from './metadataGenerator';
-import { ResolveType } from './resolveType';
+import { Method, ResponseData, ResponseType, Type } from './metadataGenerator';
+import { resolveType } from './resolveType';
 import { ParameterGenerator } from './parameterGenerator';
 import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
 import { getDecorators } from '../utils/decoratorUtils';
@@ -13,20 +13,21 @@ export class MethodGenerator {
         this.processMethodDecorators();
     }
 
-    public IsValid() {
+    public isValid() {
         return !!this.method;
     }
 
-    public Generate(): Method {
-        if (!this.IsValid()) { throw new Error('This isn\'t a valid a controller method.'); }
+    public generate(): Method {
+        if (!this.isValid()) { throw new Error('This isn\'t a valid a controller method.'); }
         if (!this.node.type) { throw new Error('Controller methods must have a return type.'); }
 
         const identifier = this.node.name as ts.Identifier;
-        const type = ResolveType(this.node.type);
+        const type = resolveType(this.node.type);
         const responses = this.getMethodResponses();
         responses.push(this.getMethodSuccessResponse(type));
 
         return {
+            consumes: this.getMethodAccept(),
             deprecated: isExistJSDocTag(this.node, 'deprecated'),
             description: getJSDocDescription(this.node),
             method: this.method,
@@ -44,7 +45,7 @@ export class MethodGenerator {
     private buildParameters() {
         const parameters = this.node.parameters.map(p => {
             try {
-                return new ParameterGenerator(p, this.method, this.path).Generate();
+                return new ParameterGenerator(p, this.method, this.path).generate();
             } catch (e) {
                 const methodId = this.node.name as ts.Identifier;
                 const controllerId = (this.node.parent as ts.ClassDeclaration).name as ts.Identifier;
@@ -80,7 +81,7 @@ export class MethodGenerator {
         }
 
         const methodDecorator = httpMethodDecorators[0];
-        this.method = methodDecorator.text;
+        this.method = methodDecorator.text.toLowerCase();
 
         const pathDecorators = getDecorators(this.node, decorator => decorator.text === 'Path');
 
@@ -101,10 +102,10 @@ export class MethodGenerator {
 
         return decorators.map(decorator => {
             let description = '';
-            let name = '200';
+            let status = '200';
             let examples = undefined;
             if (decorator.arguments.length > 0 && decorator.arguments[0]) {
-                name = decorator.arguments[0];
+                status = decorator.arguments[0];
             }
             if (decorator.arguments.length > 1 && decorator.arguments[1]) {
                 description = (decorator.arguments[1] as any).text;
@@ -117,47 +118,33 @@ export class MethodGenerator {
             return {
                 description: description,
                 examples: examples,
-                name: name,
                 schema: (decorator.typeArguments && decorator.typeArguments.length > 0)
-                    ? ResolveType(decorator.typeArguments[0])
-                    : undefined
+                    ? resolveType(decorator.typeArguments[0])
+                    : undefined,
+                status: status
             };
         });
     }
 
     private getMethodSuccessResponse(type: Type): ResponseType {
-        const decorators = getDecorators(this.node, decorator => decorator.text === 'SuccessResponse');
-        if (!decorators || !decorators.length) {
-            return {
-                description: type.typeName === 'void' ? 'No content' : 'Ok',
-                examples: this.getMethodSuccessExamples(),
-                name: type.typeName === 'void' ? '204' : '200',
-                schema: type
-            };
-        }
-        if (decorators.length > 1) {
-            throw new Error(`Only one SuccessResponse decorator allowed in '${this.getCurrentLocation}' method.`);
-        }
-
-        const decorator = decorators[0];
-
-        let description = '';
-        let name = '200';
-        const examples = undefined;
-
-        if (decorator.arguments.length > 0 && decorator.arguments[0]) {
-            name = decorator.arguments[0];
-        }
-        if (decorator.arguments.length > 1 && decorator.arguments[1]) {
-            description = decorator.arguments[1];
-        }
-
+        const responseData = this.getMethodSuccessResponseData(type);
         return {
-            description,
-            examples,
-            name,
-            schema: type
+            description: type.typeName === 'void' ? 'No content' : 'Ok',
+            examples: this.getMethodSuccessExamples(),
+            schema: responseData.type,
+            status: responseData.status
         };
+    }
+
+    private getMethodSuccessResponseData(type: Type): ResponseData {
+        switch (type.typeName) {
+            case 'void': return {status: '204', type: type};
+            case 'NewResource': return {status: '201', type: type.typeArgument||type};
+            case 'RequestAccepted': return {status: '202', type: type.typeArgument||type};
+            case 'MovedPermanently': return {status: '301', type: type.typeArgument||type};
+            case 'MovedTemporarily': return {status: '302', type: type.typeArgument||type};
+            default: return {status: '200', type: type};
+        }
     }
 
     private getMethodSuccessExamples() {
@@ -193,6 +180,17 @@ export class MethodGenerator {
         }
 
         const decorator = tagsDecorators[0];
+        return decorator.arguments;
+    }
+
+    private getMethodAccept() {
+        const consumesDecorators = getDecorators(this.node, decorator => decorator.text === 'Accept');
+        if (!consumesDecorators || !consumesDecorators.length) { return []; }
+        if (consumesDecorators.length > 1) {
+            throw new Error(`Only one Accept decorator allowed in '${this.getCurrentLocation()}' method.`);
+        }
+
+        const decorator = consumesDecorators[0];
         return decorator.arguments;
     }
 

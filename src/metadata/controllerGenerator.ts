@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 import { Controller } from './metadataGenerator';
 import { MethodGenerator } from './methodGenerator';
-import { getDecoratorTextValue } from '../utils/decoratorUtils';
+import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
 
 export class ControllerGenerator {
     private readonly pathValue: string | undefined;
@@ -21,6 +21,7 @@ export class ControllerGenerator {
         const sourceFile = this.node.parent.getSourceFile();
 
         return {
+            consumes: this.getMethodAccept(),
             location: sourceFile.fileName,
             methods: this.buildMethods(),
             name: this.node.name.text,
@@ -32,7 +33,21 @@ export class ControllerGenerator {
         return this.node.members
             .filter(m => m.kind === ts.SyntaxKind.MethodDeclaration)
             .map((m: ts.MethodDeclaration) => new MethodGenerator(m))
-            .filter(generator => generator.IsValid())
-            .map(generator => generator.Generate());
+            .filter(generator => generator.isValid())
+            .map(generator => generator.generate());
+    }
+
+    private getMethodAccept() {
+        if (!this.node.parent) { throw new Error('Controller node doesn\'t have a valid parent source file.'); }
+        if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
+
+        const consumesDecorators = getDecorators(this.node, decorator => decorator.text === 'Accept');
+        if (!consumesDecorators || !consumesDecorators.length) { return []; }
+        if (consumesDecorators.length > 1) {
+            throw new Error(`Only one Accept decorator allowed in '${this.node.name.text}' controller.`);
+        }
+
+        const decorator = consumesDecorators[0];
+        return decorator.arguments;
     }
 }

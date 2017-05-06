@@ -1,5 +1,5 @@
 import { MetadataGenerator, Parameter, Type } from './metadataGenerator';
-import { ResolveType } from './resolveType';
+import { resolveType } from './resolveType';
 import { getDecoratorName, getDecoratorTextValue } from '../utils/decoratorUtils';
 import * as ts from 'typescript';
 
@@ -10,7 +10,7 @@ export class ParameterGenerator {
         private readonly path: string
     ) { }
 
-    public Generate(): Parameter {
+    public generate(): Parameter {
         const decoratorName = getDecoratorName(this.parameter, identifier => this.supportParameterDecorator(identifier.text));
 
         switch (decoratorName) {
@@ -235,7 +235,7 @@ export class ParameterGenerator {
     }
 
     private supportsBodyParameters(method: string) {
-        return ['POST', 'PUT', 'PATCH'].some(m => m === method);
+        return ['post', 'put', 'patch'].some(m => m === method);
     }
 
     private supportParameterDecorator(decoratorName: string) {
@@ -250,7 +250,7 @@ export class ParameterGenerator {
         if (!parameter.type) {
             throw new Error(`Parameter ${parameter.name} doesn't have a valid type assigned in '${this.getCurrentLocation()}'.`);
         }
-        return ResolveType(parameter.type);
+        return resolveType(parameter.type);
     }
 }
 

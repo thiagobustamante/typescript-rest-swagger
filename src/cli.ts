@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
-import { ArgumentParser } from "argparse";
+import { ArgumentParser } from 'argparse';
 import { Config, SwaggerConfig } from './config';
 import { MetadataGenerator } from './metadata/metadataGenerator';
 import { SpecGenerator } from './swagger/generator';
 
-let parser = new ArgumentParser({
-    version: '0.0.1',
+const parser = new ArgumentParser({
     addHelp: true,
-    description: 'Tree-Gateway'
+    description: 'Tree-Gateway Swagger tool',
+    version: '0.0.1'
 });
 
 parser.addArgument(
@@ -22,8 +22,7 @@ const getPackageJsonValue = (key: string): string => {
     try {
         const packageJson = require(`${workingDir}/package.json`);
         return packageJson[key] || '';
-    }
-    catch (err) {
+    } catch (err) {
         return '';
     }
 };
@@ -65,14 +64,14 @@ const validateSwaggerConfig = (config: SwaggerConfig): SwaggerConfig => {
 
 const workingDir: string = process.cwd();
 
-let parameters = parser.parseArgs();
+const parameters = parser.parseArgs();
 const config = getConfig(parameters.config);
 
 const swaggerConfig = validateSwaggerConfig(config.swagger);
 const metadata = new MetadataGenerator(swaggerConfig.entryFile).generate();
 new SpecGenerator(metadata, config.swagger).generate(swaggerConfig.outputDirectory, swaggerConfig.yaml)
     .then(() => {
-        console.log ('Generation completed.')
+        console.log ('Generation completed.');
     })
     .catch((err: any) => {
         console.error(`Error generating swagger. ${err}`);
