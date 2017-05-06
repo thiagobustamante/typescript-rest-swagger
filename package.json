@@ -55,7 +55,7 @@
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
     "typescript": "^2.3.2",
-    "typescript-rest": "file:///Users/thiago/git/typescript-rest",
+    "typescript-rest": "^1.0.0",
     "yamljs": "^0.2.10"
   },
   "devDependencies": {
