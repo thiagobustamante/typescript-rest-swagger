@@ -1,5 +1,5 @@
 [![npm version](https://badge.fury.io/js/typescript-rest-swagger.svg)](https://badge.fury.io/js/typescript-rest-swagger)
-[![Build Status](https://travis-ci.org/thiagobustamante/typescript-rest-swagger.png?branch=master)](https://travis-ci.org/thiagobustamante/typescript-rest-swagger)
+[![Build Status](https://travis-ci.org/thiagobustamante/typescript-rest-swagger.svg?branch=master)](https://travis-ci.org/thiagobustamante/typescript-rest-swagger)
 
 # Swagger for Typescript-rest
 This is a tool to generate swagger files from a [typescript-rest](https://github.com/thiagobustamante/typescript-rest) project.
