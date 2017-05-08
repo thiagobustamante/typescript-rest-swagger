@@ -1,7 +1,7 @@
 {
     "swagger": {
         "yaml": true,
-        "outputDirectory": "./dist",
+        "outputDirectory": "./test/dist",
         "entryFile": "./test/data/apis.ts",
         "host": "localhost:3000",
         "version": "1.0",

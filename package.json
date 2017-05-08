@@ -23,8 +23,8 @@
     "prepublish": "npm run build",
     "deploy": "npm version patch && npm publish",
     "postversion": "git push origin master",
-    "swagger-gen": "node ./dist/cli.js -c ./swagger.json",
-    "pretest": "cross-env NODE_ENV=test npm build && npm run swagger-gen && npm run lint",
+    "swagger-gen": "node ./dist/cli.js -c ./test/data/swagger.json",
+    "pretest": "cross-env NODE_ENV=test npm build && npm run lint",
     "test": "cross-env NODE_ENV=test mocha",
     "test:coverage": "nyc npm test",
     "tsc": "tsc"
