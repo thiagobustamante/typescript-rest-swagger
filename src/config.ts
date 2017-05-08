@@ -60,16 +60,6 @@ export interface SwaggerConfig {
     spec?: any;
 
     /**
-     * Alter how the spec is merged to generated swagger spec.
-     * Possible values:
-     *  - 'immediate' is overriding top level elements only thus you can not append a new path or alter an existing value without erasing same level elements.
-     *  - 'recursive' proceed to a deep merge and will concat every branches or override or create new values if needed. @see https://www.npmjs.com/package/merge
-     * The default is set to immediate so it is not breaking previous versions.
-     * @default 'immediate'
-     */
-    specMerging?: 'immediate' | 'recursive';
-
-    /**
      * Security Definitions Object
      * A declaration of the security schemes available to be used in the
      * specification. This does not enforce the security schemes on the operations
