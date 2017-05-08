@@ -42,11 +42,9 @@ export class SpecGenerator {
     public getSpec() {
         let spec: Swagger.Spec = {
             basePath: this.config.basePath,
-            consumes: ['application/json'],
             definitions: this.buildDefinitions(),
             info: {},
             paths: this.buildPaths(),
-            produces: ['application/json'],
             swagger: '2.0'
         };
 
@@ -54,6 +52,8 @@ export class SpecGenerator {
             ? this.config.securityDefinitions
             : {};
 
+        if (this.config.consumes) { spec.consumes = this.config.consumes; }
+        if (this.config.produces) { spec.produces = this.config.produces; }
         if (this.config.description) { spec.info.description = this.config.description; }
         if (this.config.license) { spec.info.license = { name: this.config.license }; }
         if (this.config.name) { spec.info.title = this.config.name; }
@@ -75,8 +75,8 @@ export class SpecGenerator {
 
     private buildDefinitions() {
         const definitions: { [definitionsName: string]: Swagger.Schema } = {};
-        Object.keys(this.metadata.ReferenceTypes).map(typeName => {
-            const referenceType = this.metadata.ReferenceTypes[typeName];
+        Object.keys(this.metadata.referenceTypes).map(typeName => {
+            const referenceType = this.metadata.referenceTypes[typeName];
             definitions[referenceType.typeName] = {
                 description: referenceType.description,
                 properties: this.buildProperties(referenceType.properties),
@@ -94,14 +94,14 @@ export class SpecGenerator {
     private buildPaths() {
         const paths: { [pathName: string]: Swagger.Path } = {};
 
-        this.metadata.Controllers.forEach(controller => {
+        this.metadata.controllers.forEach(controller => {
             controller.methods.forEach(method => {
                 const path = pathUtil.join('/', (controller.path ? controller.path : ''), method.path);
                 paths[path] = paths[path] || {};
                 method.consumes = _.union(controller.consumes, method.consumes);
+                method.produces = _.union(controller.produces, method.produces);
 
                 this.buildPathMethod(controller.name, method, paths[path]);
-                // TODO concatenate consumes
             });
         });
 
@@ -114,12 +114,12 @@ export class SpecGenerator {
 
         if (method.deprecated) { pathMethod.deprecated = method.deprecated; }
         if (method.tags.length) { pathMethod.tags = method.tags; }
-        if (method.consumes.length) { pathMethod.consumes = method.consumes; }
         if (method.security) {
             const security: any = {};
             security[method.security.name] = method.security.scopes ? method.security.scopes : [];
             pathMethod.security = [security];
         }
+        this.handleMethodConsumes(method, pathMethod);
 
         pathMethod.parameters = method.parameters
             .filter(p => (p.in !== 'param'))
@@ -145,15 +145,36 @@ export class SpecGenerator {
                     type: p.type
                 }));
             });
-        if (method.parameters.some(p => (p.in === 'file' || p.in === 'files'))) {
-            pathMethod.consumes = pathMethod.consumes || [];
-            pathMethod.consumes.push('multipart/form-data');
-        }
-
         if (pathMethod.parameters.filter((p: Swagger.BaseParameter) => p.in === 'body').length > 1) {
             throw new Error('Only one body parameter allowed per controller method.');
         }
     }
+
+    private handleMethodConsumes(method: Method, pathMethod: any) {
+        if (method.consumes.length) { pathMethod.consumes = method.consumes; }
+
+        if ((!pathMethod.consumes || !pathMethod.consumes.length)) {
+            if (method.parameters.some(p => (p.in === 'file' || p.in === 'files'))) {
+                pathMethod.consumes = pathMethod.consumes || [];
+                pathMethod.consumes.push('multipart/form-data');
+            } else if (this.hasFormParams(method)) {
+                pathMethod.consumes = pathMethod.consumes || [];
+                pathMethod.consumes.push('application/x-www-form-urlencoded');
+            } else if (this.supportsBodyParameters(method.name)) {
+                pathMethod.consumes = pathMethod.consumes || [];
+                pathMethod.consumes.push('application/json');
+            }
+        }
+    }
+
+    private hasFormParams(method: Method) {
+        return method.parameters.find(p => (p.in === 'formData'));
+    }
+
+    private supportsBodyParameters(method: string) {
+        return ['post', 'put', 'patch'].some(m => m === method);
+    }
+
     private buildParameter(parameter: Parameter): Swagger.Parameter {
         const swaggerParameter: any = {
             description: parameter.description,
@@ -202,25 +223,49 @@ export class SpecGenerator {
     }
 
     private buildOperation(controllerName: string, method: Method) {
-        const responses: any = {};
+        const operation: any = {
+            operationId: this.getOperationId(controllerName, method.name),
+            produces: [],
+            responses: {}
+        };
+        const methodReturnTypes = new Set<string>();
 
         method.responses.forEach((res: ResponseType) => {
-            responses[res.status] = {
+            operation.responses[res.status] = {
                 description: res.description
             };
-            if (res.schema && this.getSwaggerType(res.schema).type !== 'void') {
-                responses[res.status]['schema'] = this.getSwaggerType(res.schema);
+
+            if (res.schema) {
+                const swaggerType = this.getSwaggerType(res.schema);
+                if (swaggerType.type !== 'void') {
+                    operation.responses[res.status]['schema'] = swaggerType;
+                }
+                methodReturnTypes.add(this.getMimeType(swaggerType));
             }
             if (res.examples) {
-                responses[res.status]['examples'] = { 'application/json': res.examples };
+                operation.responses[res.status]['examples'] = { 'application/json': res.examples };
             }
         });
+        this.handleMethodProduces(method, operation, methodReturnTypes);
+        return operation;
+    }
 
-        return {
-            operationId: this.getOperationId(controllerName, method.name),
-            produces: ['application/json'],
-            responses: responses
-        };
+    private getMimeType(swaggerType: Swagger.Schema) {
+        if (swaggerType.$ref || swaggerType.type === 'array' || swaggerType.type === 'object') {
+            return 'application/json';
+        } else if (swaggerType.type === 'string' && swaggerType.format === 'binary') {
+            return 'application/octet-stream';
+        } else {
+            return 'text/html';
+        }
+    }
+
+    private handleMethodProduces(method: Method, operation: any, methodReturnTypes: Set<string>) {
+        if (method.produces.length) {
+            operation.produces = method.produces;
+        } else if (methodReturnTypes && methodReturnTypes.size > 0) {
+            operation.produces = Array.from(methodReturnTypes);
+        }
     }
 
     private getOperationId(controllerName: string, methodName: string) {

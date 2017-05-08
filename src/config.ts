@@ -86,4 +86,14 @@ export interface SwaggerConfig {
             scopes?: { [scopeName: string]: string; }
         }
     };
+
+    /**
+     * Default consumes property for the entire API
+     */
+
+    consumes?: [string];
+    /**
+     * Default produces property for the entire API
+     */
+    produces?: [string];
 }

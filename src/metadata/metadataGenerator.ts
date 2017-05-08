@@ -27,8 +27,8 @@ export class MetadataGenerator {
         this.circularDependencyResolvers.forEach(c => c(this.referenceTypes));
 
         return {
-            Controllers: controllers,
-            ReferenceTypes: this.referenceTypes
+            controllers: controllers,
+            referenceTypes: this.referenceTypes
         };
     }
 
@@ -58,8 +58,8 @@ export class MetadataGenerator {
 }
 
 export interface Metadata {
-    Controllers: Controller[];
-    ReferenceTypes: { [typeName: string]: ReferenceType };
+    controllers: Controller[];
+    referenceTypes: { [typeName: string]: ReferenceType };
 }
 
 export interface Controller {
@@ -68,6 +68,7 @@ export interface Controller {
     name: string;
     path: string;
     consumes: string[];
+    produces: string[];
 }
 
 export interface Method {
@@ -83,6 +84,7 @@ export interface Method {
     security?: Security;
     summary?: string;
     consumes: string[];
+    produces: string[];
 }
 
 export interface Parameter {

@@ -38,6 +38,8 @@ export function resolveType(typeNode: ts.TypeNode): Type {
     if (typeReference.typeName.kind === ts.SyntaxKind.Identifier) {
         if (typeReference.typeName.text === 'Date') { return getDateType(typeNode); }
         if (typeReference.typeName.text === 'Buffer') { return { typeName: 'buffer' }; }
+        if (typeReference.typeName.text === 'DownloadBinaryData') { return { typeName: 'buffer' }; }
+        if (typeReference.typeName.text === 'DownloadResource') { return { typeName: 'buffer' }; }
 
         if (typeReference.typeName.text === 'Promise') {
             typeReference = typeReference.typeArguments[0];

@@ -69,9 +69,9 @@ const config = getConfig(parameters.config);
 
 const swaggerConfig = validateSwaggerConfig(config.swagger);
 const metadata = new MetadataGenerator(swaggerConfig.entryFile).generate();
-new SpecGenerator(metadata, config.swagger).generate(swaggerConfig.outputDirectory, swaggerConfig.yaml)
+new SpecGenerator(metadata, swaggerConfig).generate(swaggerConfig.outputDirectory, swaggerConfig.yaml)
     .then(() => {
-        console.log ('Generation completed.');
+        console.info ('Generation completed.');
     })
     .catch((err: any) => {
         console.error(`Error generating swagger. ${err}`);

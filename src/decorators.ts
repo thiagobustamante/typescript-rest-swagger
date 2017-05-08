@@ -73,3 +73,10 @@ export function Tags(...values: string[]): any {
 export function Security(name: string, scopes?: string[]): any {
   return () => { return; };
 }
+
+/**
+ * Document the method or class produces property in generated swagger docs
+ */
+export function Produces(...values: string[]): any {
+  return () => { return; };
+}

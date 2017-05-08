@@ -34,6 +34,7 @@ export class MethodGenerator {
             name: identifier.text,
             parameters: this.buildParameters(),
             path: this.path,
+            produces: this.getMethodProduces(),
             responses,
             security: this.getMethodSecurity(),
             summary: getJSDocTag(this.node, 'summary'),
@@ -191,6 +192,17 @@ export class MethodGenerator {
         }
 
         const decorator = consumesDecorators[0];
+        return decorator.arguments;
+    }
+
+    private getMethodProduces() {
+        const producesDecorators = getDecorators(this.node, decorator => decorator.text === 'Produces');
+        if (!producesDecorators || !producesDecorators.length) { return []; }
+        if (producesDecorators.length > 1) {
+            throw new Error(`Only one Produces decorator allowed in '${this.getCurrentLocation()}' method.`);
+        }
+
+        const decorator = producesDecorators[0];
         return decorator.arguments;
     }
 

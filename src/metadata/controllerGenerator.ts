@@ -25,7 +25,8 @@ export class ControllerGenerator {
             location: sourceFile.fileName,
             methods: this.buildMethods(),
             name: this.node.name.text,
-            path: this.pathValue || ''
+            path: this.pathValue || '',
+            produces: this.getMethodProduces()
         };
     }
 
@@ -48,6 +49,20 @@ export class ControllerGenerator {
         }
 
         const decorator = consumesDecorators[0];
+        return decorator.arguments;
+    }
+
+    private getMethodProduces() {
+        if (!this.node.parent) { throw new Error('Controller node doesn\'t have a valid parent source file.'); }
+        if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
+
+        const producesDecorators = getDecorators(this.node, decorator => decorator.text === 'Produces');
+        if (!producesDecorators || !producesDecorators.length) { return []; }
+        if (producesDecorators.length > 1) {
+            throw new Error(`Only one Produces decorator allowed in '${this.node.name.text}' controller.`);
+        }
+
+        const decorator = producesDecorators[0];
         return decorator.arguments;
     }
 }
