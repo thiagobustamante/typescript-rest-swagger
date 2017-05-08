@@ -1,8 +1,23 @@
 [![npm version](https://badge.fury.io/js/typescript-rest-swagger.svg)](https://badge.fury.io/js/typescript-rest-swagger)
 [![Build Status](https://travis-ci.org/thiagobustamante/typescript-rest-swagger.svg?branch=master)](https://travis-ci.org/thiagobustamante/typescript-rest-swagger)
+[![Coverage Status](https://coveralls.io/repos/github/thiagobustamante/typescript-rest-swagger/badge.svg?branch=master)](https://coveralls.io/github/thiagobustamante/typescript-rest-swagger?branch=master)
+
 
 # Swagger for Typescript-rest
 This is a tool to generate swagger files from a [typescript-rest](https://github.com/thiagobustamante/typescript-rest) project.
+
+**Table of Contents** 
+
+- [Swagger for Typescript-Rest](#)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [SwagerConfig.json](#swagerconfig.json)
+    - [Swagger Decorators](#swagger-decorators)
+      - [@Response](#response)
+      - [@Example](#example)
+      - [@Tags](#tags)
+      - [@Security](#security)
+      - [@Produces](#produces)
 
 ## Installation
 
