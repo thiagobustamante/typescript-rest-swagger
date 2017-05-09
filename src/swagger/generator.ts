@@ -74,9 +74,12 @@ export class SpecGenerator {
             definitions[referenceType.typeName] = {
                 description: referenceType.description,
                 properties: this.buildProperties(referenceType.properties),
-                required: referenceType.properties.filter(p => p.required).map(p => p.name),
                 type: 'object'
             };
+            const requiredFields = referenceType.properties.filter(p => p.required).map(p => p.name);
+            if (requiredFields && requiredFields.length) {
+                definitions[referenceType.typeName].required = requiredFields;
+            }
             if (referenceType.additionalProperties) {
                 definitions[referenceType.typeName].additionalProperties = this.buildAdditionalProperties(referenceType.additionalProperties);
             }
@@ -148,7 +151,7 @@ export class SpecGenerator {
         if (method.consumes.length) { pathMethod.consumes = method.consumes; }
 
         if ((!pathMethod.consumes || !pathMethod.consumes.length)) {
-            if (method.parameters.some(p => (p.in === 'file' || p.in === 'files'))) {
+            if (method.parameters.some(p => (p.in === 'formData' && p.type.typeName === 'file'))) {
                 pathMethod.consumes = pathMethod.consumes || [];
                 pathMethod.consumes.push('multipart/form-data');
             } else if (this.hasFormParams(method)) {
@@ -291,7 +294,8 @@ export class SpecGenerator {
         const typeMap: { [name: string]: Swagger.Schema } = {
             binary: { type: 'string', format: 'binary' },
             boolean: { type: 'boolean' },
-            buffer: { type: 'string', format: 'base64' },
+            buffer: { type: 'file' },
+//            buffer: { type: 'string', format: 'base64' },
             byte: { type: 'string', format: 'byte' },
             date: { type: 'string', format: 'date' },
             datetime: { type: 'string', format: 'date-time' },

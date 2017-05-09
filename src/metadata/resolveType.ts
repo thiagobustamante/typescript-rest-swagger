@@ -13,7 +13,10 @@ const localReferenceTypeCache: { [typeName: string]: ReferenceType } = {};
 const inProgressTypes: { [typeName: string]: boolean } = {};
 
 type UsableDeclaration = ts.InterfaceDeclaration | ts.ClassDeclaration | ts.TypeAliasDeclaration;
-export function resolveType(typeNode: ts.TypeNode): Type {
+export function resolveType(typeNode?: ts.TypeNode): Type {
+    if (!typeNode) {
+        return { typeName: 'void' };
+    }
     const primitiveType = getPrimitiveType(typeNode);
     if (primitiveType) {
         return primitiveType;
@@ -27,7 +30,7 @@ export function resolveType(typeNode: ts.TypeNode): Type {
         };
     }
 
-    if (typeNode.kind === ts.SyntaxKind.UnionType) {
+    if ((typeNode.kind === ts.SyntaxKind.UnionType) || (typeNode.kind === ts.SyntaxKind.AnyKeyword)) {
         return { typeName: 'object' };
     }
 
@@ -35,16 +38,23 @@ export function resolveType(typeNode: ts.TypeNode): Type {
         throw new Error(`Unknown type: ${ts.SyntaxKind[typeNode.kind]}`);
     }
     let typeReference: any = typeNode;
-    if (typeReference.typeName.kind === ts.SyntaxKind.Identifier) {
-        if (typeReference.typeName.text === 'Date') { return getDateType(typeNode); }
-        if (typeReference.typeName.text === 'Buffer') { return { typeName: 'buffer' }; }
-        if (typeReference.typeName.text === 'DownloadBinaryData') { return { typeName: 'buffer' }; }
-        if (typeReference.typeName.text === 'DownloadResource') { return { typeName: 'buffer' }; }
+    let typeName = resolveSimpleTypeName(typeReference.typeName as ts.EntityName);
 
-        if (typeReference.typeName.text === 'Promise') {
-            typeReference = typeReference.typeArguments[0];
-            return resolveType(typeReference);
-        }
+    if (typeName === 'Date') { return getDateType(typeNode); }
+    if (typeName === 'Buffer') { return { typeName: 'buffer' }; }
+    if (typeName === 'DownloadBinaryData') { return { typeName: 'buffer' }; }
+    if (typeName === 'DownloadResource') { return { typeName: 'buffer' }; }
+
+    if (typeName === 'Promise') {
+        typeReference = typeReference.typeArguments[0];
+        return resolveType(typeReference);
+    }
+    if (typeName === 'Array') {
+        typeReference = typeReference.typeArguments[0];
+        return <ArrayType>{
+            elementType: resolveType(typeReference),
+            typeName: 'array'
+        };
     }
 
     const enumType = getEnumerateType(typeNode);
@@ -62,7 +72,7 @@ export function resolveType(typeNode: ts.TypeNode): Type {
     if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
         const typeT: ts.TypeNode[] = typeReference.typeArguments as ts.TypeNode[];
         referenceType = getReferenceType(typeReference.typeName as ts.EntityName, typeT);
-        const typeName = resolveSimpleTypeName(typeReference.typeName as ts.EntityName);
+        typeName = resolveSimpleTypeName(typeReference.typeName as ts.EntityName);
         if (['NewResource', 'RequestAccepted', 'MovedPermanently', 'MovedTemporarily'].indexOf(typeName) >= 0) {
             referenceType.typeName = typeName;
             referenceType.typeArgument = resolveType(typeT[0]);
@@ -249,7 +259,7 @@ function getAnyTypeName(typeNode: ts.TypeNode): string {
         return getAnyTypeName(arrayType.elementType) + '[]';
     }
 
-    if (typeNode.kind === ts.SyntaxKind.UnionType) {
+    if ((typeNode.kind === ts.SyntaxKind.UnionType) || (typeNode.kind === ts.SyntaxKind.AnyKeyword)) {
         return 'object';
     }
 
@@ -348,10 +358,10 @@ function getModelTypeDeclaration(type: ts.EntityName) {
         }) as Array<UsableDeclaration>;
 
     if (!modelTypes.length) { throw new Error(`No matching model found for referenced type ${typeName}`); }
-    if (modelTypes.length > 1) {
-        const conflicts = modelTypes.map(modelType => modelType.getSourceFile().fileName).join('"; "');
-        throw new Error(`Multiple matching models found for referenced type ${typeName}; please make model names unique. Conflicts found: "${conflicts}"`);
-    }
+    // if (modelTypes.length > 1) {
+    //     const conflicts = modelTypes.map(modelType => modelType.getSourceFile().fileName).join('"; "');
+    //     throw new Error(`Multiple matching models found for referenced type ${typeName}; please make model names unique. Conflicts found: "${conflicts}"`);
+    // }
 
     return modelTypes[0];
 }
@@ -465,7 +475,9 @@ function getModelTypeAdditionalProperties(node: UsableDeclaration) {
                 const indexSignatureDeclaration = member as ts.IndexSignatureDeclaration;
 
                 const indexType = resolveType(<ts.TypeNode>indexSignatureDeclaration.parameters[0].type);
-                if (indexType.typeName !== 'string') { throw new Error('Only string indexers are supported'); }
+                if (indexType.typeName !== 'string') {
+                    throw new Error(`Only string indexers are supported. Found ${indexType.typeName}.`);
+                }
 
                 return {
                     description: '',

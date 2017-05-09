@@ -2,12 +2,13 @@ import * as ts from 'typescript';
 import { Controller } from './metadataGenerator';
 import { MethodGenerator } from './methodGenerator';
 import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
+import {normalizePath} from '../utils/pathUtils';
 
 export class ControllerGenerator {
     private readonly pathValue: string | undefined;
 
     constructor(private readonly node: ts.ClassDeclaration) {
-        this.pathValue = getDecoratorTextValue(node, decorator => decorator.text === 'Path');
+        this.pathValue = normalizePath(getDecoratorTextValue(node, decorator => decorator.text === 'Path'));
     }
 
     public isValid() {

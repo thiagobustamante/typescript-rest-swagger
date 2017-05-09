@@ -4,6 +4,7 @@ import { resolveType } from './resolveType';
 import { ParameterGenerator } from './parameterGenerator';
 import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
 import { getDecorators } from '../utils/decoratorUtils';
+import {normalizePath} from '../utils/pathUtils';
 
 export class MethodGenerator {
     private method: string;
@@ -19,7 +20,6 @@ export class MethodGenerator {
 
     public generate(): Method {
         if (!this.isValid()) { throw new Error('This isn\'t a valid a controller method.'); }
-        if (!this.node.type) { throw new Error('Controller methods must have a return type.'); }
 
         const identifier = this.node.name as ts.Identifier;
         const type = resolveType(this.node.type);
@@ -91,7 +91,7 @@ export class MethodGenerator {
         }
         if (pathDecorators) {
             const pathDecorator = pathDecorators[0]; // TODO PAthUtils.normalizePath (controlar as / e substituir :id pra {id})
-            this.path = pathDecorator ? `/${pathDecorator.arguments[0]}` : '';
+            this.path = pathDecorator ? `/${normalizePath(pathDecorator.arguments[0])}` : '';
         } else {
             this.path = '';
         }
@@ -144,6 +144,8 @@ export class MethodGenerator {
             case 'RequestAccepted': return {status: '202', type: type.typeArgument||type};
             case 'MovedPermanently': return {status: '301', type: type.typeArgument||type};
             case 'MovedTemporarily': return {status: '302', type: type.typeArgument||type};
+            case 'DownloadResource':
+            case 'DownloadBinaryData': return {status: '200', type: {typeName: 'buffer'}};
             default: return {status: '200', type: type};
         }
     }

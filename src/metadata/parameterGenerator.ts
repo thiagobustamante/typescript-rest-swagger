@@ -67,14 +67,13 @@ export class ParameterGenerator {
 
     private getContextParameter(parameter: ts.ParameterDeclaration): Parameter {
         const parameterName = (parameter.name as ts.Identifier).text;
-        const type = this.getValidatedType(parameter);
 
         return {
             description: this.getParameterDescription(parameter),
             in: 'context',
             name: parameterName,
             required: !parameter.questionToken,
-            type: type,
+            type: {typeName: ''},
             parameterName
         };
     }
@@ -133,18 +132,18 @@ export class ParameterGenerator {
 
     private getCookieParameter(parameter: ts.ParameterDeclaration): Parameter {
         const parameterName = (parameter.name as ts.Identifier).text;
-        const type = this.getValidatedType(parameter);
+//        const type = this.getValidatedType(parameter);
 
-        if (!this.supportPathDataType(type)) {
-            throw new Error(`Cookie can't support '${this.getCurrentLocation()}' method.`);
-        }
+        // if (!this.supportPathDataType(type)) {
+        //     throw new Error(`Cookie can't support '${this.getCurrentLocation()}' method.`);
+        // }
 
         return {
             description: this.getParameterDescription(parameter),
             in: 'cookie',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'CookieParam') || parameterName,
             required: !parameter.questionToken,
-            type: type,
+            type: {typeName: ''},
             parameterName
         };
     }
@@ -211,7 +210,7 @@ export class ParameterGenerator {
         if (!this.supportPathDataType(type)) {
             throw new InvalidParameterException(`Parameter '${parameterName}:${type}' can't be passed as a path parameter in '${this.getCurrentLocation()}'.`);
         }
-        if (!this.path.includes(`{${pathName}}`)) {
+        if ((!this.path.includes(`{${pathName}}`)) && (!this.path.includes(`:${pathName}`))) {
             throw new Error(`Parameter '${parameterName}' can't macth in path: '${this.path}'`);
         }
 
@@ -239,7 +238,10 @@ export class ParameterGenerator {
     }
 
     private supportParameterDecorator(decoratorName: string) {
-        return ['HeaderParam', 'QueryParam', 'Param', 'FileParam', 'FilesParam', 'FormParam', 'CookieParam'].some(d => d === decoratorName);
+        return ['HeaderParam', 'QueryParam', 'Param', 'FileParam',
+                'PathParam', 'FilesParam', 'FormParam', 'CookieParam',
+                'Context', 'ContextRequest', 'ContextResponse', 'ContextNext',
+                'ContextLanguage', 'ContextAccept'].some(d => d === decoratorName);
     }
 
     private supportPathDataType(parameterType: Type) {
