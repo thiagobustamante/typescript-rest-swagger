@@ -234,3 +234,7 @@ class PeopleService {
   }
 }
 ```
+
+A Default produces is already created in swagger documentation from the method return analisys. 
+You can use this decorator to override this default produces.
+
