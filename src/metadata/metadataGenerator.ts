@@ -69,6 +69,7 @@ export interface Controller {
     path: string;
     consumes: string[];
     produces: string[];
+    tags: string[];
 }
 
 export interface Method {

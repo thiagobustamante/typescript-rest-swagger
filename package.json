@@ -1,6 +1,6 @@
 {
   "name": "typescript-rest-swagger",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Generate Swagger files from a typescript-rest project",
   "keywords": [
     "typescript",
@@ -12,8 +12,8 @@
     "codegen",
     "generation"
   ],
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
+  "main": "./dist/decorators.js",
+  "typings": "./dist/decorators.d.ts",
   "scripts": {
     "start": "tsc -w",
     "build": "npm run clean && tsc",
@@ -83,6 +83,10 @@
   },
   "bin": {
     "swaggerGen": "dist/cli.js"
+  },
+  "directories": {
+    "lib": "dist",
+    "doc": "doc"
   },
   "engines": {
     "node": ">=6.0.0"

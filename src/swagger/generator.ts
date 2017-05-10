@@ -97,6 +97,7 @@ export class SpecGenerator {
                 paths[path] = paths[path] || {};
                 method.consumes = _.union(controller.consumes, method.consumes);
                 method.produces = _.union(controller.produces, method.produces);
+                method.tags = _.union(controller.tags, method.tags);
 
                 this.buildPathMethod(controller.name, method, paths[path]);
             });

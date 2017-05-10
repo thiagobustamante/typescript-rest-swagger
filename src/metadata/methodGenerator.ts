@@ -27,18 +27,18 @@ export class MethodGenerator {
         responses.push(this.getMethodSuccessResponse(type));
 
         return {
-            consumes: this.getMethodAccept(),
+            consumes: this.getDecoratorValues('Accept'),
             deprecated: isExistJSDocTag(this.node, 'deprecated'),
             description: getJSDocDescription(this.node),
             method: this.method,
             name: identifier.text,
             parameters: this.buildParameters(),
             path: this.path,
-            produces: this.getMethodProduces(),
+            produces: this.getDecoratorValues('Produces'),
             responses,
             security: this.getMethodSecurity(),
             summary: getJSDocTag(this.node, 'summary'),
-            tags: this.getMethodTags(),
+            tags: this.getDecoratorValues('Tags'),
             type
         };
     }
@@ -175,36 +175,14 @@ export class MethodGenerator {
         return example;
     }
 
-    private getMethodTags() {
-        const tagsDecorators = getDecorators(this.node, decorator => decorator.text === 'Tags');
+    private getDecoratorValues(decoratorName: string) {
+        const tagsDecorators = getDecorators(this.node, decorator => decorator.text === decoratorName);
         if (!tagsDecorators || !tagsDecorators.length) { return []; }
         if (tagsDecorators.length > 1) {
-            throw new Error(`Only one Tags decorator allowed in '${this.getCurrentLocation}' method.`);
+            throw new Error(`Only one ${decoratorName} decorator allowed in '${this.getCurrentLocation}' method.`);
         }
 
         const decorator = tagsDecorators[0];
-        return decorator.arguments;
-    }
-
-    private getMethodAccept() {
-        const consumesDecorators = getDecorators(this.node, decorator => decorator.text === 'Accept');
-        if (!consumesDecorators || !consumesDecorators.length) { return []; }
-        if (consumesDecorators.length > 1) {
-            throw new Error(`Only one Accept decorator allowed in '${this.getCurrentLocation()}' method.`);
-        }
-
-        const decorator = consumesDecorators[0];
-        return decorator.arguments;
-    }
-
-    private getMethodProduces() {
-        const producesDecorators = getDecorators(this.node, decorator => decorator.text === 'Produces');
-        if (!producesDecorators || !producesDecorators.length) { return []; }
-        if (producesDecorators.length > 1) {
-            throw new Error(`Only one Produces decorator allowed in '${this.getCurrentLocation()}' method.`);
-        }
-
-        const decorator = producesDecorators[0];
         return decorator.arguments;
     }
 

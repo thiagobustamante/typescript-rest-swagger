@@ -16,5 +16,4 @@ describe('Definition generation', () => {
       expect(spec.paths).to.have.property('/mypath');
     });
  });
-
 });
