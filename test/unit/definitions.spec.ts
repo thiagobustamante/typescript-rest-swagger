@@ -11,9 +11,10 @@ describe('Definition generation', () => {
   const metadata = new MetadataGenerator('./test/data/apis.ts').generate();
   const spec = new SpecGenerator(metadata, getDefaultOptions()).getSpec();
 
- describe('Simple Services', () => {
-    it('should generate a definition for decorated services', () => {
+ describe('MyService', () => {
+    it('should generate paths for decorated services', () => {
       expect(spec.paths).to.have.property('/mypath');
+      expect(spec.paths).to.have.property('/mypath/secondpath');
     });
  });
 });

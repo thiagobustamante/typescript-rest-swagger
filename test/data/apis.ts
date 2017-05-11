@@ -1,13 +1,13 @@
 'use strict';
 
-import {Inject, AutoWired} from 'typescript-ioc';
-
 import {Path, Server, GET, POST, PUT, DELETE, HttpMethod,
         PathParam, QueryParam, CookieParam, HeaderParam,
         FormParam, Param, Context, ServiceContext, ContextRequest,
         ContextResponse, ContextLanguage, ContextAccept,
         ContextNext, AcceptLanguage, Accept, FileParam,
         Errors, Return, BodyOptions} from 'typescript-rest';
+
+import * as swagger from '../../src/decorators';
 
 interface Address {
     street: string;
@@ -20,6 +20,7 @@ interface Person {
 
 @Accept('text/plain')
 @Path('mypath')
+@swagger.Tags('My Services')
 export class MyService {
     @GET
     @Accept('text/html')
@@ -58,4 +59,12 @@ export class PromiseService {
         });
     }
 
+    @GET
+    @Path('myFile')
+    @swagger.Produces('application/pdf')
+    testFile( @QueryParam('testParam')test?: string ): Promise<Return.DownloadBinaryData> {
+        return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
+            resolve(null);
+        });
+    }
 }
