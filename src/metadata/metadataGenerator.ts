@@ -70,6 +70,8 @@ export interface Controller {
     consumes: string[];
     produces: string[];
     tags: string[];
+    security?: Security;
+
 }
 
 export interface Method {

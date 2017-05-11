@@ -16,7 +16,7 @@ export interface SwaggerConfig {
     /**
     * Generated SwaggerConfig.json will output here
     */
-    outputDirectory: string;
+    outputDirectory: string | string[];
 
     /**
     * The entry point to your API

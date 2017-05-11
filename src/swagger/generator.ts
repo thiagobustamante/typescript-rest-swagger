@@ -13,27 +13,32 @@ import * as _ from 'lodash';
 export class SpecGenerator {
     constructor(private readonly metadata: Metadata, private readonly config: SwaggerConfig) { }
 
-    public generate(swaggerDir: string, yaml: boolean): Promise<void> {
+    public generate(swaggerDirs: string | string[], yaml: boolean): Promise<void> {
         return new Promise<void>((resolve, reject) => {
-            mkdirp(swaggerDir, (dirErr: any) => {
-                if (dirErr) {
-                    throw dirErr;
-                }
-                const spec = this.getSpec();
-                fs.writeFile(`${swaggerDir}/swagger.json`, JSON.stringify(spec, null, '\t'), (err: any) => {
-                    if (err) {
-                        reject(err);
+            if (!_.isArray(swaggerDirs)) {
+                swaggerDirs = [swaggerDirs];
+            }
+            const spec = this.getSpec();
+            swaggerDirs.forEach(swaggerDir => {
+                mkdirp(swaggerDir, (dirErr: any) => {
+                    if (dirErr) {
+                        throw dirErr;
                     }
-                    if (yaml) {
-                        fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec ,1000), (errYaml: any) => {
-                            if (errYaml) {
-                                reject(errYaml);
-                            }
+                    fs.writeFile(`${swaggerDir}/swagger.json`, JSON.stringify(spec, null, '\t'), (err: any) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        if (yaml) {
+                            fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec ,1000), (errYaml: any) => {
+                                if (errYaml) {
+                                    reject(errYaml);
+                                }
+                                resolve();
+                            });
+                        } else {
                             resolve();
-                        });
-                    } else {
-                        resolve();
-                    }
+                        }
+                    });
                 });
             });
         });
@@ -98,6 +103,7 @@ export class SpecGenerator {
                 method.consumes = _.union(controller.consumes, method.consumes);
                 method.produces = _.union(controller.produces, method.produces);
                 method.tags = _.union(controller.tags, method.tags);
+                method.security = method.security || controller.security;
 
                 this.buildPathMethod(controller.name, method, paths[path]);
             });

@@ -28,6 +28,7 @@ export class ControllerGenerator {
             name: this.node.name.text,
             path: this.pathValue || '',
             produces: this.getDecoratorValues('Produces'),
+            security: this.getMethodSecurity(),
             tags: this.getDecoratorValues('Tags')
         };
     }
@@ -52,5 +53,23 @@ export class ControllerGenerator {
 
         const decorator = decorators[0];
         return decorator.arguments;
+    }
+
+    private getMethodSecurity() {
+        if (!this.node.parent) { throw new Error('Controller node doesn\'t have a valid parent source file.'); }
+        if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
+
+        const securityDecorators = getDecorators(this.node, decorator => decorator.text === 'Security');
+        if (!securityDecorators || !securityDecorators.length) { return undefined; }
+        if (securityDecorators.length > 1) {
+            throw new Error(`Only one Security decorator allowed in '${this.node.name.text}' controller.`);
+        }
+
+        const decorator = securityDecorators[0];
+
+        return {
+            name: decorator.arguments[0],
+            scopes: decorator.arguments[1] ? (decorator.arguments[1] as any).elements.map((e: any) => e.text) : undefined
+        };
     }
 }

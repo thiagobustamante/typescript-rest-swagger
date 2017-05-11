@@ -69,6 +69,7 @@ export function Tags(...values: string[]): any {
 /**
  * Add a security constraint to method generated docs.
  * @param {name} security name from securityDefinitions
+ * @param {scopes} security scopes from securityDefinitions
  */
 export function Security(name: string, scopes?: string[]): any {
   return () => { return; };
