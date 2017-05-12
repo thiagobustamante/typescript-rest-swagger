@@ -22,6 +22,7 @@ interface Person {
 @Path('mypath')
 @swagger.Tags('My Services')
 export class MyService {
+    @Response<string>('default', 'Error')
     @GET
     @Accept('text/html')
     test( ): string {

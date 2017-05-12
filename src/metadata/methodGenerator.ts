@@ -109,7 +109,7 @@ export class MethodGenerator {
                 status = decorator.arguments[0];
             }
             if (decorator.arguments.length > 1 && decorator.arguments[1]) {
-                description = (decorator.arguments[1] as any).text;
+                description = decorator.arguments[1] as any;
             }
             if (decorator.arguments.length > 2 && decorator.arguments[2]) {
                 const argument = decorator.arguments[2] as any;
