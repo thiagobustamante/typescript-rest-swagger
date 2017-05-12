@@ -110,7 +110,7 @@ Some examples:
 
 ```typescript
 import {Path, Accept, GET} from 'typescript-rest';
-import {Path, Accept, GET} from 'typescript-rest-swagger';
+import {Tags} from 'typescript-rest-swagger';
 
 @Path('mypath')
 export class MyService {
