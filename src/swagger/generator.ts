@@ -164,7 +164,7 @@ export class SpecGenerator {
             } else if (this.hasFormParams(method)) {
                 pathMethod.consumes = pathMethod.consumes || [];
                 pathMethod.consumes.push('application/x-www-form-urlencoded');
-            } else if (this.supportsBodyParameters(method.name)) {
+            } else if (this.supportsBodyParameters(method.method)) {
                 pathMethod.consumes = pathMethod.consumes || [];
                 pathMethod.consumes.push('application/json');
             }
