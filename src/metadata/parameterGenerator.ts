@@ -60,8 +60,8 @@ export class ParameterGenerator {
             in: 'param',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'Param') || parameterName,
             required: !parameter.questionToken,
-            type: type,
-            parameterName
+            parameterName,
+            type: type
         };
     }
 
@@ -72,9 +72,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'context',
             name: parameterName,
+            parameterName,
             required: !parameter.questionToken,
-            type: {typeName: ''},
-            parameterName
+            type: {typeName: ''}
         };
     }
 
@@ -89,9 +89,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'formData',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FileParam') || parameterName,
+            parameterName,
             required: !parameter.questionToken,
-            type: { typeName: 'file' },
-            parameterName
+            type: { typeName: 'file' }
         };
     }
 
@@ -106,9 +106,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'formData',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FilesParam') || parameterName,
+            parameterName,
             required: !parameter.questionToken,
-            type: { typeName: 'file' },
-            parameterName
+            type: { typeName: 'file' }
         };
     }
 
@@ -124,9 +124,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'formData',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FormParam') || parameterName,
+            parameterName,
             required: !parameter.questionToken,
-            type: type,
-            parameterName
+            type: type
         };
     }
 
@@ -142,9 +142,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'cookie',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'CookieParam') || parameterName,
+            parameterName,
             required: !parameter.questionToken,
-            type: {typeName: ''},
-            parameterName
+            type: {typeName: ''}
         };
     }
 
@@ -160,9 +160,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'body',
             name: parameterName,
+            parameterName,
             required: !parameter.questionToken,
-            type,
-            parameterName
+            type
         };
     }
 
@@ -178,9 +178,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'header',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'HeaderParam') || parameterName,
+            parameterName,
             required: !parameter.questionToken,
-            type,
-            parameterName
+            type
         };
     }
 
@@ -196,9 +196,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'query',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'QueryParam') || parameterName,
+            parameterName,
             required: !parameter.questionToken,
-            type,
-            parameterName
+            type
         };
     }
 
@@ -218,9 +218,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'path',
             name: pathName,
+            parameterName,
             required: true,
-            type,
-            parameterName
+            type
         };
     }
 
