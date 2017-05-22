@@ -16,5 +16,10 @@ describe('Definition generation', () => {
       expect(spec.paths).to.have.property('/mypath');
       expect(spec.paths).to.have.property('/mypath/secondpath');
     });
+
+    it('should generate paths for decorated services, declared on superclasses', () => {
+      expect(spec.paths).to.have.property('/promise');
+      expect(spec.paths).to.have.property('/promise/{id}');
+    });
  });
 });

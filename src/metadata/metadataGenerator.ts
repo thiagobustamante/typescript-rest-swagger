@@ -48,6 +48,18 @@ export class MetadataGenerator {
         this.circularDependencyResolvers.push(callback);
     }
 
+    public getClassDeclaration(className: string) {
+        const found = this.nodes
+            .filter(node => {
+                const classDeclaration = (node as ts.ClassDeclaration);
+                return (node.kind === ts.SyntaxKind.ClassDeclaration && classDeclaration.name && classDeclaration.name.text === className);
+            });
+        if (found && found.length) {
+            return found[0];
+        }
+        return undefined;
+    }
+
     private buildControllers() {
         return this.nodes
             .filter(node => node.kind === ts.SyntaxKind.ClassDeclaration)
@@ -71,7 +83,6 @@ export interface Controller {
     produces: string[];
     tags: string[];
     security?: Security;
-
 }
 
 export interface Method {

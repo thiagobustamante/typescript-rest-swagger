@@ -40,8 +40,18 @@ export class MyService {
     }
 }
 
+class BaseService {
+    @DELETE
+    @Path(':id')
+    testDelete( @PathParam('id')id: string): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            resolve();
+        });
+    }
+}
+
 @Path('promise')
-export class PromiseService {
+export class PromiseService extends BaseService {
     /**
      * Esta eh a da classe
      * @param test Esta eh a description do param teste

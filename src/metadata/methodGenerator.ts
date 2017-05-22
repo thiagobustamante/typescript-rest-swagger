@@ -18,6 +18,11 @@ export class MethodGenerator {
         return !!this.method;
     }
 
+    public getMethodName() {
+        const identifier = this.node.name as ts.Identifier;
+        return identifier.text;
+    }
+
     public generate(): Method {
         if (!this.isValid()) { throw new Error('This isn\'t a valid a controller method.'); }
 
