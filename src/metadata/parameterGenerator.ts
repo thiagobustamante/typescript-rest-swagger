@@ -59,8 +59,8 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'param',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'Param') || parameterName,
-            required: !parameter.questionToken,
             parameterName,
+            required: !parameter.questionToken,
             type: type
         };
     }
