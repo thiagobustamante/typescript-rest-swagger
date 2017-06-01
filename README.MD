@@ -11,13 +11,13 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
 - [Swagger for Typescript-Rest](#)
   - [Installation](#installation)
   - [Usage](#usage)
-    - [SwagerConfig.json](#swagerconfig.json)
     - [Swagger Decorators](#swagger-decorators)
       - [@Response](#response)
       - [@Example](#example)
       - [@Tags](#tags)
       - [@Security](#security)
       - [@Produces](#produces)
+    - [SwagerConfig.json](#swagerconfig.json)
 
 ## Installation
 
@@ -31,72 +31,13 @@ npm install typescript-rest-swagger -g
 swaggerGen -c ./swaggerConfig.json
 ```
 
-Where the swaggerConfig.json file, contains settings about the swagger generation. For example:
+Where the [swaggerConfig.json](#swaggerconfig.json) file, contains settings about the swagger generation. For example:
 
 ```json
 {
     "swagger": {
         "outputDirectory": "./dist",
         "entryFile": "./tests/data/apis.ts"
-    }
-}
-```
-
-### SwagerConfig.json 
-
-The swagger config file supports the following properties: 
-
-Property | Type | Description
--------- | ---- | -----------
-basePath | string | Base API path; e.g. the 'v1' in https://myapi.com/v1
-consumes | [string] | Default consumes property for the entire API
-description | string | API description; defaults to npm package description
-entryFile | string | The entry point to your API
-host | string | The hostname to be informed in the generated swagger file
-license | string | API license number; defaults to npm package license
-name | string | API name; defaults to npm package name
-outputDirectory | string | Where to write the generated swagger file
-produces | [string] | Default produces property for the entire API
-version | string | API version number; defaults to npm package version
-yaml | boolean | Generates the output also as an yaml file 
-spec | any | Extend generated swagger spec with this object. Note that generated properties will always take precedence over what get specified here
-securityDefinitions | *SecurityDefinition | Security Definitions Object. A declaration of the security schemes available to be used in the specification. This does not enforce the security schemes on the operations and only serves to provide the relevant details for each scheme.
-
-
-Where the SecurityDefinition contract is defined as:
-```typescript 
-{
-    [name: string]: {
-        type: string;
-        name?: string;
-        authorizationUrl?: string;
-        tokenUrl?: string;
-        flow?: string;
-        in?: string;
-        scopes?: { [scopeName: string]: string; }
-    }
-}
-```
-
-See an example:
-```json
-{
-    "swagger": {
-        "outputDirectory": "./dist",
-        "entryFile": "./tests/data/apis.ts",
-        "host": "localhost:3000",
-        "version": "1.0",
-        "name": "Typescript-rest Test API",
-        "description": "a description",
-        "license": "MIT",
-        "basePath": "/v1",
-        "securityDefinitions": {
-            "api_key": {
-                "type": "apiKey",
-                "name": "access_token",
-                "in": "query"
-            }
-        }
     }
 }
 ```
@@ -238,3 +179,61 @@ class PeopleService {
 A Default produces is already created in swagger documentation from the method return analisys. 
 You can use this decorator to override this default produces.
 
+### SwagerConfig.json 
+
+The swagger config file supports the following properties: 
+
+Property | Type | Description
+-------- | ---- | -----------
+basePath | string | Base API path; e.g. the 'v1' in https://myapi.com/v1
+consumes | [string] | Default consumes property for the entire API
+description | string | API description; defaults to npm package description
+entryFile | string | The entry point to your API
+host | string | The hostname to be informed in the generated swagger file
+license | string | API license number; defaults to npm package license
+name | string | API name; defaults to npm package name
+outputDirectory | string | Where to write the generated swagger file
+produces | [string] | Default produces property for the entire API
+version | string | API version number; defaults to npm package version
+yaml | boolean | Generates the output also as an yaml file 
+spec | any | Extend generated swagger spec with this object. Note that generated properties will always take precedence over what get specified here
+securityDefinitions | *SecurityDefinition | Security Definitions Object. A declaration of the security schemes available to be used in the specification. This does not enforce the security schemes on the operations and only serves to provide the relevant details for each scheme.
+
+
+Where the SecurityDefinition contract is defined as:
+```typescript 
+{
+    [name: string]: {
+        type: string;
+        name?: string;
+        authorizationUrl?: string;
+        tokenUrl?: string;
+        flow?: string;
+        in?: string;
+        scopes?: { [scopeName: string]: string; }
+    }
+}
+```
+
+See an example:
+```json
+{
+    "swagger": {
+        "outputDirectory": "./dist",
+        "entryFile": "./tests/data/apis.ts",
+        "host": "localhost:3000",
+        "version": "1.0",
+        "name": "Typescript-rest Test API",
+        "description": "a description",
+        "license": "MIT",
+        "basePath": "/v1",
+        "securityDefinitions": {
+            "api_key": {
+                "type": "apiKey",
+                "name": "access_token",
+                "in": "query"
+            }
+        }
+    }
+}
+```
