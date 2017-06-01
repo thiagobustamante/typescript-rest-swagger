@@ -17,7 +17,7 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
       - [@Tags](#tags)
       - [@Security](#security)
       - [@Produces](#produces)
-    - [SwagerConfig.json](#swagerconfig.json)
+    - [SwagerConfig.json](#swagerconfigjson)
 
 ## Installation
 
@@ -31,7 +31,7 @@ npm install typescript-rest-swagger -g
 swaggerGen -c ./swaggerConfig.json
 ```
 
-Where the [swaggerConfig.json](#swaggerconfig.json) file, contains settings about the swagger generation. For example:
+Where the [swaggerConfig.json](#swaggerconfigjson) file, contains settings about the swagger generation. For example:
 
 ```json
 {
