@@ -17,7 +17,7 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
       - [@Tags](#tags)
       - [@Security](#security)
       - [@Produces](#produces)
-    - [SwagerConfig.json](#swagerconfigjson)
+    - [SwaggerConfig.json](#swaggerconfigjson)
 
 ## Installation
 
@@ -179,7 +179,7 @@ class PeopleService {
 A Default produces is already created in swagger documentation from the method return analisys. 
 You can use this decorator to override this default produces.
 
-### SwagerConfig.json 
+### SwaggerConfig.json 
 
 The swagger config file supports the following properties: 
 
