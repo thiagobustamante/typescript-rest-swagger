@@ -18,7 +18,7 @@
     "start": "tsc -w",
     "build": "npm run clean && tsc",
     "clean": "rimraf dist",
-    "lint": "tslint --exclude=./node_modules/** ./src/**/*.ts ./test/**/*.ts",
+    "lint": "tslint ./src/**/*.ts ./test/**/*.ts",
     "format": "tsfmt -r",
     "prepublish": "npm run build",
     "deploy": "npm version patch && npm publish",
