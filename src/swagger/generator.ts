@@ -98,7 +98,7 @@ export class SpecGenerator {
 
         this.metadata.controllers.forEach(controller => {
             controller.methods.forEach(method => {
-                const path = pathUtil.join('/', (controller.path ? controller.path : ''), method.path);
+                const path = pathUtil.posix.join('/', (controller.path ? controller.path : ''), method.path);
                 paths[path] = paths[path] || {};
                 method.consumes = _.union(controller.consumes, method.consumes);
                 method.produces = _.union(controller.produces, method.produces);
