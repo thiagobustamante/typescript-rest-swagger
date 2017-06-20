@@ -60,6 +60,18 @@ export class MetadataGenerator {
         return undefined;
     }
 
+    public getInterfaceDeclaration(className: string) {
+        const found = this.nodes
+            .filter(node => {
+                const interfaceDeclaration = (node as ts.InterfaceDeclaration);
+                return (node.kind === ts.SyntaxKind.InterfaceDeclaration && interfaceDeclaration.name && interfaceDeclaration.name.text === className);
+            });
+        if (found && found.length) {
+            return found[0];
+        }
+        return undefined;
+    }
+
     private buildControllers() {
         return this.nodes
             .filter(node => node.kind === ts.SyntaxKind.ClassDeclaration)

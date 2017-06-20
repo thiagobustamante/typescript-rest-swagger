@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { Controller } from './metadataGenerator';
-import { MetadataGenerator } from './metadataGenerator';
+import { getSuperClass } from './resolveType';
 import { MethodGenerator } from './methodGenerator';
 import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
 import {normalizePath} from '../utils/pathUtils';
@@ -38,19 +38,22 @@ export class ControllerGenerator {
 
     private buildMethods() {
         let result: any[] = [];
-        let targetClass: any = this.node;
+        let targetClass: any = {
+            type: this.node,
+            typeArguments: null
+        };
         while (targetClass) {
-            result = _.union(result, this.buildMethodsForClass(targetClass));
-            targetClass = this.getSuperClass(targetClass);
+            result = _.union(result, this.buildMethodsForClass(targetClass.type, targetClass.typeArguments));
+            targetClass = getSuperClass(targetClass.type, targetClass.typeArguments);
         }
 
         return result;
     }
 
-    private buildMethodsForClass(node: ts.ClassDeclaration) {
+    private buildMethodsForClass(node: ts.ClassDeclaration, genericTypeMap?: Map<String, ts.TypeNode>) {
         return node.members
             .filter(m => (m.kind === ts.SyntaxKind.MethodDeclaration))
-            .map((m: ts.MethodDeclaration) => new MethodGenerator(m))
+            .map((m: ts.MethodDeclaration) => new MethodGenerator(m, genericTypeMap))
             .filter(generator => {
                 if (generator.isValid() && !this.genMethods.has(generator.getMethodName())) {
                     this.genMethods.add(generator.getMethodName());
@@ -59,20 +62,6 @@ export class ControllerGenerator {
                 return false;
             })
             .map(generator => generator.generate());
-    }
-
-    private getSuperClass(node: ts.ClassDeclaration) {
-        const clauses = node.heritageClauses;
-        if (clauses) {
-            const filteredClauses = clauses.filter(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
-            if (filteredClauses.length > 0) {
-                const clause: ts.HeritageClause = filteredClauses[0];
-                if (clause.types && clause.types.length) {
-                    return MetadataGenerator.current.getClassDeclaration(clause.types[0].expression.getText());
-                }
-            }
-        }
-        return undefined;
     }
 
     private getDecoratorValues(decoratorName: string) {

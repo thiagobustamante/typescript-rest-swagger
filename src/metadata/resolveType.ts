@@ -13,7 +13,7 @@ const localReferenceTypeCache: { [typeName: string]: ReferenceType } = {};
 const inProgressTypes: { [typeName: string]: boolean } = {};
 
 type UsableDeclaration = ts.InterfaceDeclaration | ts.ClassDeclaration | ts.TypeAliasDeclaration;
-export function resolveType(typeNode?: ts.TypeNode): Type {
+export function resolveType(typeNode?: ts.TypeNode, genericTypeMap?: Map<String, ts.TypeNode>): Type {
     if (!typeNode) {
         return { typeName: 'void' };
     }
@@ -25,7 +25,7 @@ export function resolveType(typeNode?: ts.TypeNode): Type {
     if (typeNode.kind === ts.SyntaxKind.ArrayType) {
         const arrayType = typeNode as ts.ArrayTypeNode;
         return <ArrayType>{
-            elementType: resolveType(arrayType.elementType),
+            elementType: resolveType(arrayType.elementType, genericTypeMap),
             typeName: 'array'
         };
     }
@@ -47,12 +47,12 @@ export function resolveType(typeNode?: ts.TypeNode): Type {
 
     if (typeName === 'Promise') {
         typeReference = typeReference.typeArguments[0];
-        return resolveType(typeReference);
+        return resolveType(typeReference, genericTypeMap);
     }
     if (typeName === 'Array') {
         typeReference = typeReference.typeArguments[0];
         return <ArrayType>{
-            elementType: resolveType(typeReference),
+            elementType: resolveType(typeReference, genericTypeMap),
             typeName: 'array'
         };
     }
@@ -71,16 +71,16 @@ export function resolveType(typeNode?: ts.TypeNode): Type {
 
     if (typeReference.typeArguments && typeReference.typeArguments.length === 1) {
         const typeT: ts.TypeNode[] = typeReference.typeArguments as ts.TypeNode[];
-        referenceType = getReferenceType(typeReference.typeName as ts.EntityName, typeT);
+        referenceType = getReferenceType(typeReference.typeName as ts.EntityName, genericTypeMap, typeT);
         typeName = resolveSimpleTypeName(typeReference.typeName as ts.EntityName);
         if (['NewResource', 'RequestAccepted', 'MovedPermanently', 'MovedTemporarily'].indexOf(typeName) >= 0) {
             referenceType.typeName = typeName;
-            referenceType.typeArgument = resolveType(typeT[0]);
+            referenceType.typeArgument = resolveType(typeT[0], genericTypeMap);
         } else {
             MetadataGenerator.current.addReferenceType(referenceType);
         }
     } else {
-        referenceType = getReferenceType(typeReference.typeName as ts.EntityName);
+        referenceType = getReferenceType(typeReference.typeName as ts.EntityName, genericTypeMap);
         MetadataGenerator.current.addReferenceType(referenceType);
     }
 
@@ -184,12 +184,16 @@ function getLiteralType(typeNode: ts.TypeNode): EnumerateType | undefined {
     };
 }
 
-function getReferenceType(type: ts.EntityName, genericTypes?: ts.TypeNode[]): ReferenceType {
-    const typeName = resolveFqTypeName(type);
+function getReferenceType(type: ts.EntityName, genericTypeMap?: Map<String, ts.TypeNode>, genericTypes?: ts.TypeNode[]): ReferenceType {
+    let typeName = resolveFqTypeName(type);
+    if (genericTypeMap && genericTypeMap.has(typeName)) {
+        const refType: any = genericTypeMap.get(typeName);
+        type = refType.typeName as ts.EntityName;
+        typeName = resolveFqTypeName(type);
+    }
     const typeNameWithGenerics = getTypeName(typeName, genericTypes);
 
     try {
-
         const existingType = localReferenceTypeCache[typeNameWithGenerics];
         if (existingType) { return existingType; }
 
@@ -514,9 +518,20 @@ function getInheritedProperties(modelTypeDeclaration: UsableDeclaration, generic
     heritageClauses.forEach(clause => {
         if (!clause.types) { return; }
 
-        clause.types.forEach(t => {
+        clause.types.forEach((t: any) => {
+            let type: any = MetadataGenerator.current.getClassDeclaration(t.expression.getText());
+            if (!type) {
+                type = MetadataGenerator.current.getInterfaceDeclaration(t.expression.getText());
+            }
+            // if (type) {
+
+            // }
+            console.info(modelTypeDeclaration.typeParameters);
             const baseEntityName = t.expression as ts.EntityName;
-            getReferenceType(baseEntityName, genericTypes).properties
+            const parentGenerictypes = resolveTypeArguments(modelTypeDeclaration as ts.ClassDeclaration, genericTypes);
+            const genericTypeMap = resolveTypeArguments(type, t.typeArguments, parentGenerictypes);
+            const subClassGenericTypes: any = getSubClassGenericTypes(genericTypeMap, t.typeArguments);
+            getReferenceType(baseEntityName, genericTypeMap, subClassGenericTypes).properties
                 .forEach(property => properties.push(property));
         });
     });
@@ -545,4 +560,62 @@ function getNodeDescription(node: UsableDeclaration | ts.PropertyDeclaration | t
     if (comments.length) { return ts.displayPartsToString(comments); }
 
     return '';
+}
+
+function getSubClassGenericTypes(genericTypeMap?: Map<String, ts.TypeNode>, typeArguments?: Array<ts.TypeNode>) {
+    if (genericTypeMap && typeArguments) {
+        const result: Array<ts.TypeNode> = [];
+        typeArguments.forEach((t: any) => {
+            const typeName = getAnyTypeName(t);
+            if (genericTypeMap.has(typeName)) {
+                result.push(<ts.TypeNode>genericTypeMap.get(typeName));
+            } else {
+                result.push(t);
+            }
+        });
+        return result;
+    }
+    return null;
+}
+
+export function getSuperClass(node: ts.ClassDeclaration, typeArguments?: Map<String, ts.TypeNode>) {
+    const clauses = node.heritageClauses;
+    if (clauses) {
+        const filteredClauses = clauses.filter(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+        if (filteredClauses.length > 0) {
+            const clause: ts.HeritageClause = filteredClauses[0];
+            if (clause.types && clause.types.length) {
+                const type: any = MetadataGenerator.current.getClassDeclaration(clause.types[0].expression.getText());
+                return {
+                    type: type,
+                    typeArguments: resolveTypeArguments(type, clause.types[0].typeArguments, typeArguments)
+                };
+            }
+        }
+    }
+    return undefined;
+}
+
+function buildGenericTypeMap(node: ts.ClassDeclaration, typeArguments?: Array<ts.TypeNode>) {
+    const result: Map<String, ts.TypeNode> = new Map<String, ts.TypeNode>();
+    if (node.typeParameters && typeArguments) {
+        node.typeParameters.forEach((typeParam, index) => {
+            const paramName = typeParam.name.text;
+            result.set(paramName, typeArguments[index]);
+        });
+    }
+    return result;
+}
+
+function resolveTypeArguments(node: ts.ClassDeclaration, typeArguments?: Array<ts.TypeNode>, parentTypeArguments?: Map<String, ts.TypeNode>) {
+    const result = buildGenericTypeMap(node, typeArguments);
+    if (parentTypeArguments) {
+        result.forEach((value: any, key) => {
+            const typeName = getAnyTypeName(value);
+            if (parentTypeArguments.has(typeName)) {
+                result.set(key, <ts.TypeNode>parentTypeArguments.get(typeName));
+            }
+        });
+    }
+    return result;
 }

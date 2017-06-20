@@ -10,7 +10,7 @@ export class MethodGenerator {
     private method: string;
     private path: string;
 
-    constructor(private readonly node: ts.MethodDeclaration) {
+    constructor(private readonly node: ts.MethodDeclaration, private readonly genericTypeMap?: Map<String, ts.TypeNode>) {
         this.processMethodDecorators();
     }
 
@@ -27,7 +27,7 @@ export class MethodGenerator {
         if (!this.isValid()) { throw new Error('This isn\'t a valid a controller method.'); }
 
         const identifier = this.node.name as ts.Identifier;
-        const type = resolveType(this.node.type);
+        const type = resolveType(this.node.type, this.genericTypeMap);
         const responses = this.getMethodResponses();
         responses.push(this.getMethodSuccessResponse(type));
 
@@ -51,7 +51,7 @@ export class MethodGenerator {
     private buildParameters() {
         const parameters = this.node.parameters.map(p => {
             try {
-                return new ParameterGenerator(p, this.method, this.path).generate();
+                return new ParameterGenerator(p, this.method, this.path, this.genericTypeMap).generate();
             } catch (e) {
                 const methodId = this.node.name as ts.Identifier;
                 const controllerId = (this.node.parent as ts.ClassDeclaration).name as ts.Identifier;
@@ -125,7 +125,7 @@ export class MethodGenerator {
                 description: description,
                 examples: examples,
                 schema: (decorator.typeArguments && decorator.typeArguments.length > 0)
-                    ? resolveType(decorator.typeArguments[0])
+                    ? resolveType(decorator.typeArguments[0], this.genericTypeMap)
                     : undefined,
                 status: status
             };

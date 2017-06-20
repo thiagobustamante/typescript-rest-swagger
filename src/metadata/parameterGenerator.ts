@@ -7,7 +7,8 @@ export class ParameterGenerator {
     constructor(
         private readonly parameter: ts.ParameterDeclaration,
         private readonly method: string,
-        private readonly path: string
+        private readonly path: string,
+        private readonly genericTypeMap?: Map<String, ts.TypeNode>
     ) { }
 
     public generate(): Parameter {
@@ -252,7 +253,7 @@ export class ParameterGenerator {
         if (!parameter.type) {
             throw new Error(`Parameter ${parameter.name} doesn't have a valid type assigned in '${this.getCurrentLocation()}'.`);
         }
-        return resolveType(parameter.type);
+        return resolveType(parameter.type, this.genericTypeMap);
     }
 }
 

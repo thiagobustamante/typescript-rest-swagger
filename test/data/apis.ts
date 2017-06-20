@@ -79,3 +79,83 @@ export class PromiseService extends BaseService {
         });
     }
 }
+
+export class BasicModel {
+  id: number;
+}
+
+export class BasicEndpoint <T extends BasicModel>  {
+
+    protected list(@QueryParam('full') full?: boolean): Promise<Array<T>> {
+        return new Promise((resolve, reject) => {
+            // todo
+        });
+    }
+
+    @POST
+    protected save(entity: T): Promise<Return.NewResource<number>> {
+        return new Promise((resolve, reject) => {
+            // todo
+        });
+    }
+
+    @PUT
+    @Path('/:id')
+    protected update(@PathParam('id') id: number, entity: T): Promise<void> {
+        return new Promise((resolve, reject) => {
+            // todo
+        });
+    }
+
+    @DELETE
+    @Path('/:id')
+    protected remove(@PathParam('id') id: string): Promise<void> {
+        return new Promise((resolve, reject) => {
+            // todo
+        });
+    }
+
+    @GET
+    @Path('/:id')
+    protected get(@PathParam('id') id: string): Promise<T> {
+        return new Promise((resolve, reject) => {
+            // todo
+        });
+    }
+}
+
+export interface MyDatatype extends BasicModel {
+    property1: string;
+}
+
+@Path('generics1')
+export class DerivedEndpoint extends BasicEndpoint<MyDatatype> {
+
+    @GET
+    @Path(':param')
+    protected test(@PathParam('param') param: string): Promise<void> {
+        return new Promise<void>((resolve, reject)=> {
+            // content
+        });
+    }
+}
+
+export interface BasicModel2<T>{
+    prop: T;
+}
+
+export interface MyDatatype2 extends BasicModel2<string> {
+    property1: string;
+}
+
+@Path('generics2')
+export class DerivedEndpoint2 {
+
+    @GET
+    @Path(':param')
+    protected test(@PathParam('param') param: string): Promise<MyDatatype2> {
+        return new Promise<MyDatatype2>((resolve, reject)=> {
+            // content
+        });
+    }
+}
