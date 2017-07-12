@@ -16,10 +16,10 @@ export function getDecorators(node: ts.Node, isMatching: (identifier: DecoratorD
                     result.arguments = x.arguments.map((argument: ts.Node) => {
                         if (ts.isStringLiteral(argument)) {
                             return argument.text;
+                        } else {
+                            return argument.getText();
                         }
-                        if (ts.isObjectLiteralExpression(argument)) {
-                            return argument;
-                        }
+
                     });
                 }
                 if (x.typeArguments) {

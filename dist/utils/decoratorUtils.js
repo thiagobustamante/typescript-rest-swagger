@@ -19,8 +19,8 @@ function getDecorators(node, isMatching) {
                     if (ts.isStringLiteral(argument)) {
                         return argument.text;
                     }
-                    if (ts.isObjectLiteralExpression(argument)) {
-                        return argument;
+                    else {
+                        return argument.getText();
                     }
                 });
             }
