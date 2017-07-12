@@ -17,7 +17,9 @@ export function getDecorators(node: ts.Node, isMatching: (identifier: DecoratorD
                         if (ts.isStringLiteral(argument)) {
                             return argument.text;
                         }
-                        console.log(argument.kind);
+                        if (ts.isObjectLiteralExpression(argument)) {
+                            return argument;
+                        }
                     });
                 }
                 if (x.typeArguments) {
