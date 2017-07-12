@@ -11,13 +11,13 @@ export function getDecorators(node: ts.Node, isMatching: (identifier: DecoratorD
                 typeArguments: []
             };
             let x: any = d.expression;
-            if (x.kind === ts.SyntaxKind.CallExpression) {
+            if (ts.isCallExpression(x)) {
                 if (x.arguments) {
-                    result.arguments = x.arguments.map((argument: ts.Node) => {
+                    result.arguments = x.arguments.map((argument) => {
                         if (ts.isStringLiteral(argument)) {
                             return argument.text;
                         } else {
-                            return argument.getText();
+                            return argument;
                         }
 
                     });

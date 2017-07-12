@@ -180,8 +180,7 @@ export class MethodGenerator {
                 example[p.name.text] = this.getInitializerValue(p.initializer);
             });
         } else {
-            // tslint:disable-next-line:no-eval
-            const obj = eval(argument);
+            const obj = this.getInitializerValue(argument);
             example = _.merge(example, obj);
         }
         return example;
