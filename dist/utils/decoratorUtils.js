@@ -13,14 +13,14 @@ function getDecorators(node, isMatching) {
             typeArguments: []
         };
         var x = d.expression;
-        if (x.kind === ts.SyntaxKind.CallExpression) {
+        if (ts.isCallExpression(x)) {
             if (x.arguments) {
                 result.arguments = x.arguments.map(function (argument) {
                     if (ts.isStringLiteral(argument)) {
                         return argument.text;
                     }
                     else {
-                        return argument.getText();
+                        return argument;
                     }
                 });
             }

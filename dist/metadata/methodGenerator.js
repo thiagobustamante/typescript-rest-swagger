@@ -170,8 +170,7 @@ var MethodGenerator = (function () {
             });
         }
         else {
-            // tslint:disable-next-line:no-eval
-            var obj = eval(argument);
+            var obj = this.getInitializerValue(argument);
             example = _.merge(example, obj);
         }
         return example;
