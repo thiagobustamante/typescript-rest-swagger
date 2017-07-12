@@ -20,7 +20,6 @@
     "clean": "rimraf dist",
     "lint": "tslint ./src/**/*.ts ./test/**/*.ts",
     "format": "tsfmt -r",
-    "prepublish": "npm run build",
     "deploy": "npm version patch && npm publish",
     "postversion": "git push origin master",
     "swagger-gen": "node ./dist/cli.js -c ./test/data/swagger.json",
