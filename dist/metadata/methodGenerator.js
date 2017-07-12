@@ -6,6 +6,7 @@ var parameterGenerator_1 = require("./parameterGenerator");
 var jsDocUtils_1 = require("../utils/jsDocUtils");
 var decoratorUtils_1 = require("../utils/decoratorUtils");
 var pathUtils_1 = require("../utils/pathUtils");
+var _ = require("lodash");
 var MethodGenerator = (function () {
     function MethodGenerator(node, genericTypeMap) {
         this.node = node;
@@ -163,9 +164,16 @@ var MethodGenerator = (function () {
     MethodGenerator.prototype.getExamplesValue = function (argument) {
         var _this = this;
         var example = {};
-        argument.properties.forEach(function (p) {
-            example[p.name.text] = _this.getInitializerValue(p.initializer);
-        });
+        if (argument.properties) {
+            argument.properties.forEach(function (p) {
+                example[p.name.text] = _this.getInitializerValue(p.initializer);
+            });
+        }
+        else {
+            // tslint:disable-next-line:no-eval
+            var obj = eval(argument);
+            example = _.merge(example, obj);
+        }
         return example;
     };
     MethodGenerator.prototype.getDecoratorValues = function (decoratorName) {
