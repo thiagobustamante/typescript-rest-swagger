@@ -4,4 +4,4 @@ export declare function resolveType(typeNode?: ts.TypeNode, genericTypeMap?: Map
 export declare function getSuperClass(node: ts.ClassDeclaration, typeArguments?: Map<String, ts.TypeNode>): {
     type: any;
     typeArguments: Map<String, ts.TypeNode>;
-} | undefined;
+};

@@ -5,7 +5,7 @@ export declare class MethodGenerator {
     private readonly genericTypeMap;
     private method;
     private path;
-    constructor(node: ts.MethodDeclaration, genericTypeMap?: Map<String, ts.TypeNode> | undefined);
+    constructor(node: ts.MethodDeclaration, genericTypeMap?: Map<String, ts.TypeNode>);
     isValid(): boolean;
     getMethodName(): string;
     generate(): Method;
