@@ -49,6 +49,7 @@
     "no-reference": false,
     "no-require-imports": false,
     "no-inferrable-types": true,
+    "no-shadowed-variable": true,
     "quotemark": [
       true,
       "single"

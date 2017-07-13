@@ -542,18 +542,20 @@ function getModelDescription(modelTypeDeclaration: UsableDeclaration) {
 function getNodeDescription(node: UsableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration) {
     const symbol = MetadataGenerator.current.typeChecker.getSymbolAtLocation(node.name as ts.Node);
 
-    /**
-    * TODO: Workaround for what seems like a bug in the compiler
-    * Warrants more investigation and possibly a PR against typescript
-    */
-    //
-    if (node.kind === ts.SyntaxKind.Parameter) {
-        // TypeScript won't parse jsdoc if the flag is 4, i.e. 'Property'
-        symbol.flags = 0;
-    }
+    if (symbol) {
+        /**
+        * TODO: Workaround for what seems like a bug in the compiler
+        * Warrants more investigation and possibly a PR against typescript
+        */
+        //
+        if (node.kind === ts.SyntaxKind.Parameter) {
+            // TypeScript won't parse jsdoc if the flag is 4, i.e. 'Property'
+            symbol.flags = 0;
+        }
 
-    const comments = symbol.getDocumentationComment();
-    if (comments.length) { return ts.displayPartsToString(comments); }
+        const comments = symbol.getDocumentationComment();
+        if (comments.length) { return ts.displayPartsToString(comments); }
+    }
 
     return '';
 }

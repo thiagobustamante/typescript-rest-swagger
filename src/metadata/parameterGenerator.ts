@@ -228,8 +228,10 @@ export class ParameterGenerator {
     private getParameterDescription(node: ts.ParameterDeclaration) {
         const symbol = MetadataGenerator.current.typeChecker.getSymbolAtLocation(node.name);
 
-        const comments = symbol.getDocumentationComment();
-        if (comments.length) { return ts.displayPartsToString(comments); }
+        if (symbol) {
+            const comments = symbol.getDocumentationComment();
+            if (comments.length) { return ts.displayPartsToString(comments); }
+        }
 
         return '';
     }
