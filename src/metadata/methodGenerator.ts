@@ -4,7 +4,8 @@ import { resolveType } from './resolveType';
 import { ParameterGenerator } from './parameterGenerator';
 import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
 import { getDecorators } from '../utils/decoratorUtils';
-import {normalizePath} from '../utils/pathUtils';
+import { normalizePath } from '../utils/pathUtils';
+import * as _ from 'lodash';
 
 export class MethodGenerator {
     private method: string;
@@ -144,14 +145,14 @@ export class MethodGenerator {
 
     private getMethodSuccessResponseData(type: Type): ResponseData {
         switch (type.typeName) {
-            case 'void': return {status: '204', type: type};
-            case 'NewResource': return {status: '201', type: type.typeArgument||type};
-            case 'RequestAccepted': return {status: '202', type: type.typeArgument||type};
-            case 'MovedPermanently': return {status: '301', type: type.typeArgument||type};
-            case 'MovedTemporarily': return {status: '302', type: type.typeArgument||type};
+            case 'void': return { status: '204', type: type };
+            case 'NewResource': return { status: '201', type: type.typeArgument || type };
+            case 'RequestAccepted': return { status: '202', type: type.typeArgument || type };
+            case 'MovedPermanently': return { status: '301', type: type.typeArgument || type };
+            case 'MovedTemporarily': return { status: '302', type: type.typeArgument || type };
             case 'DownloadResource':
-            case 'DownloadBinaryData': return {status: '200', type: {typeName: 'buffer'}};
-            default: return {status: '200', type: type};
+            case 'DownloadBinaryData': return { status: '200', type: { typeName: 'buffer' } };
+            default: return { status: '200', type: type };
         }
     }
 
@@ -173,10 +174,15 @@ export class MethodGenerator {
     }
 
     private getExamplesValue(argument: any) {
-        const example: any = {};
-        argument.properties.forEach((p: any) => {
-            example[p.name.text] = this.getInitializerValue(p.initializer);
-        });
+        let example: any = {};
+        if (argument.properties) {
+            argument.properties.forEach((p: any) => {
+                example[p.name.text] = this.getInitializerValue(p.initializer);
+            });
+        } else {
+            const obj = this.getInitializerValue(argument);
+            example = _.merge(example, obj);
+        }
         return example;
     }
 
