@@ -69,6 +69,7 @@
     "coveralls": "^2.13.1",
     "cross-env": "^4.0.0",
     "istanbul": "^0.4.5",
+    "jsonata": "^1.2.6",
     "mocha": "^3.3.0",
     "nyc": "^10.2.0",
     "rimraf": "^2.6.1",

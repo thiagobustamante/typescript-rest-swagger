@@ -35,6 +35,9 @@ export class MyService {
      */
     @GET
     @Path('secondpath')
+    @swagger.Example<Person>({
+        name: 'Joe'
+    })
     test2( @QueryParam('testParam')test?: string ): Person {
         return {name: 'OK'};
     }
