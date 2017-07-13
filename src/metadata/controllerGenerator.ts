@@ -74,8 +74,8 @@ export class ControllerGenerator {
             throw new Error(`Only one ${decoratorName} decorator allowed in '${this.node.name.text}' controller.`);
         }
 
-        const decorator = decorators[0];
-        return decorator.arguments;
+        const d = decorators[0];
+        return d.arguments;
     }
 
     private getMethodSecurity() {
@@ -88,11 +88,11 @@ export class ControllerGenerator {
             throw new Error(`Only one Security decorator allowed in '${this.node.name.text}' controller.`);
         }
 
-        const decorator = securityDecorators[0];
+        const d = securityDecorators[0];
 
         return {
-            name: decorator.arguments[0],
-            scopes: decorator.arguments[1] ? (decorator.arguments[1] as any).elements.map((e: any) => e.text) : undefined
+            name: d.arguments[0],
+            scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
         };
     }
 }

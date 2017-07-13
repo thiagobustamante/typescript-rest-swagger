@@ -163,8 +163,8 @@ export class MethodGenerator {
             throw new Error(`Only one Example decorator allowed in '${this.getCurrentLocation}' method.`);
         }
 
-        const decorator = exampleDecorators[0];
-        const argument = decorator.arguments[0];
+        const d = exampleDecorators[0];
+        const argument = d.arguments[0];
 
         return this.getExamplesValue(argument);
     }
@@ -193,8 +193,8 @@ export class MethodGenerator {
             throw new Error(`Only one ${decoratorName} decorator allowed in '${this.getCurrentLocation}' method.`);
         }
 
-        const decorator = tagsDecorators[0];
-        return decorator.arguments;
+        const d = tagsDecorators[0];
+        return d.arguments;
     }
 
     private getMethodSecurity() {
@@ -204,11 +204,11 @@ export class MethodGenerator {
             throw new Error(`Only one Security decorator allowed in '${this.getCurrentLocation}' method.`);
         }
 
-        const decorator = securityDecorators[0];
+        const d = securityDecorators[0];
 
         return {
-            name: decorator.arguments[0],
-            scopes: decorator.arguments[1] ? (decorator.arguments[1] as any).elements.map((e: any) => e.text) : undefined
+            name: d.arguments[0],
+            scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
         };
     }
 
