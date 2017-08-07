@@ -162,3 +162,22 @@ export class DerivedEndpoint2 {
         });
     }
 }
+
+export type SimpleHelloType = {
+    /**
+     * Description for greeting property
+     */
+    greeting: string;
+};
+
+@Path('type')
+export class TypeEndpoint {
+
+    @GET
+    @Path(':param')
+    test(@PathParam('param') param: string): Promise<SimpleHelloType> {
+        return new Promise<MyDatatype2>((resolve, reject)=> {
+            // content
+        });
+    }
+}

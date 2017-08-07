@@ -370,8 +370,8 @@ function getModelTypeDeclaration(type: ts.EntityName) {
     return modelTypes[0];
 }
 
-function getModelTypeProperties(node: UsableDeclaration, genericTypes?: ts.TypeNode[]) {
-    if (node.kind === ts.SyntaxKind.InterfaceDeclaration) {
+function getModelTypeProperties(node: any, genericTypes?: ts.TypeNode[]): Property[] {
+    if (node.kind === ts.SyntaxKind.TypeLiteral || node.kind === ts.SyntaxKind.InterfaceDeclaration) {
         const interfaceDeclaration = node as ts.InterfaceDeclaration;
         return interfaceDeclaration.members
             .filter(member => member.kind === ts.SyntaxKind.PropertySignature)
@@ -421,13 +421,7 @@ function getModelTypeProperties(node: UsableDeclaration, genericTypes?: ts.TypeN
     }
 
     if (node.kind === ts.SyntaxKind.TypeAliasDeclaration) {
-        /**
-         * TOOD
-         *
-         * Flesh this out so that we can properly support Type Alii instead of just assuming
-         * string literal enums
-        */
-        return [];
+        return getModelTypeProperties(<any>node.type, genericTypes);
     }
 
     const classDeclaration = node as ts.ClassDeclaration;

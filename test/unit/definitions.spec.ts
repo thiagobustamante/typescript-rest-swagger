@@ -28,5 +28,11 @@ describe('Definition generation', () => {
       const expression = jsonata('paths."/mypath/secondpath".get.responses.200.examples."application/json".name');
       expect(expression.evaluate(spec)).to.eq('Joe');
     });
+
+    it('should generate definitions for type aliases', () => {
+      expect(spec.paths).to.have.property('/type/{param}');
+      const expression = jsonata('definitions.SimpleHelloType.properties.greeting.description');
+      expect(expression.evaluate(spec)).to.eq('Description for greeting property');
+    });
   });
 });
