@@ -34,9 +34,8 @@ const descriptionDefault = getPackageJsonValue('description');
 const licenseDefault = getPackageJsonValue('license');
 
 const getConfig = (configPath = 'swagger.json'): Config => {
-    let config: Config;
     try {
-        config = require(`${workingDir}/${configPath}`);
+        return require(`${workingDir}/${configPath}`);
     } catch (err) {
         if (err.code === 'MODULE_NOT_FOUND') {
             throw Error(`No config file found at '${configPath}'`);
@@ -46,8 +45,6 @@ const getConfig = (configPath = 'swagger.json'): Config => {
             throw Error(`Unhandled error encountered loading '${configPath}': ${err.message}`);
         }
     }
-
-    return config;
 };
 
 const validateSwaggerConfig = (config: SwaggerConfig): SwaggerConfig => {
