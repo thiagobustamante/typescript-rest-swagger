@@ -168,6 +168,18 @@ export type SimpleHelloType = {
      * Description for greeting property
      */
     greeting: string;
+    arrayOfSomething: Something[];
+
+    profile: {
+        name: string
+    };
+
+    comparePassword: (candidatePassword: string, cb: (err: any, isMatch: any) => {}) => void
+};
+
+export type Something = {
+    someone: string,
+    kind: string
 };
 
 @Path('type')
