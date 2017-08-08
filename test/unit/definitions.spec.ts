@@ -25,10 +25,20 @@ describe('Definition generation', () => {
 
     it('should generate paths for decorated services, declared on superclasses', () => {
       expect(spec.paths).to.have.property('/mypath/secondpath');
-      const expression = jsonata('paths."/mypath/secondpath".get.responses.200.examples."application/json".name');
-      expect(expression.evaluate(spec)).to.eq('Joe');
+      let expression = jsonata('paths."/mypath".get.responses.400.description');
+      expect(expression.evaluate(spec)).to.eq('The request format was incorrect.');
+      expression = jsonata('paths."/mypath".get.responses.500.description');
+      expect(expression.evaluate(spec)).to.eq('There was an unexpected error.');
     });
 
+    it('should support multiple response decorators', () => {
+      const expression = jsonata('definitions.SimpleHelloType.properties.greeting.description');
+      expect(expression.evaluate(spec)).to.eq('Description for greeting property');
+    });
+
+  });
+
+ describe('TypeEndpoint', () => {
     it('should generate definitions for type aliases', () => {
       expect(spec.paths).to.have.property('/type/{param}');
       const expression = jsonata('definitions.SimpleHelloType.properties.greeting.description');
