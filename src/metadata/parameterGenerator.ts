@@ -237,7 +237,7 @@ export class ParameterGenerator {
     }
 
     private supportsBodyParameters(method: string) {
-        return ['post', 'put', 'patch'].some(m => m === method);
+        return ['delete', 'post', 'put', 'patch'].some(m => m === method);
     }
 
     private supportParameterDecorator(decoratorName: string) {
