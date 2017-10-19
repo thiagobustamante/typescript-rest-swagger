@@ -23,7 +23,7 @@ interface Person {
 @swagger.Tags('My Services')
 export class MyService {
     @Response<string>('default', 'Error')
-    @Response<string>(400, 'The request format was incorrect.') 
+    @Response<string>(400, 'The request format was incorrect.')
     @Response<string>(500, 'There was an unexpected error.')
     @GET
     @Accept('text/html')
@@ -145,7 +145,7 @@ export class DerivedEndpoint extends BasicEndpoint<MyDatatype> {
     }
 }
 
-export interface BasicModel2<T>{
+export interface BasicModel2<T> {
     prop: T;
 }
 
