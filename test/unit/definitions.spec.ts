@@ -12,7 +12,7 @@ describe('Definition generation', () => {
   const metadata = new MetadataGenerator('./test/data/apis.ts').generate();
   const spec = new SpecGenerator(metadata, getDefaultOptions()).getSpec();
 
- describe('MyService', () => {
+  describe('MyService', () => {
     it('should generate paths for decorated services', () => {
       expect(spec.paths).to.have.property('/mypath');
       expect(spec.paths).to.have.property('/mypath/secondpath');
@@ -38,7 +38,7 @@ describe('Definition generation', () => {
 
   });
 
- describe('TypeEndpoint', () => {
+  describe('TypeEndpoint', () => {
     it('should generate definitions for type aliases', () => {
       expect(spec.paths).to.have.property('/type/{param}');
       const expression = jsonata('definitions.SimpleHelloType.properties.greeting.description');

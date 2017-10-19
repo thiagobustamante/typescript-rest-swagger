@@ -588,7 +588,7 @@ export function getSuperClass(node: ts.ClassDeclaration, typeArguments?: Map<Str
     return undefined;
 }
 
-function buildGenericTypeMap(node: ts.ClassDeclaration, typeArguments?: Array<ts.TypeNode>) {
+function buildGenericTypeMap(node: ts.ClassDeclaration, typeArguments?: ReadonlyArray<ts.TypeNode>) {
     const result: Map<String, ts.TypeNode> = new Map<String, ts.TypeNode>();
     if (node.typeParameters && typeArguments) {
         node.typeParameters.forEach((typeParam, index) => {
@@ -599,7 +599,7 @@ function buildGenericTypeMap(node: ts.ClassDeclaration, typeArguments?: Array<ts
     return result;
 }
 
-function resolveTypeArguments(node: ts.ClassDeclaration, typeArguments?: Array<ts.TypeNode>, parentTypeArguments?: Map<String, ts.TypeNode>) {
+function resolveTypeArguments(node: ts.ClassDeclaration, typeArguments?: ReadonlyArray<ts.TypeNode>, parentTypeArguments?: Map<String, ts.TypeNode>) {
     const result = buildGenericTypeMap(node, typeArguments);
     if (parentTypeArguments) {
         result.forEach((value: any, key) => {
