@@ -386,7 +386,12 @@ function getModelTypeProperties(node: any, genericTypes?: ts.TypeNode[]): Proper
     if (node.kind === ts.SyntaxKind.TypeLiteral || node.kind === ts.SyntaxKind.InterfaceDeclaration) {
         const interfaceDeclaration = node as ts.InterfaceDeclaration;
         return interfaceDeclaration.members
-            .filter(member => member.kind === ts.SyntaxKind.PropertySignature)
+            .filter(member => {
+                if ((<any>member).type && (<any>member).type.kind === ts.SyntaxKind.FunctionType) {
+                    return false;
+                }
+                return member.kind === ts.SyntaxKind.PropertySignature;
+            })
             .map((member: any) => {
 
                 const propertyDeclaration = member as ts.PropertyDeclaration;

@@ -55,5 +55,11 @@ describe('Definition generation', () => {
       expression = jsonata('definitions.SimpleHelloType.properties.profile.properties.name.description');
       expect(expression.evaluate(spec)).to.eq('Description for profile name');
     });
+
+    it('should ignore properties that are functions', () => {
+      const expression = jsonata('definitions.SimpleHelloType.properties.comparePassword');
+      // tslint:disable-next-line:no-unused-expression
+      expect(expression.evaluate(spec)).to.not.exist;
+    });
   });
 });
