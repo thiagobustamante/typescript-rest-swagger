@@ -44,5 +44,16 @@ describe('Definition generation', () => {
       const expression = jsonata('definitions.SimpleHelloType.properties.greeting.description');
       expect(expression.evaluate(spec)).to.eq('Description for greeting property');
     });
+
+    it('should generate nested object types in definitions', () => {
+      let expression = jsonata('definitions.SimpleHelloType.properties.profile.type');
+      expect(expression.evaluate(spec)).to.eq('object');
+      expression = jsonata('definitions.SimpleHelloType.properties.profile.description');
+      expect(expression.evaluate(spec)).to.eq('Description for profile');
+      expression = jsonata('definitions.SimpleHelloType.properties.profile.properties.name.type');
+      expect(expression.evaluate(spec)).to.eq('string');
+      expression = jsonata('definitions.SimpleHelloType.properties.profile.properties.name.description');
+      expect(expression.evaluate(spec)).to.eq('Description for profile name');
+    });
   });
 });
