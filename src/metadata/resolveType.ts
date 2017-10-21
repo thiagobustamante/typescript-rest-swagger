@@ -1,5 +1,5 @@
 import * as ts from 'typescript';
-import { MetadataGenerator, Type, EnumerateType, ReferenceType, ArrayType, Property } from './metadataGenerator';
+import { MetadataGenerator, Type, EnumerateType, ReferenceType, ObjectType, ArrayType, Property } from './metadataGenerator';
 import { getDecoratorName } from '../utils/decoratorUtils';
 import * as _ from 'lodash';
 
@@ -32,6 +32,10 @@ export function resolveType(typeNode?: ts.TypeNode, genericTypeMap?: Map<String,
 
     if ((typeNode.kind === ts.SyntaxKind.UnionType) || (typeNode.kind === ts.SyntaxKind.AnyKeyword)) {
         return { typeName: 'object' };
+    }
+
+    if (typeNode.kind === ts.SyntaxKind.TypeLiteral) {
+        return getInlineObjectType(typeNode);
     }
 
     if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
@@ -182,6 +186,14 @@ function getLiteralType(typeNode: ts.TypeNode): EnumerateType | undefined {
         enumMembers: unionTypes.map((unionNode: any) => unionNode.literal.text as string),
         typeName: 'enum',
     };
+}
+
+function getInlineObjectType(typeNode: ts.TypeNode): ObjectType {
+    const type: ObjectType = {
+        properties: getModelTypeProperties(typeNode),
+        typeName: ''
+    };
+    return type;
 }
 
 function getReferenceType(type: ts.EntityName, genericTypeMap?: Map<String, ts.TypeNode>, genericTypes?: ts.TypeNode[]): ReferenceType {
@@ -374,7 +386,12 @@ function getModelTypeProperties(node: any, genericTypes?: ts.TypeNode[]): Proper
     if (node.kind === ts.SyntaxKind.TypeLiteral || node.kind === ts.SyntaxKind.InterfaceDeclaration) {
         const interfaceDeclaration = node as ts.InterfaceDeclaration;
         return interfaceDeclaration.members
-            .filter(member => member.kind === ts.SyntaxKind.PropertySignature)
+            .filter(member => {
+                if ((<any>member).type && (<any>member).type.kind === ts.SyntaxKind.FunctionType) {
+                    return false;
+                }
+                return member.kind === ts.SyntaxKind.PropertySignature;
+            })
             .map((member: any) => {
 
                 const propertyDeclaration = member as ts.PropertyDeclaration;

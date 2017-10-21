@@ -1,6 +1,6 @@
 import { SwaggerConfig } from '../config';
 import {
-    Metadata, Type, ArrayType, ReferenceType, EnumerateType,
+    Metadata, Type, ArrayType, ObjectType, ReferenceType, EnumerateType,
     Property, Method, Parameter, ResponseType
 } from '../metadata/metadataGenerator';
 import { Swagger } from './swagger';
@@ -283,6 +283,11 @@ export class SpecGenerator {
             return swaggerType;
         }
 
+        const objectType = type as ObjectType;
+        if (objectType.properties) {
+            return this.getSwaggerTypeForObjectType(objectType);
+        }
+
         const arrayType = type as ArrayType;
         if (arrayType.elementType) {
             return this.getSwaggerTypeForArrayType(arrayType);
@@ -317,6 +322,10 @@ export class SpecGenerator {
         };
 
         return typeMap[type.typeName];
+    }
+
+    private getSwaggerTypeForObjectType(objectType: ObjectType): Swagger.Schema {
+        return { type: 'object', properties: this.buildProperties(objectType.properties) };
     }
 
     private getSwaggerTypeForArrayType(arrayType: ArrayType): Swagger.Schema {

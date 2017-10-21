@@ -22,9 +22,9 @@ interface Person {
 @Path('mypath')
 @swagger.Tags('My Services')
 export class MyService {
-    @Response<string>('default', 'Error')
-    @Response<string>(400, 'The request format was incorrect.')
-    @Response<string>(500, 'There was an unexpected error.')
+    @swagger.Response<string>('default', 'Error')
+    @swagger.Response<string>(400, 'The request format was incorrect.')
+    @swagger.Response<string>(500, 'There was an unexpected error.')
     @GET
     @Accept('text/html')
     test( ): string {
@@ -172,7 +172,13 @@ export type SimpleHelloType = {
     greeting: string;
     arrayOfSomething: Something[];
 
+    /**
+     * Description for profile
+     */
     profile: {
+        /**
+         * Description for profile name
+         */
         name: string
     };
 

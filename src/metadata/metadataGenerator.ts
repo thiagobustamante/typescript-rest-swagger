@@ -142,6 +142,10 @@ export interface ReferenceType extends Type {
     additionalProperties?: Property[];
 }
 
+export interface ObjectType extends Type {
+    properties: Property[];
+}
+
 export interface ArrayType extends Type {
     elementType: Type;
 }
