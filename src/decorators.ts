@@ -81,3 +81,32 @@ export function Security(name: string, scopes?: string[]): any {
 export function Produces(...values: string[]): any {
   return () => { return; };
 }
+
+/**
+ * Document the type of a property or parameter as `integer ($int32)` in generated swagger docs
+ */
+export function IsInt(target: any, propertyKey: string, parameterIndex?: number) {
+  return;
+}
+
+/**
+ * Document the type of a property or parameter as `integer ($int64)` in generated swagger docs
+ */
+export function IsLong(target: any, propertyKey: string, parameterIndex?: number) {
+  return;
+}
+
+/**
+ * Document the type of a property or parameter as `number ($float)` in generated swagger docs
+ */
+export function IsFloat(target: any, propertyKey: string, parameterIndex?: number) {
+  return;
+}
+
+/**
+ * Document the type of a property or parameter as `number ($double)` in generated swagger docs.
+ * This is the default for `number` types without a specifying decorator.
+ */
+export function IsDouble(target: any, propertyKey: string, parameterIndex?: number) {
+  return;
+}

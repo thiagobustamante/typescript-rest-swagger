@@ -201,3 +201,65 @@ export class TypeEndpoint {
         });
     }
 }
+
+export class PrimitiveClassModel {
+    /**
+     * An integer
+     */
+    @swagger.IsInt
+    int?: number;
+
+    @swagger.IsLong
+    long?: number;
+
+    @swagger.IsFloat
+    float?: number;
+
+    @swagger.IsDouble
+    double?: number;
+}
+
+export interface PrimitiveInterfaceModel {
+    /**
+     * An integer
+     * @IsInt
+     */
+    int?: number;
+
+    /**
+     * @IsLong
+     */
+    long?: number;
+
+    /**
+     * @IsFloat
+     */
+    float?: number;
+
+    /**
+     * @IsDouble
+     */
+    double?: number;
+}
+
+@Path('primitives')
+export class PrimitiveEndpoint {
+
+    @Path('/class')
+    @GET
+    getClass(): PrimitiveClassModel {
+        return new PrimitiveClassModel();
+    }
+
+    @Path('/interface')
+    @GET
+    testInterface(): PrimitiveInterfaceModel {
+        return {};
+    }
+
+    @Path(':id')
+    @GET
+    getById(@PathParam('id') @swagger.IsLong id: number) {
+        // ...
+    }
+}

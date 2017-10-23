@@ -1,6 +1,7 @@
 import * as ts from 'typescript';
 import { MetadataGenerator, Type, EnumerateType, ReferenceType, ObjectType, ArrayType, Property } from './metadataGenerator';
 import { getDecoratorName } from '../utils/decoratorUtils';
+import { getFirstMatchingJSDocTagName } from '../utils/jsDocUtils';
 import * as _ from 'lodash';
 
 const syntaxKindMap: { [kind: number]: string } = {};
@@ -101,11 +102,18 @@ function getPrimitiveType(typeNode: ts.TypeNode): Type | undefined {
             return { typeName: 'double' };
         }
 
-        const decoratorName = getDecoratorName(parentNode, identifier => {
-            return ['IsInt', 'IsLong', 'IsFloat', 'isDouble'].some(m => m === identifier.text);
+        const validDecorators = ['IsInt', 'IsLong', 'IsFloat', 'IsDouble'];
+
+        // Can't use decorators on interface/type properties, so support getting the type from jsdoc too.
+        const jsdocTagName = getFirstMatchingJSDocTagName(parentNode, tag => {
+            return validDecorators.some(t => t === tag.tagName.text);
         });
 
-        switch (decoratorName) {
+        const decoratorName = getDecoratorName(parentNode, identifier => {
+            return validDecorators.some(m => m === identifier.text);
+        });
+
+        switch (decoratorName || jsdocTagName) {
             case 'IsInt':
                 return { typeName: 'integer' };
             case 'IsLong':
