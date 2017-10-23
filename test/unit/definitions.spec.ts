@@ -36,6 +36,10 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('There was an unexpected error.');
     });
 
+    it('should generate a definition with a referenced type', () => {
+      const expression = jsonata('definitions.Person.properties.address."$ref"');
+      expect(expression.evaluate(spec)).to.eq('#/definitions/Address');
+    });
   });
 
   describe('TypeEndpoint', () => {

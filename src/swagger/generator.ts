@@ -283,11 +283,6 @@ export class SpecGenerator {
             return swaggerType;
         }
 
-        const objectType = type as ObjectType;
-        if (objectType.properties) {
-            return this.getSwaggerTypeForObjectType(objectType);
-        }
-
         const arrayType = type as ArrayType;
         if (arrayType.elementType) {
             return this.getSwaggerTypeForArrayType(arrayType);
@@ -298,8 +293,13 @@ export class SpecGenerator {
             return this.getSwaggerTypeForEnumType(enumType);
         }
 
-        const refType = this.getSwaggerTypeForReferenceType(type as ReferenceType);
-        return refType;
+        const refType = type as ReferenceType;
+        if (refType.properties && refType.description !== undefined) {
+            return this.getSwaggerTypeForReferenceType(type as ReferenceType);
+        }
+
+        const objectType = type as ObjectType;
+        return this.getSwaggerTypeForObjectType(objectType);
     }
 
     private getSwaggerTypeForPrimitiveType(type: Type) {
