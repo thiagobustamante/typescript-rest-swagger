@@ -179,6 +179,39 @@ class PeopleService {
 A Default produces is already created in swagger documentation from the method return analisys. 
 You can use this decorator to override this default produces.
 
+#### @IsInt, @IsLong, @IsFloat, @IsDouble
+
+Document the type of a `number` property or parameter in generated swagger docs.
+If no decorator is present, the `number` type defaults to `double` format.
+
+```typescript
+class Person {
+    @IsInt id: number;
+}
+
+@Path('people')
+class PeopleService {
+    @Path(':id')
+    @GET
+    getById(@PathParam('id') @IsLong id: number) {
+        // ...
+    }
+}
+```
+
+Because decorators don't work on type and interface properties, this can also be specified as a JSDoc tag.
+
+```typescript
+interface Person {
+    /**
+     * The person's id
+     * @IsInt
+     */
+    id: number;
+}
+```
+
+
 ### SwaggerConfig.json 
 
 The swagger config file supports the following properties: 

@@ -66,4 +66,85 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.not.exist;
     });
   });
+
+  describe('PrimitiveEndpoint', () => {
+    it('should generate integer type for @IsInt decorator declared on class property', () => {
+      let expression = jsonata('definitions.PrimitiveClassModel.properties.int.type');
+      expect(expression.evaluate(spec)).to.eq('integer');
+      expression = jsonata('definitions.PrimitiveClassModel.properties.int.format');
+      expect(expression.evaluate(spec)).to.eq('int32');
+      expression = jsonata('definitions.PrimitiveClassModel.properties.int.description');
+      expect(expression.evaluate(spec)).to.eq('An integer');
+    });
+
+    it('should generate integer type for @IsLong decorator declared on class property', () => {
+      let expression = jsonata('definitions.PrimitiveClassModel.properties.long.type');
+      expect(expression.evaluate(spec)).to.eq('integer');
+      expression = jsonata('definitions.PrimitiveClassModel.properties.long.format');
+      expect(expression.evaluate(spec)).to.eq('int64');
+      expression = jsonata('definitions.PrimitiveClassModel.properties.long.description');
+      expect(expression.evaluate(spec)).to.eq('');
+    });
+
+    it('should generate number type for @IsFloat decorator declared on class property', () => {
+      let expression = jsonata('definitions.PrimitiveClassModel.properties.float.type');
+      expect(expression.evaluate(spec)).to.eq('number');
+      expression = jsonata('definitions.PrimitiveClassModel.properties.float.format');
+      expect(expression.evaluate(spec)).to.eq('float');
+      expression = jsonata('definitions.PrimitiveClassModel.properties.float.description');
+      expect(expression.evaluate(spec)).to.eq('');
+    });
+
+    it('should generate number type for @IsDouble decorator declared on class property', () => {
+      let expression = jsonata('definitions.PrimitiveClassModel.properties.double.type');
+      expect(expression.evaluate(spec)).to.eq('number');
+      expression = jsonata('definitions.PrimitiveClassModel.properties.double.format');
+      expect(expression.evaluate(spec)).to.eq('double');
+      expression = jsonata('definitions.PrimitiveClassModel.properties.double.description');
+      expect(expression.evaluate(spec)).to.eq('');
+    });
+
+    it('should generate integer type for jsdoc @IsInt tag on interface property', () => {
+      let expression = jsonata('definitions.PrimitiveInterfaceModel.properties.int.type');
+      expect(expression.evaluate(spec)).to.eq('integer');
+      expression = jsonata('definitions.PrimitiveInterfaceModel.properties.int.format');
+      expect(expression.evaluate(spec)).to.eq('int32');
+      expression = jsonata('definitions.PrimitiveInterfaceModel.properties.int.description');
+      expect(expression.evaluate(spec)).to.eq('An integer');
+    });
+
+    it('should generate integer type for jsdoc @IsLong tag on interface property', () => {
+      let expression = jsonata('definitions.PrimitiveInterfaceModel.properties.long.type');
+      expect(expression.evaluate(spec)).to.eq('integer');
+      expression = jsonata('definitions.PrimitiveInterfaceModel.properties.long.format');
+      expect(expression.evaluate(spec)).to.eq('int64');
+      expression = jsonata('definitions.PrimitiveInterfaceModel.properties.long.description');
+      expect(expression.evaluate(spec)).to.eq('');
+    });
+
+    it('should generate number type for jsdoc @IsFloat tag on interface property', () => {
+      let expression = jsonata('definitions.PrimitiveInterfaceModel.properties.float.type');
+      expect(expression.evaluate(spec)).to.eq('number');
+      expression = jsonata('definitions.PrimitiveInterfaceModel.properties.float.format');
+      expect(expression.evaluate(spec)).to.eq('float');
+      expression = jsonata('definitions.PrimitiveInterfaceModel.properties.float.description');
+      expect(expression.evaluate(spec)).to.eq('');
+    });
+
+    it('should generate number type for jsdoc @IsDouble tag on interface property', () => {
+      let expression = jsonata('definitions.PrimitiveInterfaceModel.properties.double.type');
+      expect(expression.evaluate(spec)).to.eq('number');
+      expression = jsonata('definitions.PrimitiveInterfaceModel.properties.double.format');
+      expect(expression.evaluate(spec)).to.eq('double');
+      expression = jsonata('definitions.PrimitiveInterfaceModel.properties.double.description');
+      expect(expression.evaluate(spec)).to.eq('');
+    });
+
+    it('should generate number type decorated path params', () => {
+      let expression = jsonata('paths."/primitives/{id}".get.parameters[0].type');
+      expect(expression.evaluate(spec)).to.eq('integer');
+      expression = jsonata('paths."/primitives/{id}".get.parameters[0].format');
+      expect(expression.evaluate(spec)).to.eq('int64');
+    });
+  });
 });

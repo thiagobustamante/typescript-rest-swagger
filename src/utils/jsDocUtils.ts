@@ -24,11 +24,22 @@ export function isExistJSDocTag(node: ts.Node, tagName: string) {
 }
 
 function getJSDocTags(node: ts.Node, tagName: string) {
+    return getMatchingJSDocTags(node, t => t.tagName.text === tagName);
+}
+
+export function getFirstMatchingJSDocTagName(node: ts.Node, isMatching: (t: ts.JSDocTag) => boolean) {
+    const tags = getMatchingJSDocTags(node, isMatching);
+    if (!tags || !tags.length) { return; }
+
+    return tags[0].tagName.text;
+}
+
+function getMatchingJSDocTags(node: ts.Node, isMatching: (t: ts.JSDocTag) => boolean) {
     const jsDocs = (node as any).jsDoc as ts.JSDoc[];
     if (!jsDocs || !jsDocs.length) { return; }
 
     const jsDoc = jsDocs[0];
     if (!jsDoc.tags) { return; }
 
-    return jsDoc.tags.filter(t => t.tagName.text === tagName);
+    return jsDoc.tags.filter(isMatching);
 }
