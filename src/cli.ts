@@ -71,7 +71,7 @@ function validateSwaggerConfig(conf: SwaggerConfig): SwaggerConfig {
     conf.description = conf.description || descriptionDefault;
     conf.license = conf.license || licenseDefault;
     conf.basePath = conf.basePath || '/';
-    conf.yaml = conf.yaml || true;
+    conf.yaml = conf.yaml === false ? false : true;
 
     return conf;
 }
