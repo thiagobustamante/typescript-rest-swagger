@@ -10,7 +10,9 @@ export class MetadataGenerator {
     private circularDependencyResolvers = new Array<(referenceTypes: { [typeName: string]: ReferenceType }) => void>();
 
     constructor(entryFile: string) {
-        this.program = ts.createProgram([entryFile], {});
+       // this.program = ts.createProgram([entryFile], {});
+        const tsconfig = require(process.cwd() + '/tsconfig.json'); 
+        this.program = ts.createProgram([entryFile], tsconfig.compilerOptions);
         this.typeChecker = this.program.getTypeChecker();
         MetadataGenerator.current = this;
     }
