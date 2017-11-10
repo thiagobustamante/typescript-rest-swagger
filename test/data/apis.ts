@@ -263,3 +263,13 @@ export class PrimitiveEndpoint {
         // ...
     }
 }
+
+@Path('parameterized/:objectId')
+export class ParameterizedEndpoint {
+
+    @Path('/test')
+    @GET
+    test(@PathParam('objectId')objectId: string): PrimitiveClassModel {
+        return new PrimitiveClassModel();
+    }
+}

@@ -147,4 +147,11 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('int64');
     });
   });
+
+  describe('ParameterizedEndpoint', () => {
+    it('should generate path param for params declared on class', () => {
+      const expression = jsonata('paths."/parameterized/{objectId}/test".get.parameters[0].in');
+      expect(expression.evaluate(spec)).to.eq('path');
+      });
+  });
 });

@@ -5,13 +5,16 @@ import { ParameterGenerator } from './parameterGenerator';
 import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
 import { getDecorators } from '../utils/decoratorUtils';
 import { normalizePath } from '../utils/pathUtils';
+import * as pathUtil from 'path';
 import * as _ from 'lodash';
 
 export class MethodGenerator {
     private method: string;
     private path: string;
 
-    constructor(private readonly node: ts.MethodDeclaration, private readonly genericTypeMap?: Map<String, ts.TypeNode>) {
+    constructor(private readonly node: ts.MethodDeclaration,
+                private readonly controllerPath: string,
+                private readonly genericTypeMap?: Map<String, ts.TypeNode>) {
         this.processMethodDecorators();
     }
 
@@ -25,7 +28,7 @@ export class MethodGenerator {
     }
 
     public generate(): Method {
-        if (!this.isValid()) { throw new Error('This isn\'t a valid a controller method.'); }
+        if (!this.isValid()) { throw new Error('This isn\'t a valid controller method.'); }
 
         const identifier = this.node.name as ts.Identifier;
         const type = resolveType(this.node.type, this.genericTypeMap);
@@ -52,7 +55,9 @@ export class MethodGenerator {
     private buildParameters() {
         const parameters = this.node.parameters.map(p => {
             try {
-                return new ParameterGenerator(p, this.method, this.path, this.genericTypeMap).generate();
+                const path = pathUtil.posix.join('/', (this.controllerPath ? this.controllerPath : ''), this.path);
+
+                return new ParameterGenerator(p, this.method, path, this.genericTypeMap).generate();
             } catch (e) {
                 const methodId = this.node.name as ts.Identifier;
                 const controllerId = (this.node.parent as ts.ClassDeclaration).name as ts.Identifier;

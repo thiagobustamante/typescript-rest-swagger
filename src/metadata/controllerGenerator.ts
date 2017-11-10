@@ -53,7 +53,7 @@ export class ControllerGenerator {
     private buildMethodsForClass(node: ts.ClassDeclaration, genericTypeMap?: Map<String, ts.TypeNode>) {
         return node.members
             .filter(m => (m.kind === ts.SyntaxKind.MethodDeclaration))
-            .map((m: ts.MethodDeclaration) => new MethodGenerator(m, genericTypeMap))
+            .map((m: ts.MethodDeclaration) => new MethodGenerator(m, this.pathValue || '', genericTypeMap))
             .filter(generator => {
                 if (generator.isValid() && !this.genMethods.has(generator.getMethodName())) {
                     this.genMethods.add(generator.getMethodName());
