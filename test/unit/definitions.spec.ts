@@ -40,6 +40,15 @@ describe('Definition generation', () => {
       const expression = jsonata('definitions.Person.properties.address."$ref"');
       expect(expression.evaluate(spec)).to.eq('#/definitions/Address');
     });
+
+    it('should generate a body param with string schema type', () => {
+      let expression = jsonata('paths."/mypath".post.parameters[0].in');
+      expect(expression.evaluate(spec)).to.eq('body');
+      expression = jsonata('paths."/mypath".post.parameters[0].name');
+      expect(expression.evaluate(spec)).to.eq('body');
+      expression = jsonata('paths."/mypath".post.parameters[0].schema.type');
+      expect(expression.evaluate(spec)).to.eq('string');
+    });
   });
 
   describe('TypeEndpoint', () => {

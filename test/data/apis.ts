@@ -43,6 +43,11 @@ export class MyService {
     test2( @QueryParam('testParam')test?: string ): Person {
         return {name: 'OK'};
     }
+
+    @POST
+    testPostString(body: string) {
+        return body;
+    }
 }
 
 class BaseService {

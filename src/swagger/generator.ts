@@ -190,6 +190,8 @@ export class SpecGenerator {
         const parameterType = this.getSwaggerType(parameter.type);
         if (parameterType.$ref) {
             swaggerParameter.schema = parameterType;
+        } else if (parameter.in === 'body') {
+            swaggerParameter.schema = { type: parameterType.type };
         } else {
             swaggerParameter.type = parameterType.type;
         }
