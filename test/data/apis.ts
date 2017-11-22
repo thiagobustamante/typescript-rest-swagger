@@ -40,7 +40,11 @@ export class MyService {
     @swagger.Example<Person>({
         name: 'Joe'
     })
-    test2( @QueryParam('testParam')test?: string ): Person {
+    test2(
+        @QueryParam('testRequired')test: string,
+        @QueryParam('testDefault')test2: string = 'value',
+        @QueryParam('testOptional')test3?: string
+    ): Person {
         return {name: 'OK'};
     }
 

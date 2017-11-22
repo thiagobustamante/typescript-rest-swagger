@@ -29,6 +29,15 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('Joe');
     });
 
+    it('should generate optional parameters for params with question marks or default initializers', () => {
+      let expression = jsonata('paths."/mypath/secondpath".get.parameters[0].required');
+      expect(expression.evaluate(spec)).to.eq(true);
+      expression = jsonata('paths."/mypath/secondpath".get.parameters[1].required');
+      expect(expression.evaluate(spec)).to.eq(false);
+      expression = jsonata('paths."/mypath/secondpath".get.parameters[2].required');
+      expect(expression.evaluate(spec)).to.eq(false);
+    });
+
     it('should support multiple response decorators', () => {
       let expression = jsonata('paths."/mypath".get.responses.400.description');
       expect(expression.evaluate(spec)).to.eq('The request format was incorrect.');

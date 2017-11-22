@@ -48,7 +48,7 @@
     "no-invalid-this": true,
     "no-reference": false,
     "no-require-imports": false,
-    "no-inferrable-types": true,
+    "no-inferrable-types": false,
     "no-shadowed-variable": true,
     "quotemark": [
       true,

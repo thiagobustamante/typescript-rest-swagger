@@ -126,7 +126,7 @@ export class ParameterGenerator {
             in: 'formData',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FormParam') || parameterName,
             parameterName,
-            required: !parameter.questionToken,
+            required: !parameter.questionToken && !parameter.initializer,
             type: type
         };
     }
@@ -144,7 +144,7 @@ export class ParameterGenerator {
             in: 'cookie',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'CookieParam') || parameterName,
             parameterName,
-            required: !parameter.questionToken,
+            required: !parameter.questionToken && !parameter.initializer,
             type: {typeName: ''}
         };
     }
@@ -162,7 +162,7 @@ export class ParameterGenerator {
             in: 'body',
             name: parameterName,
             parameterName,
-            required: !parameter.questionToken,
+            required: !parameter.questionToken && !parameter.initializer,
             type
         };
     }
@@ -180,7 +180,7 @@ export class ParameterGenerator {
             in: 'header',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'HeaderParam') || parameterName,
             parameterName,
-            required: !parameter.questionToken,
+            required: !parameter.questionToken && !parameter.initializer,
             type
         };
     }
@@ -198,7 +198,7 @@ export class ParameterGenerator {
             in: 'query',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'QueryParam') || parameterName,
             parameterName,
-            required: !parameter.questionToken,
+            required: !parameter.questionToken && !parameter.initializer,
             type
         };
     }
