@@ -52,6 +52,12 @@ export class MyService {
     testPostString(body: string) {
         return body;
     }
+
+    @Path('obj')
+    @POST
+    testPostObject(data: object) {
+        return data;
+    }
 }
 
 class BaseService {

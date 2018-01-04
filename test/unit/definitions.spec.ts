@@ -58,6 +58,13 @@ describe('Definition generation', () => {
       expression = jsonata('paths."/mypath".post.parameters[0].schema.type');
       expect(expression.evaluate(spec)).to.eq('string');
     });
+
+    it('should generate a body param with object schema type', () => {
+      let expression = jsonata('paths."/mypath/obj".post.parameters[0].name');
+      expect(expression.evaluate(spec)).to.eq('data');
+      expression = jsonata('paths."/mypath/obj".post.parameters[0].schema.type');
+      expect(expression.evaluate(spec)).to.eq('object');
+    });
   });
 
   describe('TypeEndpoint', () => {

@@ -31,7 +31,7 @@ export function resolveType(typeNode?: ts.TypeNode, genericTypeMap?: Map<String,
         };
     }
 
-    if ((typeNode.kind === ts.SyntaxKind.UnionType) || (typeNode.kind === ts.SyntaxKind.AnyKeyword)) {
+    if ((typeNode.kind === ts.SyntaxKind.UnionType) || (typeNode.kind === ts.SyntaxKind.AnyKeyword) || (typeNode.kind === ts.SyntaxKind.ObjectKeyword)) {
         return { typeName: 'object' };
     }
 
