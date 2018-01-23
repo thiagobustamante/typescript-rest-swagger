@@ -85,6 +85,48 @@ describe('Definition generation', () => {
       expect(param.items.type).to.eq('string');
       expect(param.collectionFormat).to.eq('multi');
     });
+
+    it('should generate default value for a number query param', () => {
+      const param = jsonata('paths."/mypath/default-query".get.parameters[0]').evaluate(spec);
+      expect(param.name).to.eq('num');
+      expect(param.required).to.eq(false);
+      expect(param.type).to.eq('number');
+      expect(param.default).to.eq(5);
+    });
+
+    it('should generate default value for a string query param', () => {
+      const param = jsonata('paths."/mypath/default-query".get.parameters[1]').evaluate(spec);
+      expect(param.name).to.eq('str');
+      expect(param.required).to.eq(false);
+      expect(param.type).to.eq('string');
+      expect(param.default).to.eq('default value');
+    });
+
+    it('should generate default value for a true boolean query param', () => {
+      const param = jsonata('paths."/mypath/default-query".get.parameters[2]').evaluate(spec);
+      expect(param.name).to.eq('bool1');
+      expect(param.required).to.eq(false);
+      expect(param.type).to.eq('boolean');
+      expect(param.default).to.eq(true);
+    });
+
+    it('should generate default value for a false boolean query param', () => {
+      const param = jsonata('paths."/mypath/default-query".get.parameters[3]').evaluate(spec);
+      expect(param.name).to.eq('bool2');
+      expect(param.required).to.eq(false);
+      expect(param.type).to.eq('boolean');
+      expect(param.default).to.eq(false);
+    });
+
+    it('should generate default value for a string array query param', () => {
+      const param = jsonata('paths."/mypath/default-query".get.parameters[4]').evaluate(spec);
+      expect(param.name).to.eq('arr');
+      expect(param.required).to.eq(false);
+      expect(param.type).to.eq('array');
+      expect(param.items).to.be.an('object');
+      expect(param.items.type).to.eq('string');
+      expect(param.default).to.deep.eq(['a', 'b', 'c']);
+    });
   });
 
   describe('TypeEndpoint', () => {

@@ -67,6 +67,18 @@ export class MyService {
     ) {
         return { ids, names };
     }
+
+    @GET
+    @Path('default-query')
+    testDefaultQuery(
+        @QueryParam('num') num: number = 5,
+        @QueryParam('str') str: string = 'default value',
+        @QueryParam('bool1') bool1: boolean = true,
+        @QueryParam('bool2') bool2: boolean = false,
+        @QueryParam('arr') arr: string[] = ['a', 'b', 'c']
+    ) {
+        return;
+    }
 }
 
 class BaseService {

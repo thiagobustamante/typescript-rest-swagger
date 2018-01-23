@@ -122,6 +122,7 @@ export interface Parameter {
     type: Type;
     collectionFormat?: boolean;
     allowEmptyValue?: boolean;
+    default?: any;
     maxItems?: number;
     minItems?: number;
 }

@@ -654,3 +654,22 @@ export function getCommonPrimitiveAndArrayUnionType(typeNode?: ts.TypeNode): Typ
 
     return null;
 }
+
+export function getLiteralValue(expression: ts.Expression): any {
+    if (expression.kind === ts.SyntaxKind.StringLiteral) {
+        return (expression as ts.StringLiteral).text;
+    }
+    if (expression.kind === ts.SyntaxKind.NumericLiteral) {
+        return parseFloat((expression as ts.NumericLiteral).text);
+    }
+    if (expression.kind === ts.SyntaxKind.TrueKeyword) {
+        return true;
+    }
+    if (expression.kind === ts.SyntaxKind.FalseKeyword) {
+        return false;
+    }
+    if (expression.kind === ts.SyntaxKind.ArrayLiteralExpression) {
+        return (expression as ts.ArrayLiteralExpression).elements.map(e => getLiteralValue(e));
+    }
+    return;
+}

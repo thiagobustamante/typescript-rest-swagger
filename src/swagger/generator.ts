@@ -206,6 +206,8 @@ export class SpecGenerator {
 
         if (parameterType.format) { swaggerParameter.format = parameterType.format; }
 
+        if (parameter.default !== undefined) { swaggerParameter.default = parameter.default; }
+
         return swaggerParameter;
     }
 

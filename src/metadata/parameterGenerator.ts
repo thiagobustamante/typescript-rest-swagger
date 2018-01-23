@@ -1,5 +1,5 @@
 import { MetadataGenerator, Parameter, Type } from './metadataGenerator';
-import { resolveType, getCommonPrimitiveAndArrayUnionType } from './resolveType';
+import { resolveType, getCommonPrimitiveAndArrayUnionType, getLiteralValue } from './resolveType';
 import { getDecoratorName, getDecoratorTextValue, getDecoratorOptions } from '../utils/decoratorUtils';
 import * as ts from 'typescript';
 
@@ -202,6 +202,7 @@ export class ParameterGenerator {
         return {
             // allowEmptyValue: parameterOptions.allowEmptyValue,
             collectionFormat: parameterOptions.collectionFormat,
+            default: this.getDefaultValue(parameter.initializer),
             description: this.getParameterDescription(parameter),
             in: 'query',
             // maxItems: parameterOptions.maxItems,
@@ -272,6 +273,11 @@ export class ParameterGenerator {
             throw new Error(`Parameter ${parameter.name} doesn't have a valid type assigned in '${this.getCurrentLocation()}'.`);
         }
         return resolveType(parameter.type, this.genericTypeMap);
+    }
+
+    private getDefaultValue(initializer?: ts.Expression) {
+        if (!initializer) { return; }
+        return getLiteralValue(initializer);
     }
 }
 
