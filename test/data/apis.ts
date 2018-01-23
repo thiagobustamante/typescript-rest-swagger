@@ -58,6 +58,15 @@ export class MyService {
     testPostObject(data: object) {
         return data;
     }
+
+    @GET
+    @Path('multi-query')
+    testMultiQuery(
+        @QueryParam('id') ids: string[],
+        @QueryParam('name'/*, { collectionFormat: 'multi', allowEmptyValue: true }*/) names?: string | string[]
+    ) {
+        return { ids, names };
+    }
 }
 
 class BaseService {

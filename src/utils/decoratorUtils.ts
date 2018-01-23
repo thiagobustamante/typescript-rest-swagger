@@ -34,18 +34,26 @@ export function getDecorators(node: ts.Node, isMatching: (identifier: DecoratorD
         .filter(isMatching);
 }
 
-export function getDecoratorName(node: ts.Node, isMatching: (identifier: DecoratorData) => boolean) {
+function getDecorator(node: ts.Node, isMatching: (identifier: DecoratorData) => boolean) {
     const decorators = getDecorators(node, isMatching);
     if (!decorators || !decorators.length) { return; }
 
-    return decorators[0].text;
+    return decorators[0];
+}
+
+export function getDecoratorName(node: ts.Node, isMatching: (identifier: DecoratorData) => boolean) {
+    const decorator = getDecorator(node, isMatching);
+    return decorator ? decorator.text : undefined;
 }
 
 export function getDecoratorTextValue(node: ts.Node, isMatching: (identifier: DecoratorData) => boolean) {
-    const decorators = getDecorators(node, isMatching);
-    if (!decorators || !decorators.length) { return; }
+    const decorator = getDecorator(node, isMatching);
+    return decorator && typeof decorator.arguments[0] === 'string' ? decorator.arguments[0] as string : undefined;
+}
 
-    return decorators[0].arguments[0];
+export function getDecoratorOptions(node: ts.Node, isMatching: (identifier: DecoratorData) => boolean) {
+    const decorator = getDecorator(node, isMatching);
+    return decorator && typeof decorator.arguments[1] === 'object' ? decorator.arguments[1] as {[key: string]: any} : undefined;
 }
 
 export function isDecorator(node: ts.Node, isMatching: (identifier: DecoratorData) => boolean) {
@@ -58,6 +66,6 @@ export function isDecorator(node: ts.Node, isMatching: (identifier: DecoratorDat
 
 export interface DecoratorData {
     text: string;
-    arguments: Array<string>;
+    arguments: Array<any>;
     typeArguments: Array<any>;
 }

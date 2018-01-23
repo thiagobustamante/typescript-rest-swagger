@@ -65,6 +65,26 @@ describe('Definition generation', () => {
       expression = jsonata('paths."/mypath/obj".post.parameters[0].schema.type');
       expect(expression.evaluate(spec)).to.eq('object');
     });
+
+    it('should generate a query param with array type', () => {
+      const param = jsonata('paths."/mypath/multi-query".get.parameters[0]').evaluate(spec);
+      expect(param.name).to.eq('id');
+      expect(param.required).to.eq(true);
+      expect(param.type).to.eq('array');
+      expect(param.items).to.be.an('object');
+      expect(param.items.type).to.eq('string');
+      expect(param.collectionFormat).to.eq('multi');
+    });
+
+    it('should generate an array query param for parameter with compatible array and primitive intersection type', () => {
+      const param = jsonata('paths."/mypath/multi-query".get.parameters[1]').evaluate(spec);
+      expect(param.name).to.eq('name');
+      expect(param.required).to.eq(false);
+      expect(param.type).to.eq('array');
+      expect(param.items).to.be.an('object');
+      expect(param.items.type).to.eq('string');
+      expect(param.collectionFormat).to.eq('multi');
+    });
   });
 
   describe('TypeEndpoint', () => {

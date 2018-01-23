@@ -2,6 +2,7 @@ import { SwaggerConfig } from './../../src/config';
 export function getDefaultOptions(): SwaggerConfig {
   return {
     basePath: '/',
+    collectionFormat: 'multi',
     description: 'Description of a test API',
     entryFile: '',
     host: 'localhost:3000',

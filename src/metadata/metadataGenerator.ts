@@ -120,6 +120,10 @@ export interface Parameter {
     name: string;
     required: boolean;
     type: Type;
+    collectionFormat?: boolean;
+    allowEmptyValue?: boolean;
+    maxItems?: number;
+    minItems?: number;
 }
 
 export interface Security {

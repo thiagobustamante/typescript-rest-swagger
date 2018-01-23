@@ -1,6 +1,6 @@
 import { MetadataGenerator, Parameter, Type } from './metadataGenerator';
-import { resolveType } from './resolveType';
-import { getDecoratorName, getDecoratorTextValue } from '../utils/decoratorUtils';
+import { resolveType, getCommonPrimitiveAndArrayUnionType } from './resolveType';
+import { getDecoratorName, getDecoratorTextValue, getDecoratorOptions } from '../utils/decoratorUtils';
 import * as ts from 'typescript';
 
 export class ParameterGenerator {
@@ -187,15 +187,25 @@ export class ParameterGenerator {
 
     private getQueryParameter(parameter: ts.ParameterDeclaration): Parameter {
         const parameterName = (parameter.name as ts.Identifier).text;
-        const type = this.getValidatedType(parameter);
+        const parameterOptions = getDecoratorOptions(this.parameter, ident => ident.text === 'QueryParam') || {};
+        let type = this.getValidatedType(parameter);
 
-        if (!this.supportPathDataType(type)) {
-            throw new InvalidParameterException(`Parameter '${parameterName}' can't be passed as a query parameter in '${this.getCurrentLocation()}'.`);
+        if (!this.supportQueryDataType(type)) {
+            const arrayType = getCommonPrimitiveAndArrayUnionType(parameter.type);
+            if (arrayType && this.supportQueryDataType(arrayType)) {
+                type = arrayType;
+            } else {
+                throw new InvalidParameterException(`Parameter '${parameterName}' can't be passed as a query parameter in '${this.getCurrentLocation()}'.`);
+            }
         }
 
         return {
+            // allowEmptyValue: parameterOptions.allowEmptyValue,
+            collectionFormat: parameterOptions.collectionFormat,
             description: this.getParameterDescription(parameter),
             in: 'query',
+            // maxItems: parameterOptions.maxItems,
+            // minItems: parameterOptions.minItems,
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'QueryParam') || parameterName,
             parameterName,
             required: !parameter.questionToken && !parameter.initializer,
@@ -249,6 +259,12 @@ export class ParameterGenerator {
 
     private supportPathDataType(parameterType: Type) {
         return ['string', 'integer', 'long', 'float', 'double', 'date', 'datetime', 'buffer', 'boolean', 'enum'].find(t => t === parameterType.typeName);
+    }
+
+    private supportQueryDataType(parameterType: Type) {
+        // Copied from supportPathDataType and added 'array'. Not sure if all options apply to queries, but kept to avoid breaking change.
+        return ['string', 'integer', 'long', 'float', 'double', 'date',
+            'datetime', 'buffer', 'boolean', 'enum', 'array'].find(t => t === parameterType.typeName);
     }
 
     private getValidatedType(parameter: ts.ParameterDeclaration) {

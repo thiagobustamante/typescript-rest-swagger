@@ -196,6 +196,14 @@ export class SpecGenerator {
             swaggerParameter.type = parameterType.type;
         }
 
+        if (parameterType.items) {
+            swaggerParameter.items = parameterType.items;
+
+            if (parameter.collectionFormat || this.config.collectionFormat) {
+                swaggerParameter.collectionFormat = parameter.collectionFormat || this.config.collectionFormat;
+            }
+        }
+
         if (parameterType.format) { swaggerParameter.format = parameterType.format; }
 
         return swaggerParameter;

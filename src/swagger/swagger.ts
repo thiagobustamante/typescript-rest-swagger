@@ -51,6 +51,7 @@ export namespace Swagger {
         type: string;
         format?: string;
         allowEmptyValue?: boolean;
+        collectionFormat?: CollectionFormat;
     }
 
     export interface PathParameter extends BaseParameter {
@@ -66,8 +67,10 @@ export namespace Swagger {
 
     export interface FormDataParameter extends BaseParameter, BaseSchema {
         type: string;
-        collectionFormat?: string;
+        collectionFormat?: CollectionFormat;
     }
+
+    export type CollectionFormat = 'csv' | 'ssv' | 'tsv' | 'pipes' | 'multi';
 
     export type Parameter =
         BodyParameter |

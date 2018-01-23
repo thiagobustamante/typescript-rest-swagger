@@ -80,10 +80,16 @@ export interface SwaggerConfig {
     /**
      * Default consumes property for the entire API
      */
-
     consumes?: [string];
+
     /**
      * Default produces property for the entire API
      */
     produces?: [string];
+
+    /**
+     * Default collectionFormat property for query parameters of array type.
+     * Possible values are `csv`, `ssv`, `tsv`, `pipes`, `multi`. If not specified, Swagger defaults to `csv`.
+     */
+    collectionFormat?: string;
 }

@@ -636,3 +636,21 @@ function resolveTypeArguments(node: ts.ClassDeclaration, typeArguments?: Readonl
     }
     return result;
 }
+
+/**
+ * Used to identify union types of a primitive and array of the same primitive, e.g. `string | string[]`
+ */
+export function getCommonPrimitiveAndArrayUnionType(typeNode?: ts.TypeNode): Type | null {
+    if (typeNode && typeNode.kind === ts.SyntaxKind.UnionType) {
+        const union = typeNode as ts.UnionTypeNode;
+        const types = union.types.map(t => resolveType(t));
+        const arrType = types.find(t => t.typeName === 'array') as ArrayType | undefined;
+        const primitiveType = types.find(t => t.typeName !== 'array');
+
+        if (types.length === 2 && arrType && arrType.elementType && primitiveType && arrType.elementType.typeName === primitiveType.typeName) {
+            return arrType;
+        }
+    }
+
+    return null;
+}
