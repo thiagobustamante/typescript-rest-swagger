@@ -231,6 +231,7 @@ version | string | API version number; defaults to npm package version
 yaml | boolean | Generates the output also as an yaml file 
 spec | any | Extend generated swagger spec with this object. Note that generated properties will always take precedence over what get specified here
 securityDefinitions | *SecurityDefinition | Security Definitions Object. A declaration of the security schemes available to be used in the specification. This does not enforce the security schemes on the operations and only serves to provide the relevant details for each scheme.
+collectionFormat | string | Default collectionFormat property for the entire API. Possible values are `csv`, `ssv`, `tsv`, `pipes`, `multi`. If not specified, Swagger defaults to `csv`.
 
 
 Where the SecurityDefinition contract is defined as:
