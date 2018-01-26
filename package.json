@@ -1,6 +1,6 @@
 {
   "name": "typescript-rest-swagger",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Generate Swagger files from a typescript-rest project",
   "keywords": [
     "typescript",
@@ -20,7 +20,7 @@
     "clean": "rimraf dist",
     "lint": "tslint ./src/**/*.ts ./test/**/*.ts",
     "format": "tsfmt -r",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "deploy": "npm version patch && npm publish",
     "postversion": "git push origin master",
     "swagger-gen": "node ./dist/cli.js -c ./test/data/swagger.json",
