@@ -240,7 +240,7 @@ export class ParameterGenerator {
         const symbol = MetadataGenerator.current.typeChecker.getSymbolAtLocation(node.name);
 
         if (symbol) {
-            const comments = symbol.getDocumentationComment();
+            const comments = symbol.getDocumentationComment(MetadataGenerator.current.typeChecker);
             if (comments.length) { return ts.displayPartsToString(comments); }
         }
 
