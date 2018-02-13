@@ -23,9 +23,15 @@ describe('Definition generation', () => {
       expect(spec.paths).to.have.property('/promise/{id}');
     });
 
-    it('should generate paths for decorated services, declared on superclasses', () => {
+    it('should generate examples for object parameter', () => {
       expect(spec.paths).to.have.property('/mypath/secondpath');
       const expression = jsonata('paths."/mypath/secondpath".get.responses.200.examples."application/json".name');
+      expect(expression.evaluate(spec)).to.eq('Joe');
+    });
+
+    it('should generate examples for array paraemter', () => {
+      expect(spec.paths).to.have.property('/mypath');
+      const expression = jsonata('paths."/mypath".post.responses.204.examples."application/json"[0].name');
       expect(expression.evaluate(spec)).to.eq('Joe');
     });
 

@@ -6,7 +6,7 @@ import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDo
 import { getDecorators } from '../utils/decoratorUtils';
 import { normalizePath } from '../utils/pathUtils';
 import * as pathUtil from 'path';
-import * as _ from 'lodash';
+// import * as _ from 'lodash';
 
 export class MethodGenerator {
     private method: string;
@@ -185,8 +185,7 @@ export class MethodGenerator {
                 example[p.name.text] = this.getInitializerValue(p.initializer);
             });
         } else {
-            const obj = this.getInitializerValue(argument);
-            example = _.merge(example, obj);
+            example = this.getInitializerValue(argument);
         }
         return example;
     }

@@ -49,6 +49,9 @@ export class MyService {
     }
 
     @POST
+    @swagger.Example<Array<Person>>([{
+        name: 'Joe'
+    }])
     testPostString(body: string) {
         return body;
     }
