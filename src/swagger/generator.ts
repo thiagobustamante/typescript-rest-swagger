@@ -349,6 +349,6 @@ export class SpecGenerator {
     }
 
     private getSwaggerTypeForReferenceType(referenceType: ReferenceType): Swagger.Schema {
-        return { $ref: `#/definitions/${referenceType.typeName}` };
+        return { '$ref': `#/definitions/${referenceType.typeName}` };
     }
 }
