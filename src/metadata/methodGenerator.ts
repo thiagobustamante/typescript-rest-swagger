@@ -6,7 +6,6 @@ import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDo
 import { getDecorators } from '../utils/decoratorUtils';
 import { normalizePath } from '../utils/pathUtils';
 import * as pathUtil from 'path';
-// import * as _ from 'lodash';
 
 export class MethodGenerator {
     private method: string;
@@ -32,10 +31,7 @@ export class MethodGenerator {
 
         const identifier = this.node.name as ts.Identifier;
         const type = resolveType(this.node.type, this.genericTypeMap);
-        const responses = this.getMethodResponses();
-        if (0 === responses.length) {
-          responses.push(this.getMethodSuccessResponse(type));
-        }
+        const responses = this.mergeResponses(this.getMethodResponses(), this.getMethodSuccessResponse(type));
 
         return {
             consumes: this.getDecoratorValues('Accept'),
@@ -174,6 +170,25 @@ export class MethodGenerator {
         const argument = d.arguments[0];
 
         return this.getExamplesValue(argument);
+    }
+
+    private mergeResponses(responses: Array<ResponseType>, defaultResponse: ResponseType) {
+        if (!responses || !responses.length) {
+            return [defaultResponse];
+        }
+
+        const index = responses.findIndex((resp) => resp.status === defaultResponse.status);
+
+        if (defaultResponse.examples) {
+            if (index >= 0) {
+                if (!responses[index].examples) {
+                    responses[index].examples =  defaultResponse.examples;
+                }
+            } else {
+                responses.push(defaultResponse);
+            }
+        }
+        return responses;
     }
 
     private supportsPathMethod(method: string) {

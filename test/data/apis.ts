@@ -40,6 +40,7 @@ export class MyService {
     @swagger.Example<Person>({
         name: 'Joe'
     })
+    @swagger.Response<Person>(200, 'The success test.')
     test2(
         @QueryParam('testRequired')test: string,
         @QueryParam('testDefault')test2: string = 'value',
