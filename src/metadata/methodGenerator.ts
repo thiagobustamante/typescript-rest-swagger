@@ -33,7 +33,9 @@ export class MethodGenerator {
         const identifier = this.node.name as ts.Identifier;
         const type = resolveType(this.node.type, this.genericTypeMap);
         const responses = this.getMethodResponses();
-        responses.push(this.getMethodSuccessResponse(type));
+        if (0 === responses.length) {
+          responses.push(this.getMethodSuccessResponse(type));
+        }
 
         return {
             consumes: this.getDecoratorValues('Accept'),
