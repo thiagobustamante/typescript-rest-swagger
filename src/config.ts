@@ -92,9 +92,4 @@ export interface SwaggerConfig {
      * Possible values are `csv`, `ssv`, `tsv`, `pipes`, `multi`. If not specified, Swagger defaults to `csv`.
      */
     collectionFormat?: string;
-
-    /**
-     * Swagger Info block, if it exists will be used as Info section of the resulting swagger file.
-     */
-    info?: any;
 }

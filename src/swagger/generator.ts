@@ -59,16 +59,11 @@ export class SpecGenerator {
 
         if (this.config.consumes) { spec.consumes = this.config.consumes; }
         if (this.config.produces) { spec.produces = this.config.produces; }
+        if (this.config.description) { spec.info.description = this.config.description; }
+        if (this.config.license) { spec.info.license = { name: this.config.license }; }
+        if (this.config.name) { spec.info.title = this.config.name; }
+        if (this.config.version) { spec.info.version = this.config.version; }
         if (this.config.host) { spec.host = this.config.host; }
-
-        if (this.config.hasOwnProperty('info')) {
-            spec.info = this.config.info;
-        } else {
-          if (this.config.description) { spec.info.description = this.config.description; }
-          if (this.config.license) { spec.info.license = { name: this.config.license }; }
-          if (this.config.name) { spec.info.title = this.config.name; }
-          if (this.config.version) { spec.info.version = this.config.version; }
-        }
 
         if (this.config.spec) {
             spec = require('merge').recursive(spec, this.config.spec);
