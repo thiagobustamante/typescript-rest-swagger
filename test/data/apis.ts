@@ -101,6 +101,7 @@ export class PromiseService extends BaseService {
      * Esta eh a da classe
      * @param test Esta eh a description do param teste
      */
+    @swagger.Response<string>(401, 'Unauthorized')
     @GET
     test( @QueryParam('testParam')test?: string ): Promise<Person> {
         return new Promise<Person>((resolve, reject) => {
@@ -108,6 +109,20 @@ export class PromiseService extends BaseService {
         });
     }
 
+    @swagger.Response<Person>(200, 'All Good')
+    @swagger.Response<string>(401, 'Unauthorized')
+    @swagger.Example<Person>({ name: 'Test Person' })
+    @GET
+    @Path(':id')
+    testGetSingle( @PathParam('id') id: string ): Promise<Person> {
+        return new Promise<Person>((resolve, reject) => {
+            resolve({ name: 'OK' });
+        });
+    }
+
+    @swagger.Response<Person>(201, 'Person Created', { name: 'Test Person' })
+    @swagger.Response<string>(401, 'Unauthorized')
+    @swagger.Example<Person>({ name: 'Example Person' }) // NOTE: this is here to test that it doesn't overwrite the example in the @Response above
     @POST
     testPost( obj: Person ): Promise<Return.NewResource<Person>> {
         return new Promise<Return.NewResource<Person>>((resolve, reject) => {

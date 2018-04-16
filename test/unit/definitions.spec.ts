@@ -57,6 +57,37 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('Joe');
     });
 
+    it('should include default response if a non-conflicting response is declared with a decorator', () => {
+      let expression = jsonata('paths."/promise".get.responses');
+      expect(Object.keys(expression.evaluate(spec)).length).to.eq(2);
+      expression = jsonata('paths."/promise".get.responses."200".description');
+      expect(expression.evaluate(spec)).to.eq('Ok');
+      expression = jsonata('paths."/promise".get.responses."401".description');
+      expect(expression.evaluate(spec)).to.eq('Unauthorized');
+    });
+
+    it('should not include default response if it conflicts with a declared response', () => {
+      let expression = jsonata('paths."/promise".post.responses');
+      expect(Object.keys(expression.evaluate(spec)).length).to.eq(2);
+      expression = jsonata('paths."/promise".post.responses."201".description');
+      expect(expression.evaluate(spec)).to.eq('Person Created');
+      expression = jsonata('paths."/promise".post.responses."201".examples."application/json".name');
+      expect(expression.evaluate(spec)).to.eq('Test Person');
+      expression = jsonata('paths."/promise".post.responses."401".description');
+      expect(expression.evaluate(spec)).to.eq('Unauthorized');
+    });
+
+    it('should update a declared response with the declared default response example if response annotation doesn\'t specify one', () => {
+      let expression = jsonata('paths."/promise/{id}".get.responses');
+      expect(Object.keys(expression.evaluate(spec)).length).to.eq(2);
+      expression = jsonata('paths."/promise/{id}".get.responses."200".description');
+      expect(expression.evaluate(spec)).to.eq('All Good');
+      expression = jsonata('paths."/promise/{id}".get.responses."200".examples."application/json".name');
+      expect(expression.evaluate(spec)).to.eq('Test Person');
+      expression = jsonata('paths."/promise/{id}".get.responses."401".description');
+      expect(expression.evaluate(spec)).to.eq('Unauthorized');
+    });
+
     it('should generate a definition with a referenced type', () => {
       const expression = jsonata('definitions.Person.properties.address."$ref"');
       expect(expression.evaluate(spec)).to.eq('#/definitions/Address');

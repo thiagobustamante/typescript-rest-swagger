@@ -179,14 +179,12 @@ export class MethodGenerator {
 
         const index = responses.findIndex((resp) => resp.status === defaultResponse.status);
 
-        if (defaultResponse.examples) {
-            if (index >= 0) {
-                if (!responses[index].examples) {
-                    responses[index].examples =  defaultResponse.examples;
-                }
-            } else {
-                responses.push(defaultResponse);
+        if (index >= 0) {
+            if (defaultResponse.examples && !responses[index].examples) {
+                responses[index].examples = defaultResponse.examples;
             }
+        } else {
+            responses.push(defaultResponse);
         }
         return responses;
     }
