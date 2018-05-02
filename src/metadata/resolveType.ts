@@ -238,7 +238,7 @@ function getReferenceType(type: ts.EntityName, genericTypeMap?: Map<String, ts.T
         }
 
         const extendedProperties = getInheritedProperties(modelTypeDeclaration, genericTypes);
-        referenceType.properties = referenceType.properties.concat(extendedProperties);
+        mergeReferenceTypeProperties(referenceType.properties, extendedProperties);
 
         localReferenceTypeCache[typeNameWithGenerics] = referenceType;
 
@@ -247,6 +247,17 @@ function getReferenceType(type: ts.EntityName, genericTypeMap?: Map<String, ts.T
         console.error(`There was a problem resolving type of '${getTypeName(typeName, genericTypes)}'.`);
         throw err;
     }
+}
+
+function mergeReferenceTypeProperties(properties: Property[], extendedProperties: Property[]) {
+    extendedProperties.forEach(prop => {
+        const existingProp = properties.find(p => p.name === prop.name);
+        if (existingProp) {
+            existingProp.description = existingProp.description || prop.description;
+        } else {
+            properties.push(prop);
+        }
+    });
 }
 
 function resolveFqTypeName(type: ts.EntityName): string {

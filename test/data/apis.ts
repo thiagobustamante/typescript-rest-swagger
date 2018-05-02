@@ -328,3 +328,23 @@ export class ParameterizedEndpoint {
         return new PrimitiveClassModel();
     }
 }
+
+export abstract class Entity {
+    /**
+     * A numeric identifier
+     */
+    id?: number;
+}
+
+export class NamedEntity implements Entity {
+    id: number;
+    name: string;
+}
+
+@Path('abstract')
+export class AbstractEntityEndpoint {
+    @GET
+    get(): NamedEntity {
+        return new NamedEntity();
+    }
+}

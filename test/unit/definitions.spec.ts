@@ -284,4 +284,16 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('path');
       });
   });
+
+  describe('AbstractEntityEndpoint', () => {
+    it('should not duplicate inherited properties in the required list', () => {
+      const expression = jsonata('definitions.NamedEntity.required');
+      expect(expression.evaluate(spec)).to.deep.equal(['id', 'name']);
+    });
+
+    it('should use property description from base class if not defined in child', () => {
+      const expression = jsonata('definitions.NamedEntity.properties.id.description');
+      expect(expression.evaluate(spec)).to.eq('A numeric identifier');
+    });
+  });
 });
