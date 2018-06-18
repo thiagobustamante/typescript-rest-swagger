@@ -115,6 +115,7 @@ export class SpecGenerator {
     private buildPathMethod(controllerName: string, method: Method, pathObject: any) {
         const pathMethod: any = pathObject[method.method] = this.buildOperation(controllerName, method);
         pathMethod.description = method.description;
+        pathMethod.summary = method.summary;
 
         if (method.deprecated) { pathMethod.deprecated = method.deprecated; }
         if (method.tags.length) { pathMethod.tags = method.tags; }
