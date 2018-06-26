@@ -94,7 +94,7 @@ export interface Controller {
     consumes: string[];
     produces: string[];
     tags: string[];
-    security?: Security;
+    security?: Security[];
 }
 
 export interface Method {
@@ -107,7 +107,7 @@ export interface Method {
     type: Type;
     tags: string[];
     responses: ResponseType[];
-    security?: Security;
+    security?: Security[];
     summary?: string;
     consumes: string[];
     produces: string[];
