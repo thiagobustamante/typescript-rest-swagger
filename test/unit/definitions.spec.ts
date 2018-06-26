@@ -276,6 +276,14 @@ describe('Definition generation', () => {
       expression = jsonata('paths."/primitives/{id}".get.parameters[0].format');
       expect(expression.evaluate(spec)).to.eq('int64');
     });
+
+    it('should generate array type names as type + Array', () => {
+      let expression = jsonata('definitions.ResponseBodystringArray');
+      // tslint:disable-next-line:no-unused-expression
+      expect(expression.evaluate(spec)).to.not.be.undefined;
+      expression = jsonata('paths."/primitives/array".get.responses."200".schema."$ref"');
+      expect(expression.evaluate(spec)).to.equal('#/definitions/ResponseBodystringArray');
+    });
   });
 
   describe('ParameterizedEndpoint', () => {

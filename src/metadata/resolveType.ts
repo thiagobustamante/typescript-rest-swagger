@@ -291,7 +291,7 @@ function getAnyTypeName(typeNode: ts.TypeNode): string {
 
     if (typeNode.kind === ts.SyntaxKind.ArrayType) {
         const arrayType = typeNode as ts.ArrayTypeNode;
-        return getAnyTypeName(arrayType.elementType) + '[]';
+        return getAnyTypeName(arrayType.elementType) + 'Array';
     }
 
     if ((typeNode.kind === ts.SyntaxKind.UnionType) || (typeNode.kind === ts.SyntaxKind.AnyKeyword)) {
