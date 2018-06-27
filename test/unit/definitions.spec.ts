@@ -283,6 +283,14 @@ describe('Definition generation', () => {
       expression = jsonata('paths."/primitives/{id}".get.parameters[0].format');
       expect(expression.evaluate(spec)).to.eq('int64');
     });
+
+    it('should generate array type names as type + Array', () => {
+      let expression = jsonata('definitions.ResponseBodystringArray');
+      // tslint:disable-next-line:no-unused-expression
+      expect(expression.evaluate(spec)).to.not.be.undefined;
+      expression = jsonata('paths."/primitives/array".get.responses."200".schema."$ref"');
+      expect(expression.evaluate(spec)).to.equal('#/definitions/ResponseBodystringArray');
+    });
   });
 
   describe('ParameterizedEndpoint', () => {
@@ -301,6 +309,25 @@ describe('Definition generation', () => {
     it('should use property description from base class if not defined in child', () => {
       const expression = jsonata('definitions.NamedEntity.properties.id.description');
       expect(expression.evaluate(spec)).to.eq('A numeric identifier');
+    });
+  });
+
+  describe('SecureEndpoint', () => {
+    it('should apply controller security to request', () => {
+      const expression = jsonata('paths."/secure".get.security');
+      expect(expression.evaluate(spec)).to.deep.equal([ { 'access_token': [] } ]);
+    });
+
+    it('method security should override controller security', () => {
+      const expression = jsonata('paths."/secure".post.security');
+      expect(expression.evaluate(spec)).to.deep.equal([ { 'user_email': [] } ]);
+    });
+  });
+
+  describe('SuperSecureEndpoint', () => {
+    it('should apply two controller securities to request', () => {
+      const expression = jsonata('paths."/supersecure".get.security');
+      expect(expression.evaluate(spec)).to.deep.equal([ { 'access_token': [] }, { 'user_email': [] } ]);
     });
   });
 });

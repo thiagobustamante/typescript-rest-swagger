@@ -259,6 +259,10 @@ export class TypeEndpoint {
     }
 }
 
+export interface ResponseBody<T> {
+    data: T;
+}
+
 export class PrimitiveClassModel {
     /**
      * An integer
@@ -319,6 +323,12 @@ export class PrimitiveEndpoint {
     getById(@PathParam('id') @swagger.IsLong id: number) {
         // ...
     }
+
+    @Path('/array')
+    @GET
+    getArray(): ResponseBody<string[]> {
+        return { data: ['hello', 'world'] };
+    }
 }
 
 @Path('parameterized/:objectId')
@@ -348,5 +358,30 @@ export class AbstractEntityEndpoint {
     @GET
     get(): NamedEntity {
         return new NamedEntity();
+    }
+}
+
+@Path('secure')
+@swagger.Security('access_token')
+export class SecureEndpoint {
+    @GET
+    get(): string {
+        return 'Access Granted';
+    }
+
+    @POST
+    @swagger.Security('user_email')
+    post(): string {
+        return 'Posted';
+    }
+}
+
+@Path('supersecure')
+@swagger.Security('access_token')
+@swagger.Security('user_email')
+export class SuperSecureEndpoint {
+    @GET
+    get(): string {
+        return 'Access Granted';
     }
 }
