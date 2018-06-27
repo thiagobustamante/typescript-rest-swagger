@@ -257,6 +257,10 @@ export class TypeEndpoint {
     }
 }
 
+export interface ResponseBody<T> {
+    data: T;
+}
+
 export class PrimitiveClassModel {
     /**
      * An integer
@@ -316,6 +320,12 @@ export class PrimitiveEndpoint {
     @GET
     getById(@PathParam('id') @swagger.IsLong id: number) {
         // ...
+    }
+
+    @Path('/array')
+    @GET
+    getArray(): ResponseBody<string[]> {
+        return { data: ['hello', 'world'] };
     }
 }
 
