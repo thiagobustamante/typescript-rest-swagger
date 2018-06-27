@@ -44,6 +44,13 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq(false);
     });
 
+    it('should generate description for methods and paraemters', () => {
+      let expression = jsonata('paths."/mypath/secondpath".get.parameters[0].description');
+      expect(expression.evaluate(spec)).to.eq('This is the test param description');
+      expression = jsonata('paths."/mypath/secondpath".get.description');
+      expect(expression.evaluate(spec)).to.eq('This is the method description');
+    });
+
     it('should support multiple response decorators', () => {
       let expression = jsonata('paths."/mypath".get.responses."400".description');
       expect(expression.evaluate(spec)).to.eq('The request format was incorrect.');
@@ -282,7 +289,7 @@ describe('Definition generation', () => {
     it('should generate path param for params declared on class', () => {
       const expression = jsonata('paths."/parameterized/{objectId}/test".get.parameters[0].in');
       expect(expression.evaluate(spec)).to.eq('path');
-      });
+    });
   });
 
   describe('AbstractEntityEndpoint', () => {

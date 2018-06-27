@@ -1,11 +1,13 @@
 'use strict';
 
-import {Path, Server, GET, POST, PUT, DELETE, HttpMethod,
-        PathParam, QueryParam, CookieParam, HeaderParam,
-        FormParam, Param, Context, ServiceContext, ContextRequest,
-        ContextResponse, ContextLanguage, ContextAccept,
-        ContextNext, AcceptLanguage, Accept, FileParam,
-        Errors, Return, BodyOptions} from 'typescript-rest';
+import {
+    Path, Server, GET, POST, PUT, DELETE, HttpMethod,
+    PathParam, QueryParam, CookieParam, HeaderParam,
+    FormParam, Param, Context, ServiceContext, ContextRequest,
+    ContextResponse, ContextLanguage, ContextAccept,
+    ContextNext, AcceptLanguage, Accept, FileParam,
+    Errors, Return, BodyOptions
+} from 'typescript-rest';
 
 import * as swagger from '../../src/decorators';
 
@@ -27,13 +29,13 @@ export class MyService {
     @swagger.Response<string>(500, 'There was an unexpected error.')
     @GET
     @Accept('text/html')
-    test( ): string {
+    test(): string {
         return 'OK';
     }
 
     /**
-     * Esta eh a da classe
-     * @param test Esta eh a description do param teste
+     * This is the method description
+     * @param test This is the test param description
      */
     @GET
     @Path('secondpath')
@@ -42,11 +44,11 @@ export class MyService {
     })
     @swagger.Response<Person>(200, 'The success test.')
     test2(
-        @QueryParam('testRequired')test: string,
-        @QueryParam('testDefault')test2: string = 'value',
-        @QueryParam('testOptional')test3?: string
+        @QueryParam('testRequired') test: string,
+        @QueryParam('testDefault') test2: string = 'value',
+        @QueryParam('testOptional') test3?: string
     ): Person {
-        return {name: 'OK'};
+        return { name: 'OK' };
     }
 
     @POST
@@ -88,7 +90,7 @@ export class MyService {
 class BaseService {
     @DELETE
     @Path(':id')
-    testDelete( @PathParam('id')id: string): Promise<void> {
+    testDelete(@PathParam('id') id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             resolve();
         });
@@ -103,9 +105,9 @@ export class PromiseService extends BaseService {
      */
     @swagger.Response<string>(401, 'Unauthorized')
     @GET
-    test( @QueryParam('testParam')test?: string ): Promise<Person> {
+    test(@QueryParam('testParam') test?: string): Promise<Person> {
         return new Promise<Person>((resolve, reject) => {
-            resolve({name: 'OK'});
+            resolve({ name: 'OK' });
         });
     }
 
@@ -114,7 +116,7 @@ export class PromiseService extends BaseService {
     @swagger.Example<Person>({ name: 'Test Person' })
     @GET
     @Path(':id')
-    testGetSingle( @PathParam('id') id: string ): Promise<Person> {
+    testGetSingle(@PathParam('id') id: string): Promise<Person> {
         return new Promise<Person>((resolve, reject) => {
             resolve({ name: 'OK' });
         });
@@ -124,16 +126,16 @@ export class PromiseService extends BaseService {
     @swagger.Response<string>(401, 'Unauthorized')
     @swagger.Example<Person>({ name: 'Example Person' }) // NOTE: this is here to test that it doesn't overwrite the example in the @Response above
     @POST
-    testPost( obj: Person ): Promise<Return.NewResource<Person>> {
+    testPost(obj: Person): Promise<Return.NewResource<Person>> {
         return new Promise<Return.NewResource<Person>>((resolve, reject) => {
-            resolve(new Return.NewResource<Person>('id', {name: 'OK'}));
+            resolve(new Return.NewResource<Person>('id', { name: 'OK' }));
         });
     }
 
     @GET
     @Path('myFile')
     @swagger.Produces('application/pdf')
-    testFile( @QueryParam('testParam')test?: string ): Promise<Return.DownloadBinaryData> {
+    testFile(@QueryParam('testParam') test?: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             resolve(null);
         });
@@ -141,10 +143,10 @@ export class PromiseService extends BaseService {
 }
 
 export class BasicModel {
-  id: number;
+    id: number;
 }
 
-export class BasicEndpoint <T extends BasicModel>  {
+export class BasicEndpoint<T extends BasicModel>  {
 
     protected list(@QueryParam('full') full?: boolean): Promise<Array<T>> {
         return new Promise((resolve, reject) => {
@@ -194,7 +196,7 @@ export class DerivedEndpoint extends BasicEndpoint<MyDatatype> {
     @GET
     @Path(':param')
     protected test(@PathParam('param') param: string): Promise<void> {
-        return new Promise<void>((resolve, reject)=> {
+        return new Promise<void>((resolve, reject) => {
             // content
         });
     }
@@ -214,7 +216,7 @@ export class DerivedEndpoint2 {
     @GET
     @Path(':param')
     protected test(@PathParam('param') param: string): Promise<MyDatatype2> {
-        return new Promise<MyDatatype2>((resolve, reject)=> {
+        return new Promise<MyDatatype2>((resolve, reject) => {
             // content
         });
     }
@@ -251,7 +253,7 @@ export class TypeEndpoint {
     @GET
     @Path(':param')
     test(@PathParam('param') param: string): Promise<SimpleHelloType> {
-        return new Promise<MyDatatype2>((resolve, reject)=> {
+        return new Promise<MyDatatype2>((resolve, reject) => {
             // content
         });
     }
@@ -324,7 +326,7 @@ export class ParameterizedEndpoint {
 
     @Path('/test')
     @GET
-    test(@PathParam('objectId')objectId: string): PrimitiveClassModel {
+    test(@PathParam('objectId') objectId: string): PrimitiveClassModel {
         return new PrimitiveClassModel();
     }
 }
