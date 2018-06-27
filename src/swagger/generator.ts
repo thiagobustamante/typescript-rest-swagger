@@ -120,9 +120,9 @@ export class SpecGenerator {
         if (method.deprecated) { pathMethod.deprecated = method.deprecated; }
         if (method.tags.length) { pathMethod.tags = method.tags; }
         if (method.security) {
-            const security: any = {};
-            security[method.security.name] = method.security.scopes ? method.security.scopes : [];
-            pathMethod.security = [security];
+            pathMethod.security = method.security.map(s => ({
+                [s.name]: s.scopes || []
+            }));
         }
         this.handleMethodConsumes(method, pathMethod);
 

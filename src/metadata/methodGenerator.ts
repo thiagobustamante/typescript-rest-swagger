@@ -219,16 +219,11 @@ export class MethodGenerator {
     private getMethodSecurity() {
         const securityDecorators = getDecorators(this.node, decorator => decorator.text === 'Security');
         if (!securityDecorators || !securityDecorators.length) { return undefined; }
-        if (securityDecorators.length > 1) {
-            throw new Error(`Only one Security decorator allowed in '${this.getCurrentLocation}' method.`);
-        }
 
-        const d = securityDecorators[0];
-
-        return {
+        return securityDecorators.map(d => ({
             name: d.arguments[0],
             scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
-        };
+        }));
     }
 
     private getInitializerValue(initializer: any) {

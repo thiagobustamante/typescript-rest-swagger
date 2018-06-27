@@ -147,7 +147,9 @@ class PeopleService {
 
 #### @Security
 
-Add a security constraint to method generated docs, refering the security name from securityDefinitions
+Add a security constraint to method generated docs, referencing the security name from securityDefinitions.
+`@Security` can be used at the controller and method level; if defined on both, method security overwrites controller security.
+Multiple security schemes may be specified to require all of them.
 
 ```typescript
 @Path('people')

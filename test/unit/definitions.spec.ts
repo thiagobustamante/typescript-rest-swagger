@@ -304,4 +304,23 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('A numeric identifier');
     });
   });
+
+  describe('SecureEndpoint', () => {
+    it('should apply controller security to request', () => {
+      const expression = jsonata('paths."/secure".get.security');
+      expect(expression.evaluate(spec)).to.deep.equal([ { 'access_token': [] } ]);
+    });
+
+    it('method security should override controller security', () => {
+      const expression = jsonata('paths."/secure".post.security');
+      expect(expression.evaluate(spec)).to.deep.equal([ { 'user_email': [] } ]);
+    });
+  });
+
+  describe('SuperSecureEndpoint', () => {
+    it('should apply two controller securities to request', () => {
+      const expression = jsonata('paths."/supersecure".get.security');
+      expect(expression.evaluate(spec)).to.deep.equal([ { 'access_token': [] }, { 'user_email': [] } ]);
+    });
+  });
 });
