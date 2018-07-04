@@ -31,6 +31,10 @@ export class ParameterGenerator {
                 return this.getFileParameter(this.parameter);
             case 'FilesParam':
                 return this.getFilesParameter(this.parameter);
+            case 'StreamFileParam':
+                return this.getFileParameter(this.parameter);
+            case 'StreamFilesParam':
+                return this.getFilesParameter(this.parameter);
             case 'Context':
             case 'ContextRequest':
             case 'ContextResponse':
