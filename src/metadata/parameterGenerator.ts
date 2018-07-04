@@ -93,7 +93,7 @@ export class ParameterGenerator {
         return {
             description: this.getParameterDescription(parameter),
             in: 'formData',
-            name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FileParam') || parameterName,
+            name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FileParam' || ident.text === 'StreamFileParam') || parameterName,
             parameterName,
             required: !parameter.questionToken,
             type: { typeName: 'file' }
@@ -110,7 +110,7 @@ export class ParameterGenerator {
         return {
             description: this.getParameterDescription(parameter),
             in: 'formData',
-            name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FilesParam') || parameterName,
+            name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FilesParam' || ident.text === 'StreamFilesParam') || parameterName,
             parameterName,
             required: !parameter.questionToken,
             type: { typeName: 'file' }
@@ -259,7 +259,7 @@ export class ParameterGenerator {
         return ['HeaderParam', 'QueryParam', 'Param', 'FileParam',
                 'PathParam', 'FilesParam', 'FormParam', 'CookieParam',
                 'Context', 'ContextRequest', 'ContextResponse', 'ContextNext',
-                'ContextLanguage', 'ContextAccept'].some(d => d === decoratorName);
+                'ContextLanguage', 'ContextAccept', 'StreamFileParam', 'StreamFilesParam'].some(d => d === decoratorName);
     }
 
     private supportPathDataType(parameterType: Type) {
