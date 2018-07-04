@@ -339,6 +339,18 @@ export class ParameterizedEndpoint {
     test(@PathParam('objectId') objectId: string): PrimitiveClassModel {
         return new PrimitiveClassModel();
     }
+
+    @Path('/file')
+    @POST
+    file(@FileParam('file') file: Express.Multer.File): PrimitiveClassModel {
+        return new PrimitiveClassModel();
+    }
+
+    @Path('/stream')
+    @POST
+    stream(@swagger.StreamFileParam('stream') file: Express.Multer.File): PrimitiveClassModel {
+        return new PrimitiveClassModel();
+    }
 }
 
 export abstract class Entity {

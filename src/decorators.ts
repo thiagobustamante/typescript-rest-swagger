@@ -110,3 +110,26 @@ export function IsFloat(target: any, propertyKey: string, parameterIndex?: numbe
 export function IsDouble(target: any, propertyKey: string, parameterIndex?: number) {
   return;
 }
+
+/**
+ * Creates a mapping between a file on a multipart request and a method
+ * argument.
+ * Unlike @FileParam provided by typescript-rest, this decorator allows to pipe the request.
+ */
+export function StreamFileParam(name: string) {
+    return function (...args: any[]) {
+      return;
+    };
+}
+
+/**
+ * Creates a mapping between multiple files on a multipart request and a method
+ * argument.
+ * Unlike @FileParam provided by typescript-rest, this decorator allows to pipe the request.
+ */
+export function StreamFilesParam(name: string) {
+    return function (...args: any[]) {
+        return;
+    };
+}
+
