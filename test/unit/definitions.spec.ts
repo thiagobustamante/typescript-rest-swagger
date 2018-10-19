@@ -298,6 +298,16 @@ describe('Definition generation', () => {
       const expression = jsonata('paths."/parameterized/{objectId}/test".get.parameters[0].in');
       expect(expression.evaluate(spec)).to.eq('path');
     });
+
+    it('should generate formData param for params declared on method', () => {
+        const expression = jsonata('paths."/parameterized/{objectId}/file".post.parameters[0].in');
+        expect(expression.evaluate(spec)).to.eq('formData');
+    });
+
+    it('should generate path param for params declared on class', () => {
+        const expression = jsonata('paths."/parameterized/{objectId}/stream".post.parameters[0].in');
+        expect(expression.evaluate(spec)).to.eq('formData');
+    });
   });
 
   describe('AbstractEntityEndpoint', () => {
