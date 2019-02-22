@@ -209,6 +209,8 @@ export class SpecGenerator {
 
         if (parameter.default !== undefined) { swaggerParameter.default = parameter.default; }
 
+        if (parameterType.enum) { swaggerParameter.enum = parameterType.enum; }
+
         return swaggerParameter;
     }
 
