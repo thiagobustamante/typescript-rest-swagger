@@ -42,6 +42,8 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq(false);
       expression = jsonata('paths."/mypath/secondpath".get.parameters[2].required');
       expect(expression.evaluate(spec)).to.eq(false);
+      expression = jsonata('paths."/mypath/secondpath".get.parameters[3].enum');
+      expect(expression.evaluate(spec)).to.eql(['option1', 'option2']);
     });
 
     it('should generate description for methods and paraemters', () => {

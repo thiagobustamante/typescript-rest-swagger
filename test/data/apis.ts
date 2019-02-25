@@ -20,6 +20,11 @@ interface Person {
     address?: Address;
 }
 
+enum TestEnum {
+    Option1 = 'option1',
+    Option2 = 'option2'
+}
+
 @Accept('text/plain')
 @Path('mypath')
 @swagger.Tags('My Services')
@@ -46,7 +51,8 @@ export class MyService {
     test2(
         @QueryParam('testRequired') test: string,
         @QueryParam('testDefault') test2: string = 'value',
-        @QueryParam('testOptional') test3?: string
+        @QueryParam('testOptional') test3?: string,
+        @QueryParam('testEnum') test4: TestEnum
     ): Person {
         return { name: 'OK' };
     }
