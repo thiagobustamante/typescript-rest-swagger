@@ -10,6 +10,7 @@ import {
 } from 'typescript-rest';
 
 import * as swagger from '../../src/decorators';
+import { TestInterface } from '@/TestInterface'; // to test compilerOptions.paths
 
 interface Address {
     street: string;
@@ -90,6 +91,12 @@ export class MyService {
         @QueryParam('arr') arr: string[] = ['a', 'b', 'c']
     ) {
         return;
+    }
+
+    @POST
+    @Path('test-compiler-options')
+    async testCompilerOptions(payload: TestInterface): Promise<TestInterface> {
+        return { a: 'string', b: 123 };
     }
 }
 

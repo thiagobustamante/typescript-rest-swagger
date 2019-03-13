@@ -9,7 +9,13 @@ const expect = chai.expect;
 const jsonata = require('jsonata');
 
 describe('Definition generation', () => {
-  const metadata = new MetadataGenerator('./test/data/apis.ts').generate();
+  const compilerOptions = {
+    baseUrl: '.',
+    paths: {
+      '@/*': ['test/data/*'],
+    },
+  };
+  const metadata = new MetadataGenerator('./test/data/apis.ts', compilerOptions).generate();
   const spec = new SpecGenerator(metadata, getDefaultOptions()).getSpec();
 
   describe('MyService', () => {
@@ -203,6 +209,24 @@ describe('Definition generation', () => {
       const expression = jsonata('definitions.SimpleHelloType.properties.comparePassword');
       // tslint:disable-next-line:no-unused-expression
       expect(expression.evaluate(spec)).to.not.exist;
+    });
+
+    it('should support compilerOptions', () => {
+      let expression = jsonata('definitions.TestInterface');
+      expect(expression.evaluate(spec)).to.eql({
+        description: '',
+        properties: {
+          a: { type: 'string', description: '' },
+          b: { type: 'number', format: 'double', description: '' }
+        },
+        required: [ 'a', 'b' ],
+        type: 'object',
+      });
+      expect(spec.paths).to.have.property('/mypath/test-compiler-options');
+      expression = jsonata('paths."/mypath/test-compiler-options".post.responses."200".schema');
+      expect(expression.evaluate(spec)).to.eql({ $ref: '#/definitions/TestInterface' });
+      expression = jsonata('paths."/mypath/test-compiler-options".post.parameters[0].schema');
+      expect(expression.evaluate(spec)).to.eql({ $ref: '#/definitions/TestInterface' });
     });
   });
 
