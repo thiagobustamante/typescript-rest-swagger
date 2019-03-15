@@ -8,7 +8,7 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
 
 **Table of Contents** 
 
-- [Swagger for Typescript-Rest](#)
+- [Swagger for Typescript-rest](#swagger-for-typescript-rest)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Swagger Decorators](#swagger-decorators)
@@ -17,6 +17,7 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
       - [@Tags](#tags)
       - [@Security](#security)
       - [@Produces](#produces)
+      - [@IsInt, @IsLong, @IsFloat, @IsDouble](#isint-islong-isfloat-isdouble)
     - [SwaggerConfig.json](#swaggerconfigjson)
 
 ## Installation
@@ -29,6 +30,8 @@ npm install typescript-rest-swagger -g
 
 ```bash
 swaggerGen -c ./swaggerConfig.json
+swaggerGen -c ./swaggerConfig.json -t # load {cwd}/tsconfig.json
+swaggerGen -c ./swaggerConfig.json -p ./tsconfig.json # load custom tsconfig.json
 ```
 
 Where the [swaggerConfig.json](#swaggerconfigjson) file, contains settings about the swagger generation. For example:
@@ -41,6 +44,21 @@ Where the [swaggerConfig.json](#swaggerconfigjson) file, contains settings about
     }
 }
 ```
+
+Where the [tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) file contains compilerOptions. For example:
+
+```json
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        }
+    }
+}
+```
+
+For example above options are required for `swaggerGen` to understand relative imports like `import something from '@/something'`.
 
 ### Swagger Decorators
 

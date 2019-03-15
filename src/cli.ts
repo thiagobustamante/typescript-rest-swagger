@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 'use strict';
 
+import { isAbsolute, join } from 'path';
+import * as ts from 'typescript';
 import { ArgumentParser } from 'argparse';
 import { Config, SwaggerConfig } from './config';
 import { MetadataGenerator } from './metadata/metadataGenerator';
@@ -27,11 +29,29 @@ parser.addArgument(
     }
 );
 
+parser.addArgument(
+    ['-t', '--tsconfig'],
+    {
+        action: 'storeTrue',
+        defaultValue: false,
+        help: 'Load tsconfig.json file',
+    }
+);
+
+parser.addArgument(
+    ['-p', '--tsconfig_path'],
+    {
+        help: 'The tsconfig file (tsconfig.json) path. Default to {cwd}/tsconfig.json.',
+    }
+);
+
 const parameters = parser.parseArgs();
 const config = getConfig(parameters.config);
+const compilerOptions = getCompilerOptions(parameters.tsconfig, parameters.tsconfig_path);
 
 const swaggerConfig = validateSwaggerConfig(config.swagger);
-const metadata = new MetadataGenerator(swaggerConfig.entryFile).generate();
+
+const metadata = new MetadataGenerator(swaggerConfig.entryFile, compilerOptions).generate();
 new SpecGenerator(metadata, swaggerConfig).generate(swaggerConfig.outputDirectory, swaggerConfig.yaml)
     .then(() => {
         console.info ('Generation completed.');
@@ -73,4 +93,41 @@ function validateSwaggerConfig(conf: SwaggerConfig): SwaggerConfig {
     conf.yaml = conf.yaml === false ? false : true;
 
     return conf;
+}
+
+function getCompilerOptions(loadTsconfig: boolean, tsconfigPath?: string | null): ts.CompilerOptions {
+    if (!loadTsconfig && tsconfigPath) {
+        loadTsconfig = true;
+    }
+    if (!loadTsconfig) {
+        return {};
+    }
+    const cwd = process.cwd();
+    const defaultTsconfigPath = join(cwd, 'tsconfig.json');
+    tsconfigPath = tsconfigPath
+        ? getAbsolutePath(tsconfigPath, cwd)
+        : defaultTsconfigPath;
+    try {
+        const tsConfig = require(tsconfigPath);
+        if (!tsConfig) {
+            throw new Error('Invalid tsconfig');
+        }
+        return tsConfig.compilerOptions || {};
+    } catch (err) {
+        if (err.code === 'MODULE_NOT_FOUND') {
+            throw Error(`No tsconfig file found at '${tsconfigPath}'`);
+        } else if (err.name === 'SyntaxError') {
+            throw Error(`Invalid JSON syntax in tsconfig at '${tsconfigPath}': ${err.message}`);
+        } else {
+            throw Error(`Unhandled error encountered loading tsconfig '${tsconfigPath}': ${err.message}`);
+        }
+    }
+}
+
+function getAbsolutePath(path: string, basePath: string): string {
+    if (isAbsolute(path)) {
+        return path;
+    } else {
+        return join(basePath, path);
+    }
 }
