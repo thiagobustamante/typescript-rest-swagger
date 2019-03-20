@@ -18,7 +18,7 @@ const licenseDefault = getPackageJsonValue('license');
 
 const parser = new ArgumentParser({
     addHelp: true,
-    description: 'Tree-Gateway Swagger tool',
+    description: 'Typescript-REST Swagger tool',
     version: packageJson.version
 });
 
@@ -54,7 +54,7 @@ const swaggerConfig = validateSwaggerConfig(config.swagger);
 const metadata = new MetadataGenerator(swaggerConfig.entryFile, compilerOptions).generate();
 new SpecGenerator(metadata, swaggerConfig).generate(swaggerConfig.outputDirectory, swaggerConfig.yaml)
     .then(() => {
-        console.info ('Generation completed.');
+        console.info('Generation completed.');
     })
     .catch((err: any) => {
         console.error(`Error generating swagger. ${err}`);
