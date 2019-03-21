@@ -32,9 +32,9 @@ export class ControllerGenerator {
             name: this.node.name.text,
             path: this.pathValue || '',
             produces: this.getDecoratorValues('Produces'),
+            responses: this.getControllerResponses(),
             security: this.getMethodSecurity(),
             tags: this.getDecoratorValues('Tags'),
-            responses: this.getControllerResponses(),
         };
     }
 
