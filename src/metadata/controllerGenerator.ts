@@ -1,9 +1,10 @@
 import * as ts from 'typescript';
-import { Controller } from './metadataGenerator';
-import { getSuperClass } from './resolveType';
+import { Controller, ResponseType } from './metadataGenerator';
+import { getSuperClass, resolveType } from './resolveType';
 import { MethodGenerator } from './methodGenerator';
 import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
-import {normalizePath} from '../utils/pathUtils';
+import { normalizePath } from '../utils/pathUtils';
+import { getExamplesValue } from '../utils/valueUtils';
 import * as _ from 'lodash';
 
 export class ControllerGenerator {
@@ -32,7 +33,8 @@ export class ControllerGenerator {
             path: this.pathValue || '',
             produces: this.getDecoratorValues('Produces'),
             security: this.getMethodSecurity(),
-            tags: this.getDecoratorValues('Tags')
+            tags: this.getDecoratorValues('Tags'),
+            responses: this.getControllerResponses(),
         };
     }
 
@@ -62,6 +64,36 @@ export class ControllerGenerator {
                 return false;
             })
             .map(generator => generator.generate());
+    }
+
+    private getControllerResponses(): ResponseType[] {
+        const decorators = getDecorators(this.node, decorator => decorator.text === 'Response');
+        if (!decorators || !decorators.length) { return []; }
+
+        return decorators.map(decorator => {
+            let description = '';
+            let status = '200';
+            let examples = undefined;
+            if (decorator.arguments.length > 0 && decorator.arguments[0]) {
+                status = decorator.arguments[0];
+            }
+            if (decorator.arguments.length > 1 && decorator.arguments[1]) {
+                description = decorator.arguments[1] as any;
+            }
+            if (decorator.arguments.length > 2 && decorator.arguments[2]) {
+                const argument = decorator.arguments[2] as any;
+                examples = getExamplesValue(argument);
+            }
+
+            return {
+                description: description,
+                examples: examples,
+                schema: (decorator.typeArguments && decorator.typeArguments.length > 0)
+                    ? resolveType(decorator.typeArguments[0])
+                    : undefined,
+                status: status
+            };
+        });
     }
 
     private getDecoratorValues(decoratorName: string) {

@@ -29,7 +29,7 @@ export class SpecGenerator {
                             reject(err);
                         }
                         if (yaml) {
-                            fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec ,1000), (errYaml: any) => {
+                            fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec, 1000), (errYaml: any) => {
                                 if (errYaml) {
                                     reject(errYaml);
                                 }
@@ -104,6 +104,7 @@ export class SpecGenerator {
                 method.produces = _.union(controller.produces, method.produces);
                 method.tags = _.union(controller.tags, method.tags);
                 method.security = method.security || controller.security;
+                method.responses = _.union(controller.responses, method.responses);
 
                 this.buildPathMethod(controller.name, method, paths[path]);
             });
@@ -115,7 +116,7 @@ export class SpecGenerator {
     private buildPathMethod(controllerName: string, method: Method, pathObject: any) {
         const pathMethod: any = pathObject[method.method] = this.buildOperation(controllerName, method);
         pathMethod.description = method.description;
-        if(method.summary) {
+        if (method.summary) {
             pathMethod.summary = method.summary;
         }
 
@@ -324,7 +325,7 @@ export class SpecGenerator {
             binary: { type: 'string', format: 'binary' },
             boolean: { type: 'boolean' },
             buffer: { type: 'file' },
-//            buffer: { type: 'string', format: 'base64' },
+            //            buffer: { type: 'string', format: 'base64' },
             byte: { type: 'string', format: 'byte' },
             date: { type: 'string', format: 'date' },
             datetime: { type: 'string', format: 'date-time' },

@@ -95,6 +95,7 @@ export interface Controller {
     produces: string[];
     tags: string[];
     security?: Security[];
+    responses: ResponseType[];
 }
 
 export interface Method {
