@@ -398,3 +398,21 @@ export class SuperSecureEndpoint {
         return 'Access Granted';
     }
 }
+
+@Path('response')
+@swagger.Response<string>(400, 'The request format was incorrect.')
+@swagger.Response<string>(500, 'There was an unexpected error.')
+export class ResponseController {
+    @GET
+    get(): string {
+        return '42';
+    }
+
+    @swagger.Response<string>(401, 'Unauthorized.')
+    @swagger.Response<string>(502, 'Internal server error.')
+    @GET
+    @Path('/test')
+    test(): string {
+        return 'OK';
+    }
+}
