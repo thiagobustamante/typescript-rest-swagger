@@ -112,7 +112,9 @@ function getCompilerOptions(loadTsconfig: boolean, tsconfigPath?: string | null)
         if (!tsConfig) {
             throw new Error('Invalid tsconfig');
         }
-        return tsConfig.compilerOptions || {};
+        return tsConfig.compilerOptions
+            ? ts.convertCompilerOptionsFromJson(tsConfig.compilerOptions, cwd).options
+            : {};
     } catch (err) {
         if (err.code === 'MODULE_NOT_FOUND') {
             throw Error(`No tsconfig file found at '${tsconfigPath}'`);
