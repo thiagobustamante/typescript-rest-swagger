@@ -1,19 +1,19 @@
+import * as fs from 'fs';
+import * as _ from 'lodash';
+import * as mkdirp from 'mkdirp';
+import * as pathUtil from 'path';
+import * as YAML from 'yamljs';
 import { SwaggerConfig } from '../config';
 import {
-    Metadata, Type, ArrayType, ObjectType, ReferenceType, EnumerateType,
-    Property, Method, Parameter, ResponseType
+    ArrayType, EnumerateType, Metadata, Method, ObjectType, Parameter,
+    Property, ReferenceType, ResponseType, Type
 } from '../metadata/metadataGenerator';
 import { Swagger } from './swagger';
-import * as fs from 'fs';
-import * as mkdirp from 'mkdirp';
-import * as YAML from 'yamljs';
-import * as pathUtil from 'path';
-import * as _ from 'lodash';
 
 export class SpecGenerator {
     constructor(private readonly metadata: Metadata, private readonly config: SwaggerConfig) { }
 
-    public generate(swaggerDirs: string | string[], yaml: boolean): Promise<void> {
+    public generate(swaggerDirs: string | Array<string>, yaml: boolean): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             if (!_.isArray(swaggerDirs)) {
                 swaggerDirs = [swaggerDirs];
@@ -214,7 +214,7 @@ export class SpecGenerator {
         return swaggerParameter;
     }
 
-    private buildProperties(properties: Property[]) {
+    private buildProperties(properties: Array<Property>) {
         const swaggerProperties: { [propertyName: string]: Swagger.Schema } = {};
 
         properties.forEach(property => {
@@ -228,7 +228,7 @@ export class SpecGenerator {
         return swaggerProperties;
     }
 
-    private buildAdditionalProperties(properties: Property[]) {
+    private buildAdditionalProperties(properties: Array<Property>) {
         const swaggerAdditionalProperties: { [ref: string]: string } = {};
 
         properties.forEach(property => {

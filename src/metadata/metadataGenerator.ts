@@ -82,19 +82,19 @@ export class MetadataGenerator {
 }
 
 export interface Metadata {
-    controllers: Controller[];
+    controllers: Array<Controller>;
     referenceTypes: { [typeName: string]: ReferenceType };
 }
 
 export interface Controller {
     location: string;
-    methods: Method[];
+    methods: Array<Method>;
     name: string;
     path: string;
-    consumes: string[];
-    produces: string[];
-    tags: string[];
-    security?: Security[];
+    consumes: Array<string>;
+    produces: Array<string>;
+    tags: Array<string>;
+    security?: Array<Security>;
 }
 
 export interface Method {
@@ -102,15 +102,15 @@ export interface Method {
     description: string;
     method: string;
     name: string;
-    parameters: Parameter[];
+    parameters: Array<Parameter>;
     path: string;
     type: Type;
-    tags: string[];
-    responses: ResponseType[];
-    security?: Security[];
+    tags: Array<string>;
+    responses: Array<ResponseType>;
+    security?: Array<Security>;
     summary?: string;
-    consumes: string[];
-    produces: string[];
+    consumes: Array<string>;
+    produces: Array<string>;
 }
 
 export interface Parameter {
@@ -129,7 +129,7 @@ export interface Parameter {
 
 export interface Security {
     name: string;
-    scopes?: string[];
+    scopes?: Array<string>;
 }
 
 export interface Type {
@@ -138,17 +138,17 @@ export interface Type {
 }
 
 export interface EnumerateType extends Type {
-    enumMembers: string[];
+    enumMembers: Array<string>;
 }
 
 export interface ReferenceType extends Type {
     description: string;
-    properties: Property[];
-    additionalProperties?: Property[];
+    properties: Array<Property>;
+    additionalProperties?: Array<Property>;
 }
 
 export interface ObjectType extends Type {
-    properties: Property[];
+    properties: Array<Property>;
 }
 
 export interface ArrayType extends Type {

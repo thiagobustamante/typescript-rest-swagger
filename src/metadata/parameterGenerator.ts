@@ -1,7 +1,7 @@
-import { MetadataGenerator, Parameter, Type } from './metadataGenerator';
-import { resolveType, getCommonPrimitiveAndArrayUnionType, getLiteralValue } from './resolveType';
-import { getDecoratorName, getDecoratorTextValue, getDecoratorOptions } from '../utils/decoratorUtils';
 import * as ts from 'typescript';
+import { getDecoratorName, getDecoratorOptions, getDecoratorTextValue } from '../utils/decoratorUtils';
+import { MetadataGenerator, Parameter, Type } from './metadataGenerator';
+import { getCommonPrimitiveAndArrayUnionType, getLiteralValue, resolveType } from './resolveType';
 
 export class ParameterGenerator {
     constructor(
@@ -60,7 +60,7 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'param',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'Param') || parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken,
             type: type
         };
@@ -73,7 +73,7 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'context',
             name: parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken,
             type: {typeName: ''}
         };
@@ -90,7 +90,7 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'formData',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FileParam') || parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken,
             type: { typeName: 'file' }
         };
@@ -107,7 +107,7 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'formData',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FilesParam') || parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken,
             type: { typeName: 'file' }
         };
@@ -125,7 +125,7 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'formData',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FormParam') || parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken && !parameter.initializer,
             type: type
         };
@@ -143,7 +143,7 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'cookie',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'CookieParam') || parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken && !parameter.initializer,
             type: {typeName: ''}
         };
@@ -161,9 +161,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'body',
             name: parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken && !parameter.initializer,
-            type
+            type: type
         };
     }
 
@@ -179,9 +179,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'header',
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'HeaderParam') || parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken && !parameter.initializer,
-            type
+            type: type
         };
     }
 
@@ -208,9 +208,9 @@ export class ParameterGenerator {
             // maxItems: parameterOptions.maxItems,
             // minItems: parameterOptions.minItems,
             name: getDecoratorTextValue(this.parameter, ident => ident.text === 'QueryParam') || parameterName,
-            parameterName,
+            parameterName: parameterName,
             required: !parameter.questionToken && !parameter.initializer,
-            type
+            type: type
         };
     }
 
@@ -230,9 +230,9 @@ export class ParameterGenerator {
             description: this.getParameterDescription(parameter),
             in: 'path',
             name: pathName,
-            parameterName,
+            parameterName: parameterName,
             required: true,
-            type
+            type: type
         };
     }
 

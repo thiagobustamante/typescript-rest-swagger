@@ -1,9 +1,9 @@
+import * as chai from 'chai';
 import 'mocha';
 import { MetadataGenerator } from '../../src/metadata/metadataGenerator';
 // import {Swagger} from '../../src/swagger/swagger';
 import { SpecGenerator } from '../../src/swagger/generator';
 import { getDefaultOptions } from '../data/defaultOptions';
-import * as chai from 'chai';
 
 const expect = chai.expect;
 const jsonata = require('jsonata');
@@ -219,7 +219,7 @@ describe('Definition generation', () => {
           a: { type: 'string', description: '' },
           b: { type: 'number', format: 'double', description: '' }
         },
-        required: [ 'a', 'b' ],
+        required: ['a', 'b'],
         type: 'object',
       });
       expect(spec.paths).to.have.property('/mypath/test-compiler-options');
@@ -314,6 +314,8 @@ describe('Definition generation', () => {
       let expression = jsonata('definitions.ResponseBodystringArray');
       // tslint:disable-next-line:no-unused-expression
       expect(expression.evaluate(spec)).to.not.be.undefined;
+      expression = jsonata('paths."/primitives/arrayNative".get.responses."200".schema."$ref"');
+      expect(expression.evaluate(spec)).to.equal('#/definitions/ResponseBodystringArray');
       expression = jsonata('paths."/primitives/array".get.responses."200".schema."$ref"');
       expect(expression.evaluate(spec)).to.equal('#/definitions/ResponseBodystringArray');
     });
@@ -341,19 +343,19 @@ describe('Definition generation', () => {
   describe('SecureEndpoint', () => {
     it('should apply controller security to request', () => {
       const expression = jsonata('paths."/secure".get.security');
-      expect(expression.evaluate(spec)).to.deep.equal([ { 'access_token': [] } ]);
+      expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': [] }]);
     });
 
     it('method security should override controller security', () => {
       const expression = jsonata('paths."/secure".post.security');
-      expect(expression.evaluate(spec)).to.deep.equal([ { 'user_email': [] } ]);
+      expect(expression.evaluate(spec)).to.deep.equal([{ 'user_email': [] }]);
     });
   });
 
   describe('SuperSecureEndpoint', () => {
     it('should apply two controller securities to request', () => {
       const expression = jsonata('paths."/supersecure".get.security');
-      expect(expression.evaluate(spec)).to.deep.equal([ { 'access_token': [] }, { 'user_email': [] } ]);
+      expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': [] }, { 'user_email': [] }]);
     });
   });
 });

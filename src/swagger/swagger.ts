@@ -146,7 +146,7 @@ export namespace Swagger {
         xml?: XML;
         externalDocs?: ExternalDocs;
         example?: { [exampleName: string]: Example };
-        required?: string[];
+        required?: Array<string>;
     }
 
     export interface XML {

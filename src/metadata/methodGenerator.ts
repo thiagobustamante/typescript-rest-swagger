@@ -1,11 +1,11 @@
-import * as ts from 'typescript';
-import { Method, ResponseData, ResponseType, Type } from './metadataGenerator';
-import { resolveType } from './resolveType';
-import { ParameterGenerator } from './parameterGenerator';
-import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
-import { getDecorators } from '../utils/decoratorUtils';
-import { normalizePath } from '../utils/pathUtils';
 import * as pathUtil from 'path';
+import * as ts from 'typescript';
+import { getDecorators } from '../utils/decoratorUtils';
+import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
+import { normalizePath } from '../utils/pathUtils';
+import { Method, ResponseData, ResponseType, Type } from './metadataGenerator';
+import { ParameterGenerator } from './parameterGenerator';
+import { resolveType } from './resolveType';
 
 export class MethodGenerator {
     private method: string;
@@ -42,11 +42,11 @@ export class MethodGenerator {
             parameters: this.buildParameters(),
             path: this.path,
             produces: this.getDecoratorValues('Produces'),
-            responses,
+            responses: responses,
             security: this.getMethodSecurity(),
             summary: getJSDocTag(this.node, 'summary'),
             tags: this.getDecoratorValues('Tags'),
-            type
+            type: type
         };
     }
 
@@ -106,14 +106,14 @@ export class MethodGenerator {
         }
     }
 
-    private getMethodResponses(): ResponseType[] {
+    private getMethodResponses(): Array<ResponseType> {
         const decorators = getDecorators(this.node, decorator => decorator.text === 'Response');
         if (!decorators || !decorators.length) { return []; }
 
         return decorators.map(decorator => {
             let description = '';
             let status = '200';
-            let examples = undefined;
+            let examples;
             if (decorator.arguments.length > 0 && decorator.arguments[0]) {
                 status = decorator.arguments[0];
             }

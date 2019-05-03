@@ -1,10 +1,10 @@
+import * as _ from 'lodash';
 import * as ts from 'typescript';
-import { Controller } from './metadataGenerator';
-import { getSuperClass } from './resolveType';
-import { MethodGenerator } from './methodGenerator';
 import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
 import {normalizePath} from '../utils/pathUtils';
-import * as _ from 'lodash';
+import { Controller } from './metadataGenerator';
+import { MethodGenerator } from './methodGenerator';
+import { getSuperClass } from './resolveType';
 
 export class ControllerGenerator {
     private readonly pathValue: string | undefined;
@@ -37,7 +37,7 @@ export class ControllerGenerator {
     }
 
     private buildMethods() {
-        let result: any[] = [];
+        let result: Array<any> = [];
         let targetClass: any = {
             type: this.node,
             typeArguments: null

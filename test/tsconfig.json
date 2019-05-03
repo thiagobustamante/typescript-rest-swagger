@@ -15,12 +15,11 @@
         "noImplicitThis": false,
         "noUnusedParameters": false,
         "noUnusedLocals": true,
-        "outDir": "dist",
         "sourceMap": true,
         "strictNullChecks": false,
         "target": "es5"
     },
     "include": [
-        "src/**/*.ts"
+        "**/*.ts"
     ]
 }
