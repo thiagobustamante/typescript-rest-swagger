@@ -1,6 +1,6 @@
 {
   "name": "typescript-rest-swagger",
-  "version": "0.0.26",
+  "version": "0.1.0",
   "description": "Generate Swagger files from a typescript-rest project",
   "keywords": [
     "typescript",
@@ -55,7 +55,7 @@
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
     "typescript": "^2.9.1",
-    "typescript-rest": "^1.5.3",
+    "typescript-rest": "^2.0.0",
     "yamljs": "^0.2.10"
   },
   "devDependencies": {
@@ -66,12 +66,11 @@
     "@types/mocha": "^2.2.48",
     "@types/yamljs": "^0.2.30",
     "chai": "4.2.0",
-    "coveralls": "^3.0.1",
+    "coveralls": "^3.0.3",
     "cross-env": "^4.0.0",
-    "istanbul": "^0.4.5",
     "jsonata": "^1.5.4",
     "mocha": "^5.2.0",
-    "nyc": "^13.3.0",
+    "nyc": "^14.1.0",
     "rimraf": "^2.6.1",
     "source-map-support": "^0.4.14",
     "ts-node": "^3.3.0",
