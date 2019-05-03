@@ -191,19 +191,17 @@ export class SpecGenerator {
         };
 
         const parameterType = this.getSwaggerType(parameter.type);
-        if (parameterType.$ref) {
+        if (parameterType.$ref || parameter.in === 'body') {
             swaggerParameter.schema = parameterType;
-        } else if (parameter.in === 'body') {
-            swaggerParameter.schema = { type: parameterType.type };
         } else {
             swaggerParameter.type = parameterType.type;
-        }
 
-        if (parameterType.items) {
-            swaggerParameter.items = parameterType.items;
+            if (parameterType.items) {
+                swaggerParameter.items = parameterType.items;
 
-            if (parameter.collectionFormat || this.config.collectionFormat) {
-                swaggerParameter.collectionFormat = parameter.collectionFormat || this.config.collectionFormat;
+                if (parameter.collectionFormat || this.config.collectionFormat) {
+                    swaggerParameter.collectionFormat = parameter.collectionFormat || this.config.collectionFormat;
+                }
             }
         }
 
