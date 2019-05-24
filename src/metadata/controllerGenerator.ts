@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import { Controller } from './metadataGenerator';
 import { getSuperClass } from './resolveType';
 import { MethodGenerator } from './methodGenerator';
-import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
+import {getDecorators, getDecoratorTextValue, parseSecurityDecoratorArguments} from '../utils/decoratorUtils';
 import {normalizePath} from '../utils/pathUtils';
 import * as _ from 'lodash';
 
@@ -79,15 +79,18 @@ export class ControllerGenerator {
     }
 
     private getMethodSecurity() {
-        if (!this.node.parent) { throw new Error('Controller node doesn\'t have a valid parent source file.'); }
-        if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
+        if (!this.node.parent) {
+            throw new Error('Controller node doesn\'t have a valid parent source file.');
+        }
+        if (!this.node.name) {
+            throw new Error('Controller node doesn\'t have a valid name.');
+        }
 
         const securityDecorators = getDecorators(this.node, decorator => decorator.text === 'Security');
-        if (!securityDecorators || !securityDecorators.length) { return undefined; }
+        if (!securityDecorators || !securityDecorators.length) {
+            return undefined;
+        }
 
-        return securityDecorators.map(d => ({
-            name: d.arguments[0],
-            scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
-        }));
+        return securityDecorators.map(parseSecurityDecoratorArguments);
     }
 }

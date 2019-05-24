@@ -123,7 +123,7 @@ export class SpecGenerator {
         if (method.tags.length) { pathMethod.tags = method.tags; }
         if (method.security) {
             pathMethod.security = method.security.map(s => ({
-                [s.name]: s.scopes || []
+                [s.name || 'undefined']: s.scopes || []
             }));
         }
         this.handleMethodConsumes(method, pathMethod);

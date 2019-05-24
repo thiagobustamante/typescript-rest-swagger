@@ -1,10 +1,10 @@
 import * as ts from 'typescript';
-import { Method, ResponseData, ResponseType, Type } from './metadataGenerator';
-import { resolveType } from './resolveType';
-import { ParameterGenerator } from './parameterGenerator';
-import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
-import { getDecorators } from '../utils/decoratorUtils';
-import { normalizePath } from '../utils/pathUtils';
+import {Method, ResponseData, ResponseType, Type} from './metadataGenerator';
+import {resolveType} from './resolveType';
+import {ParameterGenerator} from './parameterGenerator';
+import {getJSDocDescription, getJSDocTag, isExistJSDocTag} from '../utils/jsDocUtils';
+import {getDecorators, parseSecurityDecoratorArguments} from '../utils/decoratorUtils';
+import {normalizePath} from '../utils/pathUtils';
 import * as pathUtil from 'path';
 
 export class MethodGenerator {
@@ -27,7 +27,9 @@ export class MethodGenerator {
     }
 
     public generate(): Method {
-        if (!this.isValid()) { throw new Error('This isn\'t a valid controller method.'); }
+        if (!this.isValid()) {
+            throw new Error('This isn\'t a valid controller method.');
+        }
 
         const identifier = this.node.name as ts.Identifier;
         const type = resolveType(this.node.type, this.genericTypeMap);
@@ -85,7 +87,9 @@ export class MethodGenerator {
     private processMethodDecorators() {
         const httpMethodDecorators = getDecorators(this.node, decorator => this.supportsPathMethod(decorator.text));
 
-        if (!httpMethodDecorators || !httpMethodDecorators.length) { return; }
+        if (!httpMethodDecorators || !httpMethodDecorators.length) {
+            return;
+        }
         if (httpMethodDecorators.length > 1) {
             throw new Error(`Only one HTTP Method decorator in '${this.getCurrentLocation}' method is acceptable, Found: ${httpMethodDecorators.map(d => d.text).join(', ')}`);
         }
@@ -108,7 +112,9 @@ export class MethodGenerator {
 
     private getMethodResponses(): ResponseType[] {
         const decorators = getDecorators(this.node, decorator => decorator.text === 'Response');
-        if (!decorators || !decorators.length) { return []; }
+        if (!decorators || !decorators.length) {
+            return [];
+        }
 
         return decorators.map(decorator => {
             let description = '';
@@ -148,20 +154,29 @@ export class MethodGenerator {
 
     private getMethodSuccessResponseData(type: Type): ResponseData {
         switch (type.typeName) {
-            case 'void': return { status: '204', type: type };
-            case 'NewResource': return { status: '201', type: type.typeArgument || type };
-            case 'RequestAccepted': return { status: '202', type: type.typeArgument || type };
-            case 'MovedPermanently': return { status: '301', type: type.typeArgument || type };
-            case 'MovedTemporarily': return { status: '302', type: type.typeArgument || type };
+            case 'void':
+                return {status: '204', type: type};
+            case 'NewResource':
+                return {status: '201', type: type.typeArgument || type};
+            case 'RequestAccepted':
+                return {status: '202', type: type.typeArgument || type};
+            case 'MovedPermanently':
+                return {status: '301', type: type.typeArgument || type};
+            case 'MovedTemporarily':
+                return {status: '302', type: type.typeArgument || type};
             case 'DownloadResource':
-            case 'DownloadBinaryData': return { status: '200', type: { typeName: 'buffer' } };
-            default: return { status: '200', type: type };
+            case 'DownloadBinaryData':
+                return {status: '200', type: {typeName: 'buffer'}};
+            default:
+                return {status: '200', type: type};
         }
     }
 
     private getMethodSuccessExamples() {
         const exampleDecorators = getDecorators(this.node, decorator => decorator.text === 'Example');
-        if (!exampleDecorators || !exampleDecorators.length) { return undefined; }
+        if (!exampleDecorators || !exampleDecorators.length) {
+            return undefined;
+        }
         if (exampleDecorators.length > 1) {
             throw new Error(`Only one Example decorator allowed in '${this.getCurrentLocation}' method.`);
         }
@@ -207,7 +222,9 @@ export class MethodGenerator {
 
     private getDecoratorValues(decoratorName: string) {
         const tagsDecorators = getDecorators(this.node, decorator => decorator.text === decoratorName);
-        if (!tagsDecorators || !tagsDecorators.length) { return []; }
+        if (!tagsDecorators || !tagsDecorators.length) {
+            return [];
+        }
         if (tagsDecorators.length > 1) {
             throw new Error(`Only one ${decoratorName} decorator allowed in '${this.getCurrentLocation}' method.`);
         }
@@ -218,12 +235,11 @@ export class MethodGenerator {
 
     private getMethodSecurity() {
         const securityDecorators = getDecorators(this.node, decorator => decorator.text === 'Security');
-        if (!securityDecorators || !securityDecorators.length) { return undefined; }
+        if (!securityDecorators || !securityDecorators.length) {
+            return undefined;
+        }
 
-        return securityDecorators.map(d => ({
-            name: d.arguments[0],
-            scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
-        }));
+        return securityDecorators.map(parseSecurityDecoratorArguments);
     }
 
     private getInitializerValue(initializer: any) {

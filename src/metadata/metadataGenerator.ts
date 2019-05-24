@@ -128,7 +128,7 @@ export interface Parameter {
 }
 
 export interface Security {
-    name: string;
+    name?: string;
     scopes?: string[];
 }
 
