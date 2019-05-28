@@ -136,12 +136,12 @@ export class SpecGenerator {
                     if (securityDecoratorInfo.name) {
                         const securityDefinition = this.config.securityDefinitions && this.config.securityDefinitions[securityDecoratorInfo.name];
                         if (!securityDefinition) {
-                            throw new Error(`No such securityDefinition '${securityDecoratorInfo.name}' named on method '${controllerName}.${method.method}'`);
+                            throw new Error(`Unknown securityDefinition '${securityDecoratorInfo.name}' used on method '${controllerName}.${method.method}'`);
                         }
                         // the scopes specified in the securityDecoratorInfo must align with those named in securityDefinitions
                         const missingScopes = _.difference(securityDecoratorInfo.scopes || [], Object.keys(securityDefinition.scopes || {}));
                         if (missingScopes.length > 0) {
-                            throw new Error(`The securityDefinition '${securityDecoratorInfo.name}' named on method '${controllerName}.${method.method}' is missing specified scope(s): '${missingScopes.join(',')}'`);
+                            throw new Error(`The securityDefinition '${securityDecoratorInfo.name}' used on method '${controllerName}.${method.method}' is missing specified scope(s): '${missingScopes.join(',')}'`);
                         }
                         pathMethod.security.push({[securityDecoratorInfo.name]: securityDecoratorInfo.scopes});
 
@@ -180,7 +180,7 @@ export class SpecGenerator {
                         } else if (remainingScopes === requiredScopes) {
                             // if remainingScopes has not been reassigned, this means there were no securityDefinitions defined
                             // TODO: confirm this logic stands up - assumption might be wrong if _.difference returns the original input at any point
-                            throw new Error('The securityDefinitions in swagger.config.json are empty, but one or more @Security decorators are present.');
+                            throw new Error('There are no securityDefinitions in swagger.config.json, but one or more @Security decorators have been used.');
                         }
                     }
                 }
