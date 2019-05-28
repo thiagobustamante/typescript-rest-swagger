@@ -1,10 +1,10 @@
 import * as ts from 'typescript';
-import {Method, ResponseData, ResponseType, Type} from './metadataGenerator';
-import {resolveType} from './resolveType';
-import {ParameterGenerator} from './parameterGenerator';
-import {getJSDocDescription, getJSDocTag, isExistJSDocTag} from '../utils/jsDocUtils';
-import {getDecorators, parseSecurityDecoratorArguments} from '../utils/decoratorUtils';
-import {normalizePath} from '../utils/pathUtils';
+import { Method, ResponseData, ResponseType, Type } from './metadataGenerator';
+import { resolveType } from './resolveType';
+import { ParameterGenerator } from './parameterGenerator';
+import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
+import { getDecorators, parseSecurityDecoratorArguments } from '../utils/decoratorUtils';
+import { normalizePath } from '../utils/pathUtils';
 import * as pathUtil from 'path';
 
 export class MethodGenerator {

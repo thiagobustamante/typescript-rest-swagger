@@ -2,7 +2,7 @@ import * as ts from 'typescript';
 import { Controller } from './metadataGenerator';
 import { getSuperClass } from './resolveType';
 import { MethodGenerator } from './methodGenerator';
-import {getDecorators, getDecoratorTextValue, parseSecurityDecoratorArguments} from '../utils/decoratorUtils';
+import { getDecorators, getDecoratorTextValue, parseSecurityDecoratorArguments } from '../utils/decoratorUtils';
 import {normalizePath} from '../utils/pathUtils';
 import * as _ from 'lodash';
 
