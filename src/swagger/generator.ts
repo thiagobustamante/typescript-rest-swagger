@@ -179,7 +179,6 @@ export class SpecGenerator {
                             throw new Error(`The security decorator on method '${controllerName}.${method.method}' could not find a match for the following scope(s): '${remainingScopes.join(',')}'`);
                         } else if (remainingScopes === requiredScopes) {
                             // if remainingScopes has not been reassigned, this means there were no securityDefinitions defined
-                            // TODO: confirm this logic stands up - assumption might be wrong if _.difference returns the original input at any point
                             throw new Error('There are no securityDefinitions in swagger.config.json, but one or more @Security decorators have been used.');
                         }
                     }
