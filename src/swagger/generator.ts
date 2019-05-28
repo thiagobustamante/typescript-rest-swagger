@@ -122,12 +122,6 @@ export class SpecGenerator {
         if (method.deprecated) { pathMethod.deprecated = method.deprecated; }
         if (method.tags.length) { pathMethod.tags = method.tags; }
         if (method.security) {
-
-            // console.log('CONFIG:', this.config.securityDefinitions);
-            // pathMethod.security = method.security.map(s => ({
-            //     [s.name || 'NOTFOUND']: s.scopes || []
-            // }));
-
             // prepare an empty array for the pathMethod security fields
             pathMethod.security = [];
 
