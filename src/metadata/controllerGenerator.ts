@@ -79,17 +79,11 @@ export class ControllerGenerator {
     }
 
     private getMethodSecurity() {
-        if (!this.node.parent) {
-            throw new Error('Controller node doesn\'t have a valid parent source file.');
-        }
-        if (!this.node.name) {
-            throw new Error('Controller node doesn\'t have a valid name.');
-        }
+        if (!this.node.parent) { throw new Error('Controller node doesn\'t have a valid parent source file.'); }
+        if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
 
         const securityDecorators = getDecorators(this.node, decorator => decorator.text === 'Security');
-        if (!securityDecorators || !securityDecorators.length) {
-            return undefined;
-        }
+        if (!securityDecorators || !securityDecorators.length) { return undefined; }
 
         return securityDecorators.map(parseSecurityDecoratorArguments);
     }
