@@ -67,11 +67,20 @@ export function Tags(...values: string[]): any {
 }
 
 /**
- * Add a security constraint to method generated docs.
- * @param {name} security name from securityDefinitions
- * @param {scopes} security scopes from securityDefinitions
+ * Add a security constraint to method generated docs. All securityDefinitions containing the required scopes will be included.
+ * Scopes is optional, if omitted all defined securityDefinitions will be included, implying that any security type
+ * with any scope will suffice.
+ * @summary Add a security constraint to method generated docs.
+ * @param scopes security scopes from securityDefinitions
  */
-export function Security(name: string, scopes?: string[]): any {
+export function Security( scopes?: Array<string> | string): any;
+/**
+ * Add a security constraint to method generated docs.  Specific to the named securityDefinition.
+ * @summary Add a security constraint to method generated docs.
+ * @param name security name from securityDefinitions
+ * @param scopes security scopes from securityDefinitions
+ */
+export function Security( name: string, scopes?: Array<string> | string ): any {
   return () => { return; };
 }
 
