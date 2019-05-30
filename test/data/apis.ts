@@ -375,7 +375,7 @@ export class AbstractEntityEndpoint {
 }
 
 @Path('secure')
-@swagger.Security('access_token')
+@swagger.Security('access_token',[])
 export class SecureEndpoint {
     @GET
     get(): string {
@@ -383,15 +383,15 @@ export class SecureEndpoint {
     }
 
     @POST
-    @swagger.Security('user_email')
+    @swagger.Security('user_email',[])
     post(): string {
         return 'Posted';
     }
 }
 
 @Path('supersecure')
-@swagger.Security('access_token')
-@swagger.Security('user_email')
+@swagger.Security('access_token',[])
+@swagger.Security('user_email',[])
 export class SuperSecureEndpoint {
     @GET
     get(): string {

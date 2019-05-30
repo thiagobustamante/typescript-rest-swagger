@@ -165,17 +165,34 @@ class PeopleService {
 
 #### @Security
 
-Add a security constraint to method generated docs, referencing the security name from securityDefinitions.
+Add a security constraint to generated method docs, referencing the security name and any scopes (or, roles) from securityDefinitions.
+
 `@Security` can be used at the controller and method level; if defined on both, method security overwrites controller security.
 Multiple security schemes may be specified to require all of them.
 
+When used with a single parameter, this will be interpreted as the scopes, which can be a string or an array.  With two parameters, the first parameter should be the name of a securityDefinition defined in swagger.config.json. The second parameter is the scopes, which can be a string or an array of strings.
+
+Note that where multiple scopes are specified, this implies that any one of those scopes will grant access.
+
 ```typescript
-@Path('people')
-class PeopleService {
-  @Security('api_key')
+@Path('secure')
+class SecureService {
+  @Security('basic_auth', [])
   @GET
-  getPeople(@Param('name') name: string) {
-     // ...
+  getBasicAuthContent(@Param('id') id: string) {
+     // this method is only accessible by those authenticated with valid credentials for the basic_auth securityDefinition
+  }
+  
+  @Security('read_profile')
+  @GET
+  getProfile(@Param('id') id: string) {
+     // this method is only accessible by those authenticated with valid credentials with a grant for 'read_profile' for any securityDefinition containing the 'read_profile' scope
+  }
+  
+  @Security('oauth',['read_profile'])
+  @GET
+  getOauthSpecificProfile(@Param('id') id: string) {
+     // this method is only accessible by those authenticated with valid credentials for the oauth securityDefinition with a grant for the 'read_profile' scope
   }
 }
 ```

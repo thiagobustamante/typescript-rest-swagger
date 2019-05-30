@@ -3,7 +3,7 @@ import { Method, ResponseData, ResponseType, Type } from './metadataGenerator';
 import { resolveType } from './resolveType';
 import { ParameterGenerator } from './parameterGenerator';
 import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
-import { getDecorators } from '../utils/decoratorUtils';
+import { getDecorators, parseSecurityDecoratorArguments } from '../utils/decoratorUtils';
 import { normalizePath } from '../utils/pathUtils';
 import * as pathUtil from 'path';
 
@@ -220,10 +220,7 @@ export class MethodGenerator {
         const securityDecorators = getDecorators(this.node, decorator => decorator.text === 'Security');
         if (!securityDecorators || !securityDecorators.length) { return undefined; }
 
-        return securityDecorators.map(d => ({
-            name: d.arguments[0],
-            scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
-        }));
+        return securityDecorators.map(parseSecurityDecoratorArguments);
     }
 
     private getInitializerValue(initializer: any) {

@@ -68,10 +68,15 @@ export function Tags(...values: string[]): any {
 
 /**
  * Add a security constraint to method generated docs.
- * @param {name} security name from securityDefinitions
- * @param {scopes} security scopes from securityDefinitions
+ * Name is optional, if omitted all securityDefinitions containing the specified scopes will be included. Otherwise, specific to the named securityDefinition.
+ * Scopes is optional, if omitted all defined securityDefinitions will be included, implying that any security type
+ * with any scope will suffice.
+ * NOTE: When supplying only one parameter, it will be interpreted as scopes.  This is for typescript-rest compatibility.
+ * @summary Add a security constraint to method generated docs.
+ * @param name security name from securityDefinitions
+ * @param scopes security scopes from securityDefinitions
  */
-export function Security(name: string, scopes?: string[]): any {
+export function Security( name?: string, scopes?: Array<string> | string ): any {
   return () => { return; };
 }
 

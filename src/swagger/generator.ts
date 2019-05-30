@@ -122,9 +122,57 @@ export class SpecGenerator {
         if (method.deprecated) { pathMethod.deprecated = method.deprecated; }
         if (method.tags.length) { pathMethod.tags = method.tags; }
         if (method.security) {
-            pathMethod.security = method.security.map(s => ({
-                [s.name]: s.scopes || []
-            }));
+            // prepare an empty array for the pathMethod security fields
+            pathMethod.security = [];
+
+            // process each security decorator in turn
+            method.security.forEach(securityDecoratorInfo => {
+                    if (securityDecoratorInfo.name) {
+                        const securityDefinition = this.config.securityDefinitions && this.config.securityDefinitions[securityDecoratorInfo.name];
+                        if (!securityDefinition) {
+                            throw new Error(`Unknown securityDefinition '${securityDecoratorInfo.name}' used on method '${controllerName}.${method.method}'`);
+                        }
+                        // the scopes specified in the securityDecoratorInfo must align with those named in securityDefinitions
+                        const missingScopes = _.difference(securityDecoratorInfo.scopes || [], Object.keys(securityDefinition.scopes || {}));
+                        if (missingScopes.length > 0) {
+                            throw new Error(`The securityDefinition '${securityDecoratorInfo.name}' used on method '${controllerName}.${method.method}' is missing specified scope(s): '${missingScopes.join(',')}'`);
+                        }
+                        pathMethod.security.push({[securityDecoratorInfo.name]: securityDecoratorInfo.scopes || []});
+
+                    } else {
+                        // when no name was specified, we need to find all those securityDefinitions whose scopes contain our specified scopes
+                        const requiredScopes = securityDecoratorInfo.scopes || [];
+                        let remainingScopes = requiredScopes;
+
+                        // iterate over securityDefinitions, adding all with matching scopes
+                        if (this.config.securityDefinitions) {
+                            for (const securityDefinitionName in this.config.securityDefinitions) {
+                                const securityDefinition = this.config.securityDefinitions[securityDefinitionName];
+                                const availableScopes = Object.keys(securityDefinition.scopes || {});
+
+                                // find all scopes in the current security definition relevant to this decorator
+                                const relevantScopes = _.intersection(requiredScopes, availableScopes);
+
+                                // remove relevantScopes from remainingScopes
+                                remainingScopes = _.difference(remainingScopes, relevantScopes);
+
+                                if (relevantScopes.length || requiredScopes.length === 0) {
+                                    pathMethod.security.push({[securityDefinitionName]: relevantScopes});
+                                }
+                            }
+                        } else {
+                            throw new Error('No securityDefinitions were defined in swagger.config.json, but one or more @Security decorators are present.');
+                        }
+
+                        if (remainingScopes.length > 0) {
+                            throw new Error(`The security decorator on method '${controllerName}.${method.method}' could not find a match for the following scope(s): '${remainingScopes.join(',')}'`);
+                        } else if (remainingScopes === requiredScopes) {
+                            // if remainingScopes has not been reassigned, this means there were no securityDefinitions defined
+                            throw new Error('There are no securityDefinitions in swagger.config.json, but one or more @Security decorators have been used.');
+                        }
+                    }
+                }
+            );
         }
         this.handleMethodConsumes(method, pathMethod);
 
