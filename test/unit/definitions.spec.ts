@@ -219,7 +219,7 @@ describe('Definition generation', () => {
           a: { type: 'string', description: '' },
           b: { type: 'number', format: 'double', description: '' }
         },
-        required: [ 'a', 'b' ],
+        required: ['a', 'b'],
         type: 'object',
       });
       expect(spec.paths).to.have.property('/mypath/test-compiler-options');
@@ -341,19 +341,39 @@ describe('Definition generation', () => {
   describe('SecureEndpoint', () => {
     it('should apply controller security to request', () => {
       const expression = jsonata('paths."/secure".get.security');
-      expect(expression.evaluate(spec)).to.deep.equal([ { 'access_token': [] } ]);
+      expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': [] }]);
     });
 
     it('method security should override controller security', () => {
       const expression = jsonata('paths."/secure".post.security');
-      expect(expression.evaluate(spec)).to.deep.equal([ { 'user_email': [] } ]);
+      expect(expression.evaluate(spec)).to.deep.equal([{ 'user_email': [] }]);
     });
   });
 
   describe('SuperSecureEndpoint', () => {
     it('should apply two controller securities to request', () => {
       const expression = jsonata('paths."/supersecure".get.security');
-      expect(expression.evaluate(spec)).to.deep.equal([ { 'access_token': [] }, { 'user_email': [] } ]);
+      expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': [] }, { 'user_email': [] }]);
+    });
+  });
+
+  describe('ResponseController', () => {
+    it('should support multiple response decorators on controller', () => {
+      let expression = jsonata('paths."/response".get.responses."400".description');
+      expect(expression.evaluate(spec)).to.eq('The request format was incorrect.');
+      expression = jsonata('paths."/response".get.responses."500".description');
+      expect(expression.evaluate(spec)).to.eq('There was an unexpected error.');
+    });
+
+    it('should support decorators on controller and method', () => {
+      let expression = jsonata('paths."/response/test".get.responses."400".description');
+      expect(expression.evaluate(spec)).to.eq('The request format was incorrect.');
+      expression = jsonata('paths."/response/test".get.responses."500".description');
+      expect(expression.evaluate(spec)).to.eq('There was an unexpected error.');
+      expression = jsonata('paths."/response/test".get.responses."502".description');
+      expect(expression.evaluate(spec)).to.eq('Internal server error.');
+      expression = jsonata('paths."/response/test".get.responses."401".description');
+      expect(expression.evaluate(spec)).to.eq('Unauthorized.');
     });
   });
 });
