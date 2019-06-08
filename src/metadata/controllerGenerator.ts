@@ -1,10 +1,11 @@
 import * as _ from 'lodash';
 import * as ts from 'typescript';
 import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
-import {normalizePath} from '../utils/pathUtils';
-import { Controller } from './metadataGenerator';
+import { normalizePath } from '../utils/pathUtils';
+import { getExamplesValue } from '../utils/valueUtils';
+import { Controller, ResponseType } from './metadataGenerator';
 import { MethodGenerator } from './methodGenerator';
-import { getSuperClass } from './resolveType';
+import { getSuperClass, resolveType } from './resolveType';
 
 export class ControllerGenerator {
     private readonly pathValue: string | undefined;
@@ -31,8 +32,9 @@ export class ControllerGenerator {
             name: this.node.name.text,
             path: this.pathValue || '',
             produces: this.getDecoratorValues('Produces'),
+            responses: this.getControllerResponses(),
             security: this.getMethodSecurity(),
-            tags: this.getDecoratorValues('Tags')
+            tags: this.getDecoratorValues('Tags'),
         };
     }
 
@@ -62,6 +64,36 @@ export class ControllerGenerator {
                 return false;
             })
             .map(generator => generator.generate());
+    }
+
+    private getControllerResponses(): Array<ResponseType> {
+        const decorators = getDecorators(this.node, decorator => decorator.text === 'Response');
+        if (!decorators || !decorators.length) { return []; }
+
+        return decorators.map(decorator => {
+            let description = '';
+            let status = '200';
+            let examples;
+            if (decorator.arguments.length > 0 && decorator.arguments[0]) {
+                status = decorator.arguments[0];
+            }
+            if (decorator.arguments.length > 1 && decorator.arguments[1]) {
+                description = decorator.arguments[1] as any;
+            }
+            if (decorator.arguments.length > 2 && decorator.arguments[2]) {
+                const argument = decorator.arguments[2] as any;
+                examples = getExamplesValue(argument);
+            }
+
+            return {
+                description: description,
+                examples: examples,
+                schema: (decorator.typeArguments && decorator.typeArguments.length > 0)
+                    ? resolveType(decorator.typeArguments[0])
+                    : undefined,
+                status: status
+            };
+        });
     }
 
     private getDecoratorValues(decoratorName: string) {

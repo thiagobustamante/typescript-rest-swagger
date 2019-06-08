@@ -1,4 +1,6 @@
+import * as pathUtil from 'path';
 import * as ts from 'typescript';
+import { getExamplesValue } from '../utils/valueUtils';
 import { ControllerGenerator } from './controllerGenerator';
 
 export class MetadataGenerator {
@@ -93,6 +95,7 @@ export interface Controller {
     path: string;
     consumes: Array<string>;
     produces: Array<string>;
+    responses: Array<ResponseType>;
     tags: Array<string>;
     security?: Array<Security>;
 }

@@ -356,6 +356,29 @@ describe('Definition generation', () => {
     it('should apply two controller securities to request', () => {
       const expression = jsonata('paths."/supersecure".get.security');
       expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': [] }, { 'user_email': [] }]);
+<<<<<<< HEAD
+=======
+    });
+  });
+
+  describe('ResponseController', () => {
+    it('should support multiple response decorators on controller', () => {
+      let expression = jsonata('paths."/response".get.responses."400".description');
+      expect(expression.evaluate(spec)).to.eq('The request format was incorrect.');
+      expression = jsonata('paths."/response".get.responses."500".description');
+      expect(expression.evaluate(spec)).to.eq('There was an unexpected error.');
+    });
+
+    it('should support decorators on controller and method', () => {
+      let expression = jsonata('paths."/response/test".get.responses."400".description');
+      expect(expression.evaluate(spec)).to.eq('The request format was incorrect.');
+      expression = jsonata('paths."/response/test".get.responses."500".description');
+      expect(expression.evaluate(spec)).to.eq('There was an unexpected error.');
+      expression = jsonata('paths."/response/test".get.responses."502".description');
+      expect(expression.evaluate(spec)).to.eq('Internal server error.');
+      expression = jsonata('paths."/response/test".get.responses."401".description');
+      expect(expression.evaluate(spec)).to.eq('Unauthorized.');
+>>>>>>> 099e96eb0a33a1e1a12646191cf916abab3b7646
     });
   });
 });

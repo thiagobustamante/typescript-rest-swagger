@@ -3,8 +3,8 @@ import * as ts from 'typescript';
 import { getDecorators } from '../utils/decoratorUtils';
 import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
 import { normalizePath } from '../utils/pathUtils';
-import { Method, ResponseData, ResponseType, Type } from './metadataGenerator';
-import { ParameterGenerator } from './parameterGenerator';
+import { getExamplesValue } from '../utils/valueUtils';
+import { Method } from './metadataGenerator';
 import { resolveType } from './resolveType';
 
 export class MethodGenerator {
@@ -12,8 +12,8 @@ export class MethodGenerator {
     private path: string;
 
     constructor(private readonly node: ts.MethodDeclaration,
-                private readonly controllerPath: string,
-                private readonly genericTypeMap?: Map<String, ts.TypeNode>) {
+        private readonly controllerPath: string,
+        private readonly genericTypeMap?: Map<String, ts.TypeNode>) {
         this.processMethodDecorators();
     }
 
@@ -122,7 +122,7 @@ export class MethodGenerator {
             }
             if (decorator.arguments.length > 2 && decorator.arguments[2]) {
                 const argument = decorator.arguments[2] as any;
-                examples = this.getExamplesValue(argument);
+                examples = getExamplesValue(argument);
             }
 
             return {
@@ -169,7 +169,7 @@ export class MethodGenerator {
         const d = exampleDecorators[0];
         const argument = d.arguments[0];
 
-        return this.getExamplesValue(argument);
+        return getExamplesValue(argument);
     }
 
     private mergeResponses(responses: Array<ResponseType>, defaultResponse: ResponseType) {
@@ -193,18 +193,6 @@ export class MethodGenerator {
         return ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS', 'HEAD'].some(m => m === method);
     }
 
-    private getExamplesValue(argument: any) {
-        let example: any = {};
-        if (argument.properties) {
-            argument.properties.forEach((p: any) => {
-                example[p.name.text] = this.getInitializerValue(p.initializer);
-            });
-        } else {
-            example = this.getInitializerValue(argument);
-        }
-        return example;
-    }
-
     private getDecoratorValues(decoratorName: string) {
         const tagsDecorators = getDecorators(this.node, decorator => decorator.text === decoratorName);
         if (!tagsDecorators || !tagsDecorators.length) { return []; }
@@ -224,31 +212,5 @@ export class MethodGenerator {
             name: d.arguments[0],
             scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
         }));
-    }
-
-    private getInitializerValue(initializer: any) {
-        switch (initializer.kind as ts.SyntaxKind) {
-            case ts.SyntaxKind.ArrayLiteralExpression:
-                return initializer.elements.map((e: any) => this.getInitializerValue(e));
-            case ts.SyntaxKind.StringLiteral:
-                return initializer.text;
-            case ts.SyntaxKind.TrueKeyword:
-                return true;
-            case ts.SyntaxKind.FalseKeyword:
-                return false;
-            case ts.SyntaxKind.NumberKeyword:
-            case ts.SyntaxKind.FirstLiteralToken:
-                return parseInt(initializer.text, 10);
-            case ts.SyntaxKind.ObjectLiteralExpression:
-                const nestedObject: any = {};
-
-                initializer.properties.forEach((p: any) => {
-                    nestedObject[p.name.text] = this.getInitializerValue(p.initializer);
-                });
-
-                return nestedObject;
-            default:
-                return undefined;
-        }
     }
 }
