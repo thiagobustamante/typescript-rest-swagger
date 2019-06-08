@@ -62,7 +62,7 @@ export function Example<T>(example: T): any {
  * ```
  * @param values a list of tags
  */
-export function Tags(...values: string[]): any {
+export function Tags(...values: Array<string>): any {
   return () => { return; };
 }
 
@@ -71,14 +71,14 @@ export function Tags(...values: string[]): any {
  * @param {name} security name from securityDefinitions
  * @param {scopes} security scopes from securityDefinitions
  */
-export function Security(name: string, scopes?: string[]): any {
+export function Security(name: string, scopes?: Array<string>): any {
   return () => { return; };
 }
 
 /**
  * Document the method or class produces property in generated swagger docs
  */
-export function Produces(...values: string[]): any {
+export function Produces(...values: Array<string>): any {
   return () => { return; };
 }
 
