@@ -210,8 +210,8 @@ export class MethodGenerator {
         if (!securityDecorators || !securityDecorators.length) { return undefined; }
 
         return securityDecorators.map(d => ({
-            name: d.arguments[0],
-            scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
+            name: d.arguments[1] ? d.arguments[1] : 'default',
+            scopes: d.arguments[0] ? (d.arguments[0] as any).elements.map((e: any) => e.text) : undefined
         }));
     }
 }

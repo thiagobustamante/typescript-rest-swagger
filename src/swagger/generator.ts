@@ -1,3 +1,4 @@
+import * as debug from 'debug';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
@@ -11,14 +12,18 @@ import {
 import { Swagger } from './swagger';
 
 export class SpecGenerator {
+    private debugger = debug('typescript-rest-swagger:spec-generator');
+
     constructor(private readonly metadata: Metadata, private readonly config: SwaggerConfig) { }
 
-    public generate(swaggerDirs: string | Array<string>, yaml: boolean): Promise<void> {
+    public generate(): Promise<void> {
+        this.debugger('Generating swagger files.');
+        this.debugger('Swagger Config: %j', this.config);
+        this.debugger('Services Metadata: %j', this.metadata);
         return new Promise<void>((resolve, reject) => {
-            if (!_.isArray(swaggerDirs)) {
-                swaggerDirs = [swaggerDirs];
-            }
+            const swaggerDirs = _.castArray(this.config.outputDirectory);
             const spec = this.getSpec();
+            this.debugger('Saving specs to files: %j', swaggerDirs);
             swaggerDirs.forEach(swaggerDir => {
                 mkdirp(swaggerDir, (dirErr: any) => {
                     if (dirErr) {
@@ -28,7 +33,7 @@ export class SpecGenerator {
                         if (err) {
                             reject(err);
                         }
-                        if (yaml) {
+                        if (this.config.yaml) {
                             fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec, 1000), (errYaml: any) => {
                                 if (errYaml) {
                                     reject(errYaml);
@@ -69,13 +74,16 @@ export class SpecGenerator {
             spec = require('merge').recursive(spec, this.config.spec);
         }
 
+        this.debugger('Generated specs: %j', spec);
         return spec;
     }
 
     private buildDefinitions() {
         const definitions: { [definitionsName: string]: Swagger.Schema } = {};
         Object.keys(this.metadata.referenceTypes).map(typeName => {
+            this.debugger('Generating definition for type: %s', typeName);
             const referenceType = this.metadata.referenceTypes[typeName];
+            this.debugger('Metadata for referenced Type: %j', referenceType);
             definitions[referenceType.typeName] = {
                 description: referenceType.description,
                 properties: this.buildProperties(referenceType.properties),
@@ -88,6 +96,7 @@ export class SpecGenerator {
             if (referenceType.additionalProperties) {
                 definitions[referenceType.typeName].additionalProperties = this.buildAdditionalProperties(referenceType.additionalProperties);
             }
+            this.debugger('Generated Definition for type %s: %j', typeName, definitions[referenceType.typeName]);
         });
 
         return definitions;
@@ -96,8 +105,11 @@ export class SpecGenerator {
     private buildPaths() {
         const paths: { [pathName: string]: Swagger.Path } = {};
 
+        this.debugger('Generating paths declarations');
         this.metadata.controllers.forEach(controller => {
+            this.debugger('Generating paths for controller: %s', controller.name);
             controller.methods.forEach(method => {
+                this.debugger('Generating paths for method: %s', method.name);
                 const path = pathUtil.posix.join('/', (controller.path ? controller.path : ''), method.path);
                 paths[path] = paths[path] || {};
                 method.consumes = _.union(controller.consumes, method.consumes);
@@ -105,16 +117,17 @@ export class SpecGenerator {
                 method.tags = _.union(controller.tags, method.tags);
                 method.security = method.security || controller.security;
                 method.responses = _.union(controller.responses, method.responses);
-
-                this.buildPathMethod(controller.name, method, paths[path]);
+                const pathObject: any = paths[path];
+                pathObject[method.method] = this.buildPathMethod(controller.name, method);
+                this.debugger('Generated path for method %s: %j', method.name, pathObject[method.method]);
             });
         });
 
         return paths;
     }
 
-    private buildPathMethod(controllerName: string, method: Method, pathObject: any) {
-        const pathMethod: any = pathObject[method.method] = this.buildOperation(controllerName, method);
+    private buildPathMethod(controllerName: string, method: Method) {
+        const pathMethod: any = this.buildOperation(controllerName, method);
         pathMethod.description = method.description;
         if (method.summary) {
             pathMethod.summary = method.summary;
@@ -156,6 +169,7 @@ export class SpecGenerator {
         if (pathMethod.parameters.filter((p: Swagger.BaseParameter) => p.in === 'body').length > 1) {
             throw new Error('Only one body parameter allowed per controller method.');
         }
+        return pathMethod;
     }
 
     private handleMethodConsumes(method: Method, pathMethod: any) {

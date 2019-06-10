@@ -15,7 +15,6 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
       - [@Response](#response)
       - [@Example](#example)
       - [@Tags](#tags)
-      - [@Security](#security)
       - [@Produces](#produces)
       - [@IsInt, @IsLong, @IsFloat, @IsDouble](#isint-islong-isfloat-isdouble)
     - [SwaggerConfig.json](#swaggerconfigjson)
@@ -156,23 +155,6 @@ Add tags for a given method on generated swagger documentation.
 @Path('people')
 class PeopleService {
   @Tags('adiministrative', 'department1')
-  @GET
-  getPeople(@Param('name') name: string) {
-     // ...
-  }
-}
-```
-
-#### @Security
-
-Add a security constraint to method generated docs, referencing the security name from securityDefinitions.
-`@Security` can be used at the controller and method level; if defined on both, method security overwrites controller security.
-Multiple security schemes may be specified to require all of them.
-
-```typescript
-@Path('people')
-class PeopleService {
-  @Security('api_key')
   @GET
   getPeople(@Param('name') name: string) {
      // ...

@@ -1,3 +1,4 @@
+import * as debug from 'debug';
 import * as _ from 'lodash';
 import * as ts from 'typescript';
 import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
@@ -10,6 +11,7 @@ import { getSuperClass, resolveType } from './resolveType';
 export class ControllerGenerator {
     private readonly pathValue: string | undefined;
     private genMethods: Set<string> = new Set<string>();
+    private debugger = debug('typescript-rest-swagger:metadata:controller-generator');
 
     constructor(private readonly node: ts.ClassDeclaration) {
         this.pathValue = normalizePath(getDecoratorTextValue(node, decorator => decorator.text === 'Path'));
@@ -24,8 +26,10 @@ export class ControllerGenerator {
         if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
 
         const sourceFile = this.node.parent.getSourceFile();
+        this.debugger('Generating Metadata for controller %s', this.node.name.text);
+        this.debugger('Controller path: %s', this.pathValue);
 
-        return {
+        const controllerMetadata = {
             consumes: this.getDecoratorValues('Accept'),
             location: sourceFile.fileName,
             methods: this.buildMethods(),
@@ -36,6 +40,8 @@ export class ControllerGenerator {
             security: this.getMethodSecurity(),
             tags: this.getDecoratorValues('Tags'),
         };
+        this.debugger('Generated Metadata for controller %s: %j', this.node.name.text, controllerMetadata);
+        return controllerMetadata;
     }
 
     private buildMethods() {
@@ -118,8 +124,8 @@ export class ControllerGenerator {
         if (!securityDecorators || !securityDecorators.length) { return undefined; }
 
         return securityDecorators.map(d => ({
-            name: d.arguments[0],
-            scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
+            name: d.arguments[1] ? d.arguments[1] : 'default',
+            scopes: d.arguments[0] ? (d.arguments[0] as any).elements.map((e: any) => e.text) : undefined
         }));
     }
 }

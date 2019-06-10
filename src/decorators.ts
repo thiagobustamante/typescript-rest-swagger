@@ -67,15 +67,6 @@ export function Tags(...values: Array<string>): any {
 }
 
 /**
- * Add a security constraint to method generated docs.
- * @param {name} security name from securityDefinitions
- * @param {scopes} security scopes from securityDefinitions
- */
-export function Security(name: string, scopes?: Array<string>): any {
-  return () => { return; };
-}
-
-/**
  * Document the method or class produces property in generated swagger docs
  */
 export function Produces(...values: Array<string>): any {

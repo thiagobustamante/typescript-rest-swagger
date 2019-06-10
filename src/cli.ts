@@ -1,13 +1,18 @@
 #!/usr/bin/env node
 'use strict';
 
+import { ArgumentParser } from 'argparse';
+import * as debug from 'debug';
+import * as fs from 'fs-extra-promise';
+import * as _ from 'lodash';
 import { isAbsolute, join } from 'path';
 import * as ts from 'typescript';
-import { ArgumentParser } from 'argparse';
+import * as YAML from 'yamljs';
 import { Config, SwaggerConfig } from './config';
 import { MetadataGenerator } from './metadata/metadataGenerator';
 import { SpecGenerator } from './swagger/generator';
 
+const debugLog = debug('typescript-rest-swagger');
 const packageJson = require(`../package.json`);
 
 const workingDir: string = process.cwd();
@@ -25,7 +30,7 @@ const parser = new ArgumentParser({
 parser.addArgument(
     ['-c', '--config'],
     {
-        help: 'The swagger config file (swagger.json).'
+        help: 'The swagger config file (swagger.json or swagger.yml).'
     }
 );
 
@@ -48,11 +53,17 @@ parser.addArgument(
 const parameters = parser.parseArgs();
 const config = getConfig(parameters.config);
 const compilerOptions = getCompilerOptions(parameters.tsconfig, parameters.tsconfig_path);
+debugLog('Starting Swagger generation tool');
+debugLog('Compiler Options: %j', compilerOptions);
 
 const swaggerConfig = validateSwaggerConfig(config.swagger);
+debugLog('Swagger Config: %j', swaggerConfig);
 
+debugLog('Processing Services Metadata');
 const metadata = new MetadataGenerator(swaggerConfig.entryFile, compilerOptions).generate();
-new SpecGenerator(metadata, swaggerConfig).generate(swaggerConfig.outputDirectory, swaggerConfig.yaml)
+debugLog('Generated Metadata: %j', metadata);
+
+new SpecGenerator(metadata, swaggerConfig).generate()
     .then(() => {
         console.info('Generation completed.');
     })
@@ -70,16 +81,12 @@ function getPackageJsonValue(key: string): string {
 }
 
 function getConfig(configPath = 'swagger.json'): Config {
-    try {
-        return require(`${workingDir}/${configPath}`);
-    } catch (err) {
-        if (err.code === 'MODULE_NOT_FOUND') {
-            throw Error(`No config file found at '${configPath}'`);
-        } else if (err.name === 'SyntaxError') {
-            throw Error(`Invalid JSON syntax in config at '${configPath}': ${err.message}`);
-        } else {
-            throw Error(`Unhandled error encountered loading '${configPath}': ${err.message}`);
-        }
+    const configFile = `${workingDir}/${configPath}`;
+    if (_.endsWith(configFile, '.yml') || _.endsWith(configFile, '.yaml')) {
+        return YAML.load(configFile);
+    }
+    else {
+        return fs.readJSONSync(configFile);
     }
 }
 

@@ -3,7 +3,8 @@
 import {
     Accept, DELETE, GET, Path,
     PathParam, POST, PUT, QueryParam,
-    Return
+    Return,
+    Security
 } from 'typescript-rest';
 
 import { TestInterface } from '@/TestInterface'; // to test compilerOptions.paths
@@ -387,7 +388,7 @@ export class AbstractEntityEndpoint {
 }
 
 @Path('secure')
-@swagger.Security('access_token')
+@Security('access_token')
 export class SecureEndpoint {
     @GET
     public get(): string {
@@ -395,15 +396,15 @@ export class SecureEndpoint {
     }
 
     @POST
-    @swagger.Security('user_email')
+    @Security('user_email')
     public post(): string {
         return 'Posted';
     }
 }
 
 @Path('supersecure')
-@swagger.Security('access_token')
-@swagger.Security('user_email')
+@Security('access_token')
+@Security('user_email')
 export class SuperSecureEndpoint {
     @GET
     public get(): string {

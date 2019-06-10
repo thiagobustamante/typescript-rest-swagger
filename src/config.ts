@@ -2,61 +2,61 @@
 
 export interface Config {
     /**
-    * Swagger generation configuration object
-    */
+     * Swagger generation configuration object
+     */
     swagger: SwaggerConfig;
 }
 
 export interface SwaggerConfig {
     /**
-    * Support the output to be an yaml file
-    */
+     * Support the output to be an yaml file
+     */
     yaml: boolean;
 
     /**
-    * Generated SwaggerConfig.json will output here
-    */
-    outputDirectory: string | string[];
+     * Generated SwaggerConfig.json will output here
+     */
+    outputDirectory: string | Array<string>;
 
     /**
-    * The entry point to your API
-    */
-    entryFile: string;
+     * The entry point to your API
+     */
+    entryFile: string | Array<string>;
 
     /**
-    * API host, expressTemplate.g. localhost:3000 or https://myapi.com
-    */
+     * API host, expressTemplate.g. localhost:3000 or https://myapi.com
+     */
     host?: string;
 
     /**
-    * API version number; defaults to npm package version
-    */
+     * API version number; defaults to npm package version
+     */
     version?: string;
 
     /**
-    * API name; defaults to npm package name
-    */
+     * API name; defaults to npm package name
+     */
     name?: string;
 
     /**
-    * 'API description; defaults to npm package description
-    */
+     * 'API description; defaults to npm package description
+     */
     description?: string;
 
     /**
-    * API license; defaults to npm package license
-    */
+     * API license; defaults to npm package license
+     */
     license?: string;
 
     /**
-    * Base API path; e.g. the 'v1' in https://myapi.com/v1
-    */
+     * Base API path; e.g. the 'v1' in https://myapi.com/v1
+     */
     basePath?: string;
 
     /**
-    * Extend generated swagger spec with this object
-    * Note that generated properties will always take precedence over what get specified here
-    */
+     * Extend generated swagger spec with this object
+     * Note that generated properties will always take precedence over what get specified here
+     */
     spec?: any;
 
     /**

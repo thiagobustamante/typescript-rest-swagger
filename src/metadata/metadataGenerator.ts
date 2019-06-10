@@ -1,3 +1,5 @@
+import * as debug from 'debug';
+import * as _ from 'lodash';
 import * as ts from 'typescript';
 import { ControllerGenerator } from './controllerGenerator';
 
@@ -8,9 +10,14 @@ export class MetadataGenerator {
     private readonly program: ts.Program;
     private referenceTypes: { [typeName: string]: ReferenceType } = {};
     private circularDependencyResolvers = new Array<(referenceTypes: { [typeName: string]: ReferenceType }) => void>();
+    private debugger = debug('typescript-rest-swagger:metadata');
 
-    constructor(entryFile: string, compilerOptions: ts.CompilerOptions) {
-        this.program = ts.createProgram([entryFile], compilerOptions);
+    constructor(entryFile: string | Array<string>, compilerOptions: ts.CompilerOptions) {
+        const sourceFiles = _.castArray(entryFile);
+        this.debugger('Starting Metadata Generator');
+        this.debugger('Source files: %j ', sourceFiles);
+        this.debugger('Compiler Options: %j ', compilerOptions);
+        this.program = ts.createProgram(sourceFiles, compilerOptions);
         this.typeChecker = this.program.getTypeChecker();
         MetadataGenerator.current = this;
     }
@@ -22,8 +29,10 @@ export class MetadataGenerator {
             });
         });
 
+        this.debugger('Building Metadata for controllers Generator');
         const controllers = this.buildControllers();
 
+        this.debugger('Handling circular references');
         this.circularDependencyResolvers.forEach(c => c(this.referenceTypes));
 
         return {
