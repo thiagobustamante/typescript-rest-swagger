@@ -1,6 +1,4 @@
-import * as pathUtil from 'path';
 import * as ts from 'typescript';
-import { getExamplesValue } from '../utils/valueUtils';
 import { ControllerGenerator } from './controllerGenerator';
 
 export class MetadataGenerator {

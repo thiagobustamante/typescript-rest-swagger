@@ -4,7 +4,8 @@ import { getDecorators } from '../utils/decoratorUtils';
 import { getJSDocDescription, getJSDocTag, isExistJSDocTag } from '../utils/jsDocUtils';
 import { normalizePath } from '../utils/pathUtils';
 import { getExamplesValue } from '../utils/valueUtils';
-import { Method } from './metadataGenerator';
+import { Method, ResponseData, ResponseType, Type } from './metadataGenerator';
+import { ParameterGenerator } from './parameterGenerator';
 import { resolveType } from './resolveType';
 
 export class MethodGenerator {

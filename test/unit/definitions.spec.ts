@@ -356,8 +356,6 @@ describe('Definition generation', () => {
     it('should apply two controller securities to request', () => {
       const expression = jsonata('paths."/supersecure".get.security');
       expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': [] }, { 'user_email': [] }]);
-<<<<<<< HEAD
-=======
     });
   });
 
@@ -378,7 +376,6 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('Internal server error.');
       expression = jsonata('paths."/response/test".get.responses."401".description');
       expect(expression.evaluate(spec)).to.eq('Unauthorized.');
->>>>>>> 099e96eb0a33a1e1a12646191cf916abab3b7646
     });
   });
 });

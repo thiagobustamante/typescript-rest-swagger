@@ -416,7 +416,7 @@ export class SuperSecureEndpoint {
 @swagger.Response<string>(500, 'There was an unexpected error.')
 export class ResponseController {
     @GET
-    get(): string {
+    public get(): string {
         return '42';
     }
 
@@ -424,7 +424,7 @@ export class ResponseController {
     @swagger.Response<string>(502, 'Internal server error.')
     @GET
     @Path('/test')
-    test(): string {
+    public test(): string {
         return 'OK';
     }
 }
