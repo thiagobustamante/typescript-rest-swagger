@@ -60,8 +60,8 @@ export class MyService {
     @swagger.Example<Array<Person>>([{
         name: 'Joe'
     }])
-    public testPostString(body: string) {
-        return body;
+    public testPostString(body: string): Array<Person> {
+        return [];
     }
 
     @Path('obj')
@@ -388,7 +388,7 @@ export class AbstractEntityEndpoint {
 }
 
 @Path('secure')
-@Security('access_token')
+@Security(['ROLE_1', 'ROLE_2'], 'access_token')
 export class SecureEndpoint {
     @GET
     public get(): string {
@@ -396,7 +396,7 @@ export class SecureEndpoint {
     }
 
     @POST
-    @Security('user_email')
+    @Security([], 'user_email')
     public post(): string {
         return 'Posted';
     }
@@ -405,6 +405,7 @@ export class SecureEndpoint {
 @Path('supersecure')
 @Security('access_token')
 @Security('user_email')
+@Security()
 export class SuperSecureEndpoint {
     @GET
     public get(): string {

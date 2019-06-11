@@ -35,9 +35,9 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('Joe');
     });
 
-    it('should generate examples for array paraemter', () => {
+    it('should generate examples for array parameter', () => {
       expect(spec.paths).to.have.property('/mypath');
-      const expression = jsonata('paths."/mypath".post.responses."204".examples."application/json"[0].name');
+      const expression = jsonata('paths."/mypath".post.responses."200".examples."application/json".name');
       expect(expression.evaluate(spec)).to.eq('Joe');
     });
 
@@ -52,7 +52,7 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eql(['option1', 'option2']);
     });
 
-    it('should generate description for methods and paraemters', () => {
+    it('should generate description for methods and parameters', () => {
       let expression = jsonata('paths."/mypath/secondpath".get.parameters[0].description');
       expect(expression.evaluate(spec)).to.eq('This is the test param description');
       expression = jsonata('paths."/mypath/secondpath".get.description');
@@ -343,7 +343,7 @@ describe('Definition generation', () => {
   describe('SecureEndpoint', () => {
     it('should apply controller security to request', () => {
       const expression = jsonata('paths."/secure".get.security');
-      expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': [] }]);
+      expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': ['ROLE_1', 'ROLE_2'] }]);
     });
 
     it('method security should override controller security', () => {
@@ -355,7 +355,7 @@ describe('Definition generation', () => {
   describe('SuperSecureEndpoint', () => {
     it('should apply two controller securities to request', () => {
       const expression = jsonata('paths."/supersecure".get.security');
-      expect(expression.evaluate(spec)).to.deep.equal([{ 'access_token': [] }, { 'user_email': [] }]);
+      expect(expression.evaluate(spec)).to.deep.equal([{ 'default': ['access_token'] }, { 'default': ['user_email'] }, { 'default': [] }]);
     });
   });
 
