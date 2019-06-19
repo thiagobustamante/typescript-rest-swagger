@@ -24,6 +24,11 @@ export interface SwaggerConfig {
     entryFile: string | Array<string>;
 
     /**
+     * Inform if the generated spec will be in swagger 2.0 format or i open api 3.0
+     */
+    ouptupFormat?: 'swagger_2' | 'openapi_3';
+
+    /**
      * API host, expressTemplate.g. localhost:3000 or https://myapi.com
      */
     host?: string;

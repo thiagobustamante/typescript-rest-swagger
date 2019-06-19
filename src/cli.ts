@@ -98,6 +98,7 @@ function validateSwaggerConfig(conf: SwaggerConfig): SwaggerConfig {
     conf.description = conf.description || descriptionDefault;
     conf.license = conf.license || licenseDefault;
     conf.yaml = conf.yaml === false ? false : true;
+    conf.ouptupFormat = conf.ouptupFormat === 'openapi_3' ? conf.ouptupFormat : 'swagger_2';
 
     return conf;
 }

@@ -15,7 +15,7 @@ describe('Definition generation', () => {
     },
   };
   const metadata = new MetadataGenerator(['./test/data/ap*.ts'], compilerOptions).generate();
-  const spec = new SpecGenerator(metadata, getDefaultOptions()).getSpec();
+  const spec = new SpecGenerator(metadata, getDefaultOptions()).getSwaggerSpec();
 
   describe('MyService', () => {
     it('should generate paths for decorated services', () => {
@@ -375,6 +375,15 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eq('Internal server error.');
       expression = jsonata('paths."/response/test".get.responses."401".description');
       expect(expression.evaluate(spec)).to.eq('Unauthorized.');
+    });
+  });
+
+  describe('SpecGenerator', () => {
+    it('should be able to generate open api 3.0 outputs', async () => {
+      const openapi = await new SpecGenerator(metadata, getDefaultOptions()).getOpenApiSpec();
+      const expression = jsonata('paths."/supersecure".get.security');
+      expect(expression.evaluate(openapi)).to.deep.equal([{ 'default': ['access_token'] }, { 'default': ['user_email'] }, { 'default': [] }]);
+      expect(openapi.openapi).to.be.equal('3.0.0');
     });
   });
 });
