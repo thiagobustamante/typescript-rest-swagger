@@ -31,7 +31,7 @@ export interface SwaggerConfig {
     /**
      * Inform if the generated spec will be in swagger 2.0 format or i open api 3.0
      */
-    ouptupFormat?: Specification;
+    outputFormat?: Specification;
 
     /**
      * API host, expressTemplate.g. localhost:3000 or https://myapi.com

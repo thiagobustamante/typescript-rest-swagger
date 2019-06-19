@@ -224,7 +224,7 @@ basePath | string | Base API path; e.g. the 'v1' in https://myapi.com/v1
 consumes | [string] | Default consumes property for the entire API
 description | string | API description; defaults to npm package description
 entryFile | string or string[] | The entry point to your API (it is possible to use glob patters)
-ouptupFormat | 'Swagger_2' or 'OpenApi_3' | Inform if the generated spec will be in swagger 2.0 format or i open api 3.0
+outputFormat | 'Swagger_2' or 'OpenApi_3' | Inform if the generated spec will be in swagger 2.0 format or i open api 3.0
 host | string | The hostname to be informed in the generated swagger file
 license | string | API license number; defaults to npm package license
 name | string | API name; defaults to npm package name

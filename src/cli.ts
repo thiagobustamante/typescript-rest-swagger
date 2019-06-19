@@ -98,7 +98,7 @@ function validateSwaggerConfig(conf: SwaggerConfig): SwaggerConfig {
     conf.description = conf.description || descriptionDefault;
     conf.license = conf.license || licenseDefault;
     conf.yaml = conf.yaml === false ? false : true;
-    conf.ouptupFormat = conf.ouptupFormat ? Specification[conf.ouptupFormat] : Specification.Swagger_2;
+    conf.outputFormat = conf.outputFormat ? Specification[conf.outputFormat] : Specification.Swagger_2;
 
     return conf;
 }

@@ -21,7 +21,7 @@ export class SpecGenerator {
         this.debugger('Swagger Config: %j', this.config);
         this.debugger('Services Metadata: %j', this.metadata);
         let spec: any = this.getSwaggerSpec();
-        if (this.config.ouptupFormat === Specification.OpenApi_3) {
+        if (this.config.outputFormat === Specification.OpenApi_3) {
             spec = await this.convertToOpenApiSpec(spec);
         }
         return new Promise<void>((resolve, reject) => {
