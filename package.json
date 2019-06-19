@@ -1,6 +1,6 @@
 {
   "name": "typescript-rest-swagger",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Generate Swagger files from a typescript-rest project",
   "keywords": [
     "typescript",
@@ -55,7 +55,7 @@
     "mkdirp": "^0.5.1",
     "path": "^0.12.7",
     "swagger2openapi": "^5.3.0",
-    "typescript": "^3.5.1",
+    "typescript": "^3.5.2",
     "typescript-rest": "^2.2.0",
     "yamljs": "^0.2.10"
   },
