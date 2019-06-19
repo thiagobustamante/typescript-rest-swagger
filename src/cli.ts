@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 import { isAbsolute, join } from 'path';
 import * as ts from 'typescript';
 import * as YAML from 'yamljs';
-import { Config, SwaggerConfig } from './config';
+import { Config, Specification, SwaggerConfig } from './config';
 import { MetadataGenerator } from './metadata/metadataGenerator';
 import { SpecGenerator } from './swagger/generator';
 
@@ -98,7 +98,7 @@ function validateSwaggerConfig(conf: SwaggerConfig): SwaggerConfig {
     conf.description = conf.description || descriptionDefault;
     conf.license = conf.license || licenseDefault;
     conf.yaml = conf.yaml === false ? false : true;
-    conf.ouptupFormat = conf.ouptupFormat === 'openapi_3' ? conf.ouptupFormat : 'swagger_2';
+    conf.ouptupFormat = conf.ouptupFormat ? Specification[conf.ouptupFormat] : Specification.Swagger_2;
 
     return conf;
 }

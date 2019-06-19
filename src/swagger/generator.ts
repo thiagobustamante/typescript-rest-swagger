@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
 import * as pathUtil from 'path';
 import * as YAML from 'yamljs';
-import { SwaggerConfig } from '../config';
+import { Specification, SwaggerConfig } from '../config';
 import {
     ArrayType, EnumerateType, Metadata, Method, ObjectType, Parameter,
     Property, ReferenceType, ResponseType, Type
@@ -21,7 +21,7 @@ export class SpecGenerator {
         this.debugger('Swagger Config: %j', this.config);
         this.debugger('Services Metadata: %j', this.metadata);
         let spec: any = this.getSwaggerSpec();
-        if (this.config.ouptupFormat === 'openapi_3') {
+        if (this.config.ouptupFormat === Specification.OpenApi_3) {
             spec = await this.convertToOpenApiSpec(spec);
         }
         return new Promise<void>((resolve, reject) => {
