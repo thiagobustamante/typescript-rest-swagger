@@ -20,7 +20,10 @@ export class SpecGenerator {
         this.debugger('Generating swagger files.');
         this.debugger('Swagger Config: %j', this.config);
         this.debugger('Services Metadata: %j', this.metadata);
-        const spec = this.config.ouptupFormat === 'openapi_3' ? await this.getOpenApiSpec() : this.getSwaggerSpec();
+        let spec: any = this.getSwaggerSpec();
+        if (this.config.ouptupFormat === 'openapi_3') {
+            spec = await this.convertToOpenApiSpec(spec);
+        }
         return new Promise<void>((resolve, reject) => {
             const swaggerDirs = _.castArray(this.config.outputDirectory);
             this.debugger('Saving specs to files: %j', swaggerDirs);
@@ -79,16 +82,21 @@ export class SpecGenerator {
     }
 
     public async getOpenApiSpec() {
+        return await this.convertToOpenApiSpec(this.getSwaggerSpec());
+    }
+
+    private async convertToOpenApiSpec(spec: Swagger.Spec) {
         this.debugger('Converting specs to openapi 3.0');
         const converter = require('swagger2openapi');
         const options = {
             patch: true,
             warnOnly: true
         };
-        const openapi = await converter.convertObj(this.getSwaggerSpec(), options);
+        const openapi = await converter.convertObj(spec, options);
         this.debugger('Converted to openapi 3.0: %j', openapi);
         return openapi.openapi;
     }
+
 
     private buildDefinitions() {
         const definitions: { [definitionsName: string]: Swagger.Schema } = {};
