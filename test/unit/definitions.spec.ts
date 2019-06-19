@@ -15,7 +15,7 @@ describe('Definition generation', () => {
       '@/*': ['test/data/*'],
     },
   };
-  const metadata = new MetadataGenerator('./test/data/apis.ts', compilerOptions).generate();
+  const metadata = new MetadataGenerator(['./test/data/ap*.ts'], compilerOptions).generate();
   const spec = new SpecGenerator(metadata, getDefaultOptions()).getSpec();
 
   describe('MyService', () => {

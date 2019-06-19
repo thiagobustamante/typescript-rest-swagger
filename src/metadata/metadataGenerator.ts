@@ -1,4 +1,5 @@
 import * as debug from 'debug';
+import * as glob from 'glob';
 import * as _ from 'lodash';
 import * as ts from 'typescript';
 import { ControllerGenerator } from './controllerGenerator';
@@ -13,7 +14,7 @@ export class MetadataGenerator {
     private debugger = debug('typescript-rest-swagger:metadata');
 
     constructor(entryFile: string | Array<string>, compilerOptions: ts.CompilerOptions) {
-        const sourceFiles = _.castArray(entryFile);
+        const sourceFiles = this.getSourceFiles(entryFile);
         this.debugger('Starting Metadata Generator');
         this.debugger('Source files: %j ', sourceFiles);
         this.debugger('Compiler Options: %j ', compilerOptions);
@@ -79,6 +80,21 @@ export class MetadataGenerator {
             return found[0];
         }
         return undefined;
+    }
+
+    private getSourceFiles(sourceFiles: string | Array<string>) {
+        this.debugger('Getting source files from expressions');
+        this.debugger('Source file patterns: %j ', sourceFiles);
+        const sourceFilesExpressions = _.castArray(sourceFiles);
+        const result: Set<string> = new Set<string>();
+        const options = { cwd: process.cwd() };
+        sourceFilesExpressions.forEach(pattern => {
+            this.debugger('Searching pattern: %s with options: %j', pattern, options);
+            const matches = glob.sync(pattern, options);
+            matches.forEach(file => result.add(file));
+        });
+
+        return Array.from(result);
     }
 
     private buildControllers() {
