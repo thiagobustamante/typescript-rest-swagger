@@ -223,7 +223,8 @@ Property | Type | Description
 basePath | string | Base API path; e.g. the 'v1' in https://myapi.com/v1
 consumes | [string] | Default consumes property for the entire API
 description | string | API description; defaults to npm package description
-entryFile | string | The entry point to your API
+entryFile | string or string[] | The entry point to your API (it is possible to use glob patters)
+ouptupFormat | 'swagger_2' or 'openapi_3' | Inform if the generated spec will be in swagger 2.0 format or i open api 3.0
 host | string | The hostname to be informed in the generated swagger file
 license | string | API license number; defaults to npm package license
 name | string | API name; defaults to npm package name
@@ -256,7 +257,8 @@ See an example:
 {
     "swagger": {
         "outputDirectory": "./dist",
-        "entryFile": "./tests/data/apis.ts",
+        "entryFile": "./controllers/*.ts",
+        "outputFormat": "openapi_3",
         "host": "localhost:3000",
         "version": "1.0",
         "name": "Typescript-rest Test API",
@@ -272,4 +274,26 @@ See an example:
         }
     }
 }
+```
+
+or in yaml format:
+See an example:
+
+```yaml
+swagger:
+  outputDirectory: ./dist
+  entryFile: 
+    - ./controllers/*.ts
+  outputFormat: openapi_3
+  host: localhost:3000
+  version: 1.0
+  name: Typescript-rest Test API
+  description: A description
+  license: MIT
+  basePath: /v1
+  securityDefinitions:
+    api_key:
+      type: apiKey
+      name: access_token
+      in: query
 ```
