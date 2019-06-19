@@ -1,7 +1,6 @@
 import * as chai from 'chai';
 import 'mocha';
 import { MetadataGenerator } from '../../src/metadata/metadataGenerator';
-// import {Swagger} from '../../src/swagger/swagger';
 import { SpecGenerator } from '../../src/swagger/generator';
 import { getDefaultOptions } from '../data/defaultOptions';
 
