@@ -233,7 +233,8 @@ export class DerivedEndpoint2 {
     }
 }
 
-export interface SimpleHelloType {
+// tslint:disable-next-line: interface-over-type-literal
+export type SimpleHelloType = {
     /**
      * Description for greeting property
      */
@@ -251,12 +252,15 @@ export interface SimpleHelloType {
     };
 
     comparePassword: (candidatePassword: string, cb: (err: any, isMatch: any) => {}) => void;
-}
+};
 
 export interface Something {
+    id: UUID;
     someone: string;
     kind: string;
 }
+
+export type UUID = string;
 
 @Path('type')
 export class TypeEndpoint {

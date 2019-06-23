@@ -2,6 +2,7 @@ import * as _ from 'lodash';
 import * as ts from 'typescript';
 import { getDecoratorName } from '../utils/decoratorUtils';
 import { getFirstMatchingJSDocTagName } from '../utils/jsDocUtils';
+import { keywords } from './keywordKinds';
 import { ArrayType, EnumerateType, MetadataGenerator, ObjectType, Property, ReferenceType, Type } from './metadataGenerator';
 
 const syntaxKindMap: { [kind: number]: string } = {};
@@ -227,6 +228,11 @@ function getReferenceType(type: ts.EntityName, genericTypeMap?: Map<String, ts.T
 
         const properties = getModelTypeProperties(modelTypeDeclaration, genericTypes);
         const additionalProperties = getModelTypeAdditionalProperties(modelTypeDeclaration);
+
+        if (modelTypeDeclaration.kind === ts.SyntaxKind.TypeAliasDeclaration) {
+            const description = getModelDescription(modelTypeDeclaration);
+            console.log(description);
+        }
 
         const referenceType: ReferenceType = {
             description: getModelDescription(modelTypeDeclaration),
@@ -460,7 +466,11 @@ function getModelTypeProperties(node: any, genericTypes?: Array<ts.TypeNode>): A
     }
 
     if (node.kind === ts.SyntaxKind.TypeAliasDeclaration) {
-        return getModelTypeProperties(node.type as any, genericTypes);
+        const typeAlias = node as ts.TypeAliasDeclaration;
+
+        return !keywords.includes(typeAlias.type.kind) 
+            ? getModelTypeProperties(typeAlias.type, genericTypes)
+            : [];
     }
 
     const classDeclaration = node as ts.ClassDeclaration;
