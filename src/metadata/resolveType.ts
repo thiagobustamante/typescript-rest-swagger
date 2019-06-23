@@ -229,11 +229,6 @@ function getReferenceType(type: ts.EntityName, genericTypeMap?: Map<String, ts.T
         const properties = getModelTypeProperties(modelTypeDeclaration, genericTypes);
         const additionalProperties = getModelTypeAdditionalProperties(modelTypeDeclaration);
 
-        if (modelTypeDeclaration.kind === ts.SyntaxKind.TypeAliasDeclaration) {
-            const description = getModelDescription(modelTypeDeclaration);
-            console.log(description);
-        }
-
         const referenceType: ReferenceType = {
             description: getModelDescription(modelTypeDeclaration),
             properties: properties,
