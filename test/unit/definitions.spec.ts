@@ -189,8 +189,15 @@ describe('Definition generation', () => {
   describe('TypeEndpoint', () => {
     it('should generate definitions for type aliases', () => {
       expect(spec.paths).to.have.property('/type/{param}');
-      const expression = jsonata('definitions.SimpleHelloType.properties.greeting.description');
+      let expression = jsonata('definitions.SimpleHelloType.properties.greeting.description');
       expect(expression.evaluate(spec)).to.eq('Description for greeting property');
+
+      expression = jsonata('definitions.UUID');
+      expect(expression.evaluate(spec)).to.eql({
+        description: '',
+        properties: {},
+        type: 'object',
+      });
     });
 
     it('should generate nested object types in definitions', () => {
