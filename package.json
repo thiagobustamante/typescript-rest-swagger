@@ -24,7 +24,9 @@
     "pretest": "cross-env NODE_ENV=test npm run build && npm run lint",
     "test": "cross-env NODE_ENV=test mocha --exit",
     "test:coverage": "nyc npm test",
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "nyc": {
     "include": [
@@ -57,7 +59,8 @@
     "swagger2openapi": "^5.3.0",
     "typescript": "^3.5.2",
     "typescript-rest": "^2.2.0",
-    "yamljs": "^0.2.10"
+    "yamljs": "^0.2.10",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@types/argparse": "^1.0.36",
@@ -95,5 +98,6 @@
   "engines": {
     "node": ">=6.0.0"
   },
-  "engineStrict": true
+  "engineStrict": true,
+  "snyk": true
 }
