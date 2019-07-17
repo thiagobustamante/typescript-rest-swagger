@@ -102,4 +102,9 @@ export interface SwaggerConfig {
      * Possible values are `csv`, `ssv`, `tsv`, `pipes`, `multi`. If not specified, Swagger defaults to `csv`.
      */
     collectionFormat?: string;
+
+    /**
+     * Directory to ignore during TypeScript metadata scan
+     */
+    ignore?: [string];
 }

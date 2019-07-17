@@ -60,7 +60,7 @@ const swaggerConfig = validateSwaggerConfig(config.swagger);
 debugLog('Swagger Config: %j', swaggerConfig);
 
 debugLog('Processing Services Metadata');
-const metadata = new MetadataGenerator(swaggerConfig.entryFile, compilerOptions).generate();
+const metadata = new MetadataGenerator(swaggerConfig.entryFile, compilerOptions, swaggerConfig.ignore).generate();
 debugLog('Generated Metadata: %j', metadata);
 
 new SpecGenerator(metadata, swaggerConfig).generate()
