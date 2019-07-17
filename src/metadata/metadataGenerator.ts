@@ -28,7 +28,7 @@ export class MetadataGenerator {
         this.program.getSourceFiles().forEach(sf => {
             if (this.ignorePaths && this.ignorePaths.length) {
                 for (const path of this.ignorePaths) {
-                    if(mm(sf.fileName, path)) {
+                    if(!sf.fileName.includes('node_modules/typescript-rest-swagger/') && mm(sf.fileName, path)) {
                         return;
                     }
                 }
