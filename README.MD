@@ -271,7 +271,10 @@ See an example:
                 "name": "access_token",
                 "in": "query"
             }
-        }
+        },
+        "ignore": [
+          "**/node_modules/typescript/**"
+        ]
     }
 }
 ```
@@ -296,4 +299,6 @@ swagger:
       type: apiKey
       name: access_token
       in: query
+  ignore:
+    - /node_modules/typescript/**    
 ```
