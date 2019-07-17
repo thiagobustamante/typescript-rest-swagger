@@ -399,7 +399,7 @@ function getModelTypeDeclaration(type: ts.EntityName) {
     if (!modelTypes.length) { throw new Error(`No matching model found for referenced type ${typeName}`); }
 
     modelTypes = modelTypes.filter((modelType) => {
-        return modelType.getSourceFile().fileName.replace(/\\/g, '/').toLowerCase().indexOf('node_modules/typescript') <= -1;
+        return modelType.getSourceFile().fileName.replace(/\\/g, '/').toLowerCase().indexOf('node_modules/typescript/') <= -1;
     });
 
     if (modelTypes.length > 1) {
