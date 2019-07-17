@@ -397,10 +397,10 @@ function getModelTypeDeclaration(type: ts.EntityName) {
         }) as Array<UsableDeclaration>;
 
     if (!modelTypes.length) { throw new Error(`No matching model found for referenced type ${typeName}`); }
-    if (modelTypes.length > 1) {
-        const conflicts = modelTypes.map(modelType => modelType.getSourceFile().fileName).join('"; "');
-        throw new Error(`Multiple matching models found for referenced type ${typeName}; please make model names unique. Conflicts found: "${conflicts}"`);
-    }
+    // if (modelTypes.length > 1) {
+    //    const conflicts = modelTypes.map(modelType => modelType.getSourceFile().fileName).join('"; "');
+    //    throw new Error(`Multiple matching models found for referenced type ${typeName}; please make model names unique. Conflicts found: "${conflicts}"`);
+    // }
 
     return modelTypes[0];
 }
