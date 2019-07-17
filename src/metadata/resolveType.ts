@@ -386,7 +386,7 @@ function getModelTypeDeclaration(type: ts.EntityName) {
     const typeName = type.kind === ts.SyntaxKind.Identifier
         ? (type as ts.Identifier).text
         : (type as ts.QualifiedName).right.text;
-    const modelTypes = statements
+    let modelTypes = statements
         .filter(node => {
             if (!nodeIsUsable(node)) {
                 return false;
@@ -397,10 +397,15 @@ function getModelTypeDeclaration(type: ts.EntityName) {
         }) as Array<UsableDeclaration>;
 
     if (!modelTypes.length) { throw new Error(`No matching model found for referenced type ${typeName}`); }
-    // if (modelTypes.length > 1) {
-    //     const conflicts = modelTypes.map(modelType => modelType.getSourceFile().fileName).join('"; "');
-    //     throw new Error(`Multiple matching models found for referenced type ${typeName}; please make model names unique. Conflicts found: "${conflicts}"`);
-    // }
+
+    modelTypes = modelTypes.filter((modelType) => {
+        return modelType.getSourceFile().fileName.replace(/\\/g, '/').toLowerCase().indexOf('node_modules/typescript') <= -1;
+    });
+
+    if (modelTypes.length > 1) {
+        const conflicts = modelTypes.map(modelType => modelType.getSourceFile().fileName).join('"; "');
+        throw new Error(`Multiple matching models found for referenced type ${typeName}; please make model names unique. Conflicts found: "${conflicts}".`);
+    }
 
     return modelTypes[0];
 }
