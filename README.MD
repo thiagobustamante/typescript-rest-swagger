@@ -273,7 +273,7 @@ See an example:
             }
         },
         "ignore": [
-          "**/node_modules/typescript/**"
+          "**/node_modules/**"
         ]
     }
 }
@@ -300,5 +300,5 @@ swagger:
       name: access_token
       in: query
   ignore:
-    - /node_modules/typescript/**    
+    - /node_modules/**    
 ```
