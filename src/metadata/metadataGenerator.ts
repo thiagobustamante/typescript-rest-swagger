@@ -1,6 +1,7 @@
 import * as debug from 'debug';
 import * as glob from 'glob';
 import * as _ from 'lodash';
+import * as mm from 'minimatch';
 import * as ts from 'typescript';
 import { ControllerGenerator } from './controllerGenerator';
 
@@ -13,7 +14,7 @@ export class MetadataGenerator {
     private circularDependencyResolvers = new Array<(referenceTypes: { [typeName: string]: ReferenceType }) => void>();
     private debugger = debug('typescript-rest-swagger:metadata');
 
-    constructor(entryFile: string | Array<string>, compilerOptions: ts.CompilerOptions) {
+    constructor(entryFile: string | Array<string>, compilerOptions: ts.CompilerOptions, private readonly  ignorePaths?: Array<string>) {
         const sourceFiles = this.getSourceFiles(entryFile);
         this.debugger('Starting Metadata Generator');
         this.debugger('Source files: %j ', sourceFiles);
@@ -25,6 +26,14 @@ export class MetadataGenerator {
 
     public generate(): Metadata {
         this.program.getSourceFiles().forEach(sf => {
+            if (this.ignorePaths && this.ignorePaths.length) {
+                for (const path of this.ignorePaths) {
+                    if(!sf.fileName.includes('node_modules/typescript-rest-swagger/') && mm(sf.fileName, path)) {
+                        return;
+                    }
+                }
+            }
+
             ts.forEachChild(sf, node => {
                 this.nodes.push(node);
             });

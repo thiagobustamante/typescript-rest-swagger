@@ -234,6 +234,19 @@ describe('Definition generation', () => {
       expression = jsonata('paths."/mypath/test-compiler-options".post.parameters[0].schema');
       expect(expression.evaluate(spec)).to.eql({ $ref: '#/definitions/TestInterface' });
     });
+    it('should support formparam', () => {
+      expect(spec.paths).to.have.property('/mypath/test-form-param');
+      let expression = jsonata('paths."/mypath/test-form-param".post.responses."200".schema');
+      expect(expression.evaluate(spec)).to.eql({ type: 'string' });
+      expression = jsonata('paths."/mypath/test-form-param".post.parameters[0]');
+      expect(expression.evaluate(spec)).to.eql({
+        description: '',
+        in: 'formData',
+        name: 'id',
+        required: true,
+        type: 'string',
+      });
+    });
   });
 
   describe('PrimitiveEndpoint', () => {
