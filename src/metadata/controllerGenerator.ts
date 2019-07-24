@@ -29,7 +29,7 @@ export class ControllerGenerator extends EndpointGenerator<ts.ClassDeclaration> 
         this.debugger('Controller path: %s', this.pathValue);
 
         const controllerMetadata = {
-            consumes: this.getDecoratorValues('Accept'),
+            consumes: this.getDecoratorValues('Consumes'),
             location: sourceFile.fileName,
             methods: this.buildMethods(),
             name: this.getCurrentLocation(),
