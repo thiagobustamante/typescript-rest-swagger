@@ -51,6 +51,23 @@ describe('Definition generation', () => {
       expect(expression.evaluate(spec)).to.eql(['option1', 'option2']);
     });
 
+    it('should generate specs for enum params based on it values types', () => {
+      let expression = jsonata('paths."/mypath/secondpath".get.parameters[3]');
+      let paramSpec = expression.evaluate(spec);
+      expect(paramSpec.type).to.equal('string');
+      expect(paramSpec.enum).to.eql(['option1', 'option2']);
+
+      expression = jsonata('paths."/mypath/secondpath".get.parameters[4]');
+      paramSpec = expression.evaluate(spec);
+      expect(paramSpec.type).to.equal('number');
+      expect(paramSpec.enum).to.eql([0, 1]);
+
+      expression = jsonata('paths."/mypath/secondpath".get.parameters[5]');
+      paramSpec = expression.evaluate(spec);
+      expect(paramSpec.type).to.equal('string');
+      expect(paramSpec.enum).to.eql([0, 'String param']);
+    });
+
     it('should generate description for methods and parameters', () => {
       let expression = jsonata('paths."/mypath/secondpath".get.parameters[0].description');
       expect(expression.evaluate(spec)).to.eq('This is the test param description');

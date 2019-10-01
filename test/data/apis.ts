@@ -24,6 +24,16 @@ enum TestEnum {
     Option2 = 'option2'
 }
 
+enum TestNumericEnum {
+  Option1,
+  Option2,
+}
+
+enum TestMixedEnum {
+  Option1,
+  Option2 = 'String param',
+}
+
 @Accept('text/plain')
 @Path('mypath')
 @swagger.Tags('My Services')
@@ -51,7 +61,9 @@ export class MyService {
         @QueryParam('testRequired') test: string,
         @QueryParam('testDefault') test2: string = 'value',
         @QueryParam('testOptional') test3?: string,
-        @QueryParam('testEnum') test4?: TestEnum
+        @QueryParam('testEnum') test4?: TestEnum,
+        @QueryParam('testNumericEnum') test5?: TestNumericEnum,
+        @QueryParam('testMixedEnum') test6?: TestMixedEnum
     ): Person {
         return { name: 'OK' };
     }

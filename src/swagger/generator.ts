@@ -383,7 +383,19 @@ export class SpecGenerator {
     }
 
     private getSwaggerTypeForEnumType(enumType: EnumerateType): Swagger.Schema {
-        return { type: 'string', enum: enumType.enumMembers.map(member => member as string) as [string] };
+        function getDerivedTypeFromValues (values: Array<any>): string {
+          return values.reduce((derivedType: string, item: any) => {
+            const currentType = typeof item;
+            derivedType = derivedType && derivedType !== currentType ? 'string' : currentType;
+            return derivedType;
+          }, null);
+        }
+
+        const enumValues = enumType.enumMembers.map(member => member as string) as [string];
+        return {
+          enum: enumType.enumMembers.map(member => member as string) as [string],
+          type: getDerivedTypeFromValues(enumValues),
+        };
     }
 
     private getSwaggerTypeForReferenceType(referenceType: ReferenceType): Swagger.Schema {

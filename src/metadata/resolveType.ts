@@ -163,9 +163,9 @@ function getEnumerateType(typeNode: ts.TypeNode): EnumerateType | undefined {
         const initializer = member.initializer;
         if (initializer) {
             if (initializer.expression) {
-                return initializer.expression.text;
+                return parseEnumValueByKind(initializer.expression.text, initializer.kind);
             }
-            return initializer.text;
+            return parseEnumValueByKind(initializer.text, initializer.kind);
         }
         return;
     }
@@ -175,6 +175,10 @@ function getEnumerateType(typeNode: ts.TypeNode): EnumerateType | undefined {
         }),
         typeName: 'enum',
     } as EnumerateType;
+}
+
+function parseEnumValueByKind (value: string, kind: ts.SyntaxKind): any {
+  return kind === ts.SyntaxKind.NumericLiteral ? parseFloat(value) : value;
 }
 
 function getLiteralType(typeNode: ts.TypeNode): EnumerateType | undefined {
@@ -463,7 +467,7 @@ function getModelTypeProperties(node: any, genericTypes?: Array<ts.TypeNode>): A
     if (node.kind === ts.SyntaxKind.TypeAliasDeclaration) {
         const typeAlias = node as ts.TypeAliasDeclaration;
 
-        return !keywords.includes(typeAlias.type.kind) 
+        return !keywords.includes(typeAlias.type.kind)
             ? getModelTypeProperties(typeAlias.type, genericTypes)
             : [];
     }
