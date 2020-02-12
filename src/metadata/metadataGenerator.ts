@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import * as mm from 'minimatch';
 import * as ts from 'typescript';
 import { ControllerGenerator } from './controllerGenerator';
+import { isDecorator } from '../utils/decoratorUtils';
 
 export class MetadataGenerator {
     public static current: MetadataGenerator;
@@ -109,6 +110,7 @@ export class MetadataGenerator {
     private buildControllers() {
         return this.nodes
             .filter(node => node.kind === ts.SyntaxKind.ClassDeclaration)
+            .filter(node => !isDecorator(node, decorator => 'Hidden' === decorator.text))
             .map((classDeclaration: ts.ClassDeclaration) => new ControllerGenerator(classDeclaration))
             .filter(generator => generator.isValid())
             .map(generator => generator.generate());

@@ -74,6 +74,13 @@ export function Produces(...values: Array<string>): any {
 }
 
 /**
+ * Document the method or class produces property in generated swagger docs
+ */
+export function Hidden(): any {
+  return () => { return; };
+}
+
+/**
  * Document the type of a property or parameter as `integer ($int32)` in generated swagger docs
  */
 export function IsInt(target: any, propertyKey: string, parameterIndex?: number) {

@@ -181,6 +181,22 @@ class PeopleService {
 A Default produces is already created in swagger documentation from the method return analisys. 
 You can use this decorator to override this default produces.
 
+#### @Hidden 
+
+Allow to hide some APIs from swagger docs (ex: test or dev APIs, etc ...).
+This decorator can be applied for a whole class or only a method
+
+```typescript
+@Path('people')
+@Hidden()
+class PeopleService {
+  @GET
+  getPeople(@Param('name') name: string) {
+     // ...
+  }
+}
+```
+
 #### @IsInt, @IsLong, @IsFloat, @IsDouble
 
 Document the type of a `number` property or parameter in generated swagger docs.

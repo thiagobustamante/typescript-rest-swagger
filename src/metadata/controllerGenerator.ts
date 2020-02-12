@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as ts from 'typescript';
-import { getDecoratorTextValue } from '../utils/decoratorUtils';
+import { getDecoratorTextValue, isDecorator } from '../utils/decoratorUtils';
 import { normalizePath } from '../utils/pathUtils';
 import { EndpointGenerator } from './endpointGenerator';
 import { Controller } from './metadataGenerator';
@@ -64,6 +64,7 @@ export class ControllerGenerator extends EndpointGenerator<ts.ClassDeclaration> 
     private buildMethodsForClass(node: ts.ClassDeclaration, genericTypeMap?: Map<String, ts.TypeNode>) {
         return node.members
             .filter(m => (m.kind === ts.SyntaxKind.MethodDeclaration))
+            .filter(m => !isDecorator(m, decorator => 'Hidden' === decorator.text))
             .map((m: ts.MethodDeclaration) => new MethodGenerator(m, this.pathValue || '', genericTypeMap))
             .filter(generator => {
                 if (generator.isValid() && !this.genMethods.has(generator.getMethodName())) {
