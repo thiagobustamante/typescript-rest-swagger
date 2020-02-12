@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { isAbsolute, join } from 'path';
 import * as ts from 'typescript';
 import * as YAML from 'yamljs';
+import * as path from 'path';
 import { Config, Specification, SwaggerConfig } from './config';
 import { MetadataGenerator } from './metadata/metadataGenerator';
 import { SpecGenerator } from './swagger/generator';
@@ -30,7 +31,7 @@ const parser = new ArgumentParser({
 parser.addArgument(
     ['-c', '--config'],
     {
-        help: 'The swagger config file (swagger.json or swagger.yml).'
+        help: 'The swagger config file (swagger.json or swagger.yml or swaggerCongig.js).'
     }
 );
 
@@ -84,6 +85,8 @@ function getConfig(configPath = 'swagger.json'): Config {
     const configFile = `${workingDir}/${configPath}`;
     if (_.endsWith(configFile, '.yml') || _.endsWith(configFile, '.yaml')) {
         return YAML.load(configFile);
+    } else if (_.endsWith(configFile, '.js')) {
+        return require(path.join(configFile))
     }
     else {
         return fs.readJSONSync(configFile);
