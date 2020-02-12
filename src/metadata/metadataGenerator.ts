@@ -3,8 +3,8 @@ import * as glob from 'glob';
 import * as _ from 'lodash';
 import * as mm from 'minimatch';
 import * as ts from 'typescript';
-import { ControllerGenerator } from './controllerGenerator';
 import { isDecorator } from '../utils/decoratorUtils';
+import { ControllerGenerator } from './controllerGenerator';
 
 export class MetadataGenerator {
     public static current: MetadataGenerator;
