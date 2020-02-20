@@ -30,6 +30,7 @@ npm install typescript-rest-swagger -g
 
 ```bash
 swaggerGen -c ./swaggerConfig.json
+swaggerGen -c ./swaggerConfig.js #.js files are also allowed as config files
 swaggerGen -c ./swaggerConfig.json -t # load {cwd}/tsconfig.json
 swaggerGen -c ./swaggerConfig.json -p ./tsconfig.json # load custom tsconfig.json
 ```

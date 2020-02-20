@@ -7,8 +7,8 @@ import {
     Security
 } from 'typescript-rest';
 
-import { TestInterface } from '@/TestInterface'; // to test compilerOptions.paths
 import * as swagger from '../../src/decorators';
+import { TestInterface } from './TestInterface'; // to test compilerOptions.paths
 
 interface Address {
     street: string;
