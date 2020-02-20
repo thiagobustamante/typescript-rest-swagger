@@ -16,6 +16,7 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
       - [@Example](#example)
       - [@Tags](#tags)
       - [@Produces](#produces)
+      - [@Hidden](#hidden)
       - [@IsInt, @IsLong, @IsFloat, @IsDouble](#isint-islong-isfloat-isdouble)
     - [SwaggerConfig.json](#swaggerconfigjson)
 
@@ -180,6 +181,22 @@ class PeopleService {
 
 A Default produces is already created in swagger documentation from the method return analisys. 
 You can use this decorator to override this default produces.
+
+#### @Hidden 
+
+Allow to hide some APIs from swagger docs (ex: test or dev APIs, etc ...).
+This decorator can be applied for the whole class or only a single method
+
+```typescript
+@Path('people')
+@Hidden()
+class PeopleService {
+  @GET
+  getPeople(@Param('name') name: string) {
+     // ...
+  }
+}
+```
 
 #### @IsInt, @IsLong, @IsFloat, @IsDouble
 
