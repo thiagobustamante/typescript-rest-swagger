@@ -4,7 +4,9 @@ node_js:
 script: npm run test:coverage | coveralls
 deploy:
   provider: npm
+  edge: true
   email: thiago@cruxframework.org
+  skip_cleanup: true
   api_key:
     secure: JdM7eESWBSHdBOcOggIU89iJRQW1zE86GtBuJs3IbUvezDMlNIhVZNzv0sFPU9wJi5xr7FWROcZYaNz5ud6WHMof5ZKW4H5Wb91l4iaUaAt2u0ZzavA7htMV4GHl01Z3ZeDHpDCB92ag/zbweRS+D1RMAK0KeWEoZi0Cb+Zu1XglmCGHLH6C7SuSEbTgIPsHVzKn9+/BHpEV4yxl0JvH2eHxg0mPgSofTi7qTTl2fLqVRv1YFPHrO//vTGWmtiN4uTw/pH72YpfV0ua8JIFvlleTGmeRmPDne6sYoyn33mtRdYqsGndL4+DDNpnbDjwRfa5Q2dEzjmFpjj+qeJU67h/eAicMDvVJKC/yrxZ1l3l7kIoXbeP/AG/kFK7XqaP8WA+u0T5UOAk2A+/3t9UKeq33vfGcFwOgd/j/ubNPMNTGJu0vyLJlLCI6+YZFKnu2lwSeJM2Wz+u1R2jnVCN8sC/s7Wwz4s0uGiG9kcJAkh/cTotcf92UyNP6vhHALqy6xB2tT/Wm0vVlNAJG1mGGXShOyX2Q+Kn2bggrRZAqP6HkQjDddVqbFl9xjeJPFaAbq7yYyRtqTzqmySfqMT+lP30F9NKQYmgRMsusTxxPuqfmPhyUzeXxeDMdqAbUB2l5AfdDt9128l51qmci7mI56Soa6/ivaLO8GkZSzs41lEo=
   on:
