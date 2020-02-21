@@ -10,6 +10,18 @@ import {
 import * as swagger from '../../src/decorators';
 import { TestInterface } from './TestInterface'; // to test compilerOptions.paths
 
+export interface MytypeWithUnion {
+    property: 'value1' | 'value2';
+}
+
+@Path('unionTypes')
+export class TestUnionType {
+    @POST
+    public post(body: MytypeWithUnion): string {
+        return '42';
+    }
+}
+
 interface Address {
     street: string;
 }
@@ -25,13 +37,13 @@ enum TestEnum {
 }
 
 enum TestNumericEnum {
-  Option1,
-  Option2,
+    Option1,
+    Option2,
 }
 
 enum TestMixedEnum {
-  Option1,
-  Option2 = 'String param',
+    Option1,
+    Option2 = 'String param',
 }
 
 @Accept('text/plain')
