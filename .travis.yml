@@ -1,7 +1,7 @@
 language: node_js
 node_js:
 - '6'
-script: npm run test:coverage | coveralls
+script: npm run build && npm run test:coverage | coveralls
 deploy:
   provider: npm
   edge: true
