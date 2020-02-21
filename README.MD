@@ -15,6 +15,7 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
       - [@Response](#response)
       - [@Example](#example)
       - [@Tags](#tags)
+      - [@Consumes](#consumes)
       - [@Produces](#produces)
       - [@Hidden](#hidden)
       - [@IsInt, @IsLong, @IsFloat, @IsDouble](#isint-islong-isfloat-isdouble)
@@ -164,6 +165,21 @@ class PeopleService {
 }
 ```
 
+
+#### @Consumes 
+
+Document the consumes property in generated swagger docs
+
+```typescript
+@Path('people')
+@Consumes('text/html')
+class PeopleService {
+  @PUT
+  createPeople(@Param('name') name: string, people: People) {
+     // ...
+  }
+}
+```
 
 #### @Produces 
 

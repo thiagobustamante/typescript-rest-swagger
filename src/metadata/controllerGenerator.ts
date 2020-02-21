@@ -29,12 +29,12 @@ export class ControllerGenerator extends EndpointGenerator<ts.ClassDeclaration> 
         this.debugger('Controller path: %s', this.pathValue);
 
         const controllerMetadata = {
-            consumes: this.getDecoratorValues('Accept'),
+            consumes: this.getDecoratorValues('Consumes'),
             location: sourceFile.fileName,
             methods: this.buildMethods(),
             name: this.getCurrentLocation(),
             path: this.pathValue || '',
-            produces: this.getDecoratorValues('Produces'),
+            produces: (this.getDecoratorValues('Produces') ? this.getDecoratorValues('Produces') : this.getDecoratorValues('Accept')),
             responses: this.getResponses(),
             security: this.getSecurity(),
             tags: this.getDecoratorValues('Tags'),
