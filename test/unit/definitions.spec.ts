@@ -432,4 +432,12 @@ describe('Definition generation', () => {
     });
   });
 
+  describe('Should support observables', () => {
+    it('', () => {
+      expect(spec.paths).toHaveProperty('/observable');
+      expect(spec.paths).toHaveProperty('/observable/array');
+      expect(spec.paths).toHaveProperty('/observable/person');
+      expect(spec.paths).toHaveProperty('/observable/population');
+    });
+  });
 });
