@@ -55,12 +55,7 @@ export function resolveType(typeNode?: ts.TypeNode, genericTypeMap?: Map<String,
     if (typeName === 'DownloadBinaryData') { return { typeName: 'buffer' }; }
     if (typeName === 'DownloadResource') { return { typeName: 'buffer' }; }
 
-    if (typeName === 'Promise') {
-        typeReference = typeReference.typeArguments[0];
-        return resolveType(typeReference, genericTypeMap);
-    }
-
-    if (typeName === 'Observable') {
+    if (typeName === 'Promise' || typeName === 'Observable') {
         typeReference = typeReference.typeArguments[0];
         return resolveType(typeReference, genericTypeMap);
     }
