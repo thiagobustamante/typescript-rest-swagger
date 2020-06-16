@@ -67,9 +67,23 @@ export function Tags(...values: Array<string>): any {
 }
 
 /**
+ * Document the method or class comsumes property in generated swagger docs
+ */
+export function Consumes(...values: Array<string>): any {
+  return () => { return; };
+}
+
+/**
  * Document the method or class produces property in generated swagger docs
  */
 export function Produces(...values: Array<string>): any {
+  return () => { return; };
+}
+
+/**
+ * Document the method or class produces property in generated swagger docs
+ */
+export function Hidden(): any {
   return () => { return; };
 }
 

@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import * as ts from 'typescript';
-import { getDecoratorTextValue } from '../utils/decoratorUtils';
+import { getDecoratorTextValue, isDecorator } from '../utils/decoratorUtils';
 import { normalizePath } from '../utils/pathUtils';
 import { EndpointGenerator } from './endpointGenerator';
 import { Controller } from './metadataGenerator';
@@ -29,12 +29,12 @@ export class ControllerGenerator extends EndpointGenerator<ts.ClassDeclaration> 
         this.debugger('Controller path: %s', this.pathValue);
 
         const controllerMetadata = {
-            consumes: this.getDecoratorValues('Accept'),
+            consumes: this.getDecoratorValues('Consumes'),
             location: sourceFile.fileName,
             methods: this.buildMethods(),
             name: this.getCurrentLocation(),
             path: this.pathValue || '',
-            produces: this.getDecoratorValues('Produces'),
+            produces: (this.getDecoratorValues('Produces') ? this.getDecoratorValues('Produces') : this.getDecoratorValues('Accept')),
             responses: this.getResponses(),
             security: this.getSecurity(),
             tags: this.getDecoratorValues('Tags'),
@@ -64,6 +64,7 @@ export class ControllerGenerator extends EndpointGenerator<ts.ClassDeclaration> 
     private buildMethodsForClass(node: ts.ClassDeclaration, genericTypeMap?: Map<String, ts.TypeNode>) {
         return node.members
             .filter(m => (m.kind === ts.SyntaxKind.MethodDeclaration))
+            .filter(m => !isDecorator(m, decorator => 'Hidden' === decorator.text))
             .map((m: ts.MethodDeclaration) => new MethodGenerator(m, this.pathValue || '', genericTypeMap))
             .filter(generator => {
                 if (generator.isValid() && !this.genMethods.has(generator.getMethodName())) {

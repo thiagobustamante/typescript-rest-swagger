@@ -37,14 +37,14 @@ export class MethodGenerator extends EndpointGenerator<ts.MethodDeclaration> {
         const responses = this.mergeResponses(this.getResponses(this.genericTypeMap), this.getMethodSuccessResponse(type));
 
         const methodMetadata = {
-            consumes: this.getDecoratorValues('Accept'),
+            consumes: this.getDecoratorValues('Consumes'),
             deprecated: isExistJSDocTag(this.node, 'deprecated'),
             description: getJSDocDescription(this.node),
             method: this.method,
             name: identifier.text,
             parameters: this.buildParameters(),
             path: this.path,
-            produces: this.getDecoratorValues('Produces'),
+            produces: (this.getDecoratorValues('Produces') ? this.getDecoratorValues('Produces') : this.getDecoratorValues('Accept')),
             responses: responses,
             security: this.getSecurity(),
             summary: getJSDocTag(this.node, 'summary'),

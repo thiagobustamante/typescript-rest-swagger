@@ -32,12 +32,16 @@ export function resolveType(typeNode?: ts.TypeNode, genericTypeMap?: Map<String,
         } as ArrayType;
     }
 
-    if ((typeNode.kind === ts.SyntaxKind.UnionType) || (typeNode.kind === ts.SyntaxKind.AnyKeyword) || (typeNode.kind === ts.SyntaxKind.ObjectKeyword)) {
+    if ((typeNode.kind === ts.SyntaxKind.AnyKeyword) || (typeNode.kind === ts.SyntaxKind.ObjectKeyword)) {
         return { typeName: 'object' };
     }
 
     if (typeNode.kind === ts.SyntaxKind.TypeLiteral) {
         return getInlineObjectType(typeNode);
+    }
+
+    if (typeNode.kind === ts.SyntaxKind.UnionType) {
+        return getUnionType(typeNode);
     }
 
     if (typeNode.kind !== ts.SyntaxKind.TypeReference) {
@@ -163,9 +167,9 @@ function getEnumerateType(typeNode: ts.TypeNode): EnumerateType | undefined {
         const initializer = member.initializer;
         if (initializer) {
             if (initializer.expression) {
-                return initializer.expression.text;
+                return parseEnumValueByKind(initializer.expression.text, initializer.kind);
             }
-            return initializer.text;
+            return parseEnumValueByKind(initializer.text, initializer.kind);
         }
         return;
     }
@@ -177,6 +181,36 @@ function getEnumerateType(typeNode: ts.TypeNode): EnumerateType | undefined {
     } as EnumerateType;
 }
 
+function parseEnumValueByKind(value: string, kind: ts.SyntaxKind): any {
+    return kind === ts.SyntaxKind.NumericLiteral ? parseFloat(value) : value;
+}
+
+function getUnionType(typeNode: ts.TypeNode) {
+    const union = typeNode as ts.UnionTypeNode;
+    let baseType: any = null;
+    let isObject = false;
+    union.types.forEach(type => {
+        if (baseType === null) {
+            baseType = type;
+        }
+        if (baseType.kind !== type.kind) {
+            isObject = true;
+        }
+    });
+    if (isObject) {
+        return { typeName: 'object' };
+    }
+    return {
+        enumMembers: union.types.map((type, index) => {
+            return type.getText() ? removeQuotes(type.getText()) : index;
+        }),
+        typeName: 'enum',
+    } as EnumerateType;
+}
+
+function removeQuotes(str: string) {
+    return str.replace(/^["']|["']$/g, '');
+}
 function getLiteralType(typeNode: ts.TypeNode): EnumerateType | undefined {
     const literalName = (typeNode as any).typeName.text;
     const literalTypes = MetadataGenerator.current.nodes
@@ -295,7 +329,8 @@ function getAnyTypeName(typeNode: ts.TypeNode): string {
         return getAnyTypeName(arrayType.elementType) + 'Array';
     }
 
-    if ((typeNode.kind === ts.SyntaxKind.UnionType) || (typeNode.kind === ts.SyntaxKind.AnyKeyword)) {
+    if (typeNode.kind === ts.SyntaxKind.UnionType ||
+        typeNode.kind === ts.SyntaxKind.AnyKeyword) {
         return 'object';
     }
 
@@ -463,7 +498,7 @@ function getModelTypeProperties(node: any, genericTypes?: Array<ts.TypeNode>): A
     if (node.kind === ts.SyntaxKind.TypeAliasDeclaration) {
         const typeAlias = node as ts.TypeAliasDeclaration;
 
-        return !keywords.includes(typeAlias.type.kind) 
+        return !keywords.includes(typeAlias.type.kind)
             ? getModelTypeProperties(typeAlias.type, genericTypes)
             : [];
     }

@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import * as _ from 'lodash';
 import * as mm from 'minimatch';
 import * as ts from 'typescript';
+import { isDecorator } from '../utils/decoratorUtils';
 import { ControllerGenerator } from './controllerGenerator';
 
 export class MetadataGenerator {
@@ -28,7 +29,7 @@ export class MetadataGenerator {
         this.program.getSourceFiles().forEach(sf => {
             if (this.ignorePaths && this.ignorePaths.length) {
                 for (const path of this.ignorePaths) {
-                    if(!sf.fileName.includes('node_modules/typescript-rest-swagger/') && mm(sf.fileName, path)) {
+                    if(!sf.fileName.includes('node_modules/typescript-rest/') && mm(sf.fileName, path)) {
                         return;
                     }
                 }
@@ -109,6 +110,7 @@ export class MetadataGenerator {
     private buildControllers() {
         return this.nodes
             .filter(node => node.kind === ts.SyntaxKind.ClassDeclaration)
+            .filter(node => !isDecorator(node, decorator => 'Hidden' === decorator.text))
             .map((classDeclaration: ts.ClassDeclaration) => new ControllerGenerator(classDeclaration))
             .filter(generator => generator.isValid())
             .map(generator => generator.generate());

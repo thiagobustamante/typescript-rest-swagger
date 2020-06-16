@@ -8,3 +8,4 @@ coverage
 *.log
 npm-debug.log*
 .idea
+reports
