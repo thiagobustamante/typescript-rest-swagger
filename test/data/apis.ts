@@ -1,5 +1,6 @@
 'use strict';
 
+import {Observable, of} from "rxjs";
 import {
     Accept, DELETE, FormParam, GET, Path,
     PathParam, POST, PUT, QueryParam,
@@ -462,5 +463,49 @@ export class ResponseController {
     @Path('/test')
     public test(): string {
         return 'OK';
+    }
+}
+
+@Path('observable')
+export class ObservableController {
+    @GET
+    public get(): Observable<string> {
+        return of('hello');
+    }
+
+    @GET
+    @Path('array')
+    public getArray(): Observable<Array<string>> {
+        return of([]);
+    }
+
+    @GET
+    @Path('person')
+    public getPerson(): Observable<Person> {
+        return of({
+            address: {
+                street: 'Fleet Street'
+            } as Address,
+            name: 'Jon'
+        } as Person);
+    }
+
+    @GET
+    @Path('population')
+    public getPersons(): Observable<Array<Person>> {
+        return of([
+            {
+                address: {
+                    street: 'Fleet Street'
+                } as Address,
+                name: 'Jon'
+            },
+            {
+                address: {
+                    street: 'Cannon Street'
+                } as Address,
+                name: 'Jessica'
+            }
+        ]);
     }
 }
