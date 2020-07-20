@@ -6,9 +6,9 @@ import * as debug from 'debug';
 import * as fs from 'fs-extra-promise';
 import * as _ from 'lodash';
 import { isAbsolute, join } from 'path';
+import * as path from 'path';
 import * as ts from 'typescript';
 import * as YAML from 'yamljs';
-import * as path from 'path';
 import { Config, Specification, SwaggerConfig } from './config';
 import { MetadataGenerator } from './metadata/metadataGenerator';
 import { SpecGenerator } from './swagger/generator';
@@ -86,7 +86,7 @@ function getConfig(configPath = 'swagger.json'): Config {
     if (_.endsWith(configFile, '.yml') || _.endsWith(configFile, '.yaml')) {
         return YAML.load(configFile);
     } else if (_.endsWith(configFile, '.js')) {
-        return require(path.join(configFile))
+        return require(path.join(configFile));
     }
     else {
         return fs.readJSONSync(configFile);
@@ -137,10 +137,10 @@ function getCompilerOptions(loadTsconfig: boolean, tsconfigPath?: string | null)
     }
 }
 
-function getAbsolutePath(path: string, basePath: string): string {
-    if (isAbsolute(path)) {
-        return path;
+function getAbsolutePath(p: string, basePath: string): string {
+    if (isAbsolute(p)) {
+        return p;
     } else {
-        return join(basePath, path);
+        return join(basePath, p);
     }
 }

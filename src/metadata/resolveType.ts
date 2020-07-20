@@ -596,7 +596,9 @@ function getInheritedProperties(modelTypeDeclaration: UsableDeclaration, generic
             if (!type) {
                 type = MetadataGenerator.current.getInterfaceDeclaration(t.expression.getText());
             }
-            if (!type) throw new Error(`No type found for ${t.expression.getText()}`)
+            if (!type) {
+                throw new Error(`No type found for ${t.expression.getText()}`);
+            }
             const baseEntityName = t.expression as ts.EntityName;
             const parentGenerictypes = resolveTypeArguments(modelTypeDeclaration as ts.ClassDeclaration, genericTypes);
             const genericTypeMap = resolveTypeArguments(type, t.typeArguments, parentGenerictypes);
