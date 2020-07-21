@@ -26,28 +26,29 @@ export class SpecGenerator {
         }
         return new Promise<void>((resolve, reject) => {
             const swaggerDirs = _.castArray(this.config.outputDirectory);
-            this.debugger('Saving specs to files: %j', swaggerDirs);
+            this.debugger('Saving specs to folders: %j', swaggerDirs);
             swaggerDirs.forEach(swaggerDir => {
-                mkdirp(swaggerDir, (dirErr: any) => {
-                    if (dirErr) {
-                        throw dirErr;
-                    }
+                mkdirp(swaggerDir).then(() => {
+                    this.debugger('Saving specs json file to folder: %j', swaggerDir);
                     fs.writeFile(`${swaggerDir}/swagger.json`, JSON.stringify(spec, null, '\t'), (err: any) => {
                         if (err) {
-                            reject(err);
+                            return reject(err);
                         }
                         if (this.config.yaml) {
+                            this.debugger('Saving specs yaml file to folder: %j', swaggerDir);
                             fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec, 1000), (errYaml: any) => {
                                 if (errYaml) {
-                                    reject(errYaml);
+                                    return reject(errYaml);
                                 }
+                                this.debugger('Generated files saved to folder: %j', swaggerDir);
                                 resolve();
                             });
                         } else {
+                            this.debugger('Generated files saved to folder: %j', swaggerDir);
                             resolve();
                         }
                     });
-                });
+                }).catch(reject);
             });
         });
     }
@@ -383,18 +384,18 @@ export class SpecGenerator {
     }
 
     private getSwaggerTypeForEnumType(enumType: EnumerateType): Swagger.Schema {
-        function getDerivedTypeFromValues (values: Array<any>): string {
-          return values.reduce((derivedType: string, item: any) => {
-            const currentType = typeof item;
-            derivedType = derivedType && derivedType !== currentType ? 'string' : currentType;
-            return derivedType;
-          }, null);
+        function getDerivedTypeFromValues(values: Array<any>): string {
+            return values.reduce((derivedType: string, item: any) => {
+                const currentType = typeof item;
+                derivedType = derivedType && derivedType !== currentType ? 'string' : currentType;
+                return derivedType;
+            }, null);
         }
 
         const enumValues = enumType.enumMembers.map(member => member as string) as [string];
         return {
-          enum: enumType.enumMembers.map(member => member as string) as [string],
-          type: getDerivedTypeFromValues(enumValues),
+            enum: enumType.enumMembers.map(member => member as string) as [string],
+            type: getDerivedTypeFromValues(enumValues),
         };
     }
 
