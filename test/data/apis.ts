@@ -1,15 +1,26 @@
 'use strict';
 
 import {
-    Path, Server, GET, POST, PUT, DELETE, HttpMethod,
-    PathParam, QueryParam, CookieParam, HeaderParam,
-    FormParam, Param, Context, ServiceContext, ContextRequest,
-    ContextResponse, ContextLanguage, ContextAccept,
-    ContextNext, AcceptLanguage, Accept, FileParam,
-    Errors, Return, BodyOptions
+    Accept, DELETE, FormParam, GET, Path,
+    PathParam, POST, PUT, QueryParam,
+    Return,
+    Security
 } from 'typescript-rest';
 
 import * as swagger from '../../src/decorators';
+import { TestInterface } from './TestInterface'; // to test compilerOptions.paths
+
+export interface MytypeWithUnion {
+    property: 'value1' | 'value2';
+}
+
+@Path('unionTypes')
+export class TestUnionType {
+    @POST
+    public post(body: MytypeWithUnion): string {
+        return '42';
+    }
+}
 
 interface Address {
     street: string;
@@ -18,6 +29,21 @@ interface Address {
 interface Person {
     name: string;
     address?: Address;
+}
+
+enum TestEnum {
+    Option1 = 'option1',
+    Option2 = 'option2'
+}
+
+enum TestNumericEnum {
+    Option1,
+    Option2,
+}
+
+enum TestMixedEnum {
+    Option1,
+    Option2 = 'String param',
 }
 
 @Accept('text/plain')
@@ -29,7 +55,7 @@ export class MyService {
     @swagger.Response<string>(500, 'There was an unexpected error.')
     @GET
     @Accept('text/html')
-    test(): string {
+    public test(): string {
         return 'OK';
     }
 
@@ -43,10 +69,13 @@ export class MyService {
         name: 'Joe'
     })
     @swagger.Response<Person>(200, 'The success test.')
-    test2(
+    public test2(
         @QueryParam('testRequired') test: string,
         @QueryParam('testDefault') test2: string = 'value',
-        @QueryParam('testOptional') test3?: string
+        @QueryParam('testOptional') test3?: string,
+        @QueryParam('testEnum') test4?: TestEnum,
+        @QueryParam('testNumericEnum') test5?: TestNumericEnum,
+        @QueryParam('testMixedEnum') test6?: TestMixedEnum
     ): Person {
         return { name: 'OK' };
     }
@@ -55,42 +84,54 @@ export class MyService {
     @swagger.Example<Array<Person>>([{
         name: 'Joe'
     }])
-    testPostString(body: string) {
-        return body;
+    public testPostString(body: string): Array<Person> {
+        return [];
     }
 
     @Path('obj')
     @POST
-    testPostObject(data: object) {
+    public testPostObject(data: object) {
         return data;
     }
 
     @GET
     @Path('multi-query')
-    testMultiQuery(
-        @QueryParam('id') ids: string[],
-        @QueryParam('name'/*, { collectionFormat: 'multi', allowEmptyValue: true }*/) names?: string | string[]
+    public testMultiQuery(
+        @QueryParam('id') ids: Array<string>,
+        @QueryParam('name'/*, { collectionFormat: 'multi', allowEmptyValue: true }*/) names?: string | Array<string>
     ) {
-        return { ids, names };
+        return { ids: ids, names: names };
     }
 
     @GET
     @Path('default-query')
-    testDefaultQuery(
+    public testDefaultQuery(
         @QueryParam('num') num: number = 5,
         @QueryParam('str') str: string = 'default value',
         @QueryParam('bool1') bool1: boolean = true,
         @QueryParam('bool2') bool2: boolean = false,
-        @QueryParam('arr') arr: string[] = ['a', 'b', 'c']
+        @QueryParam('arr') arr: Array<string> = ['a', 'b', 'c']
     ) {
         return;
+    }
+
+    @POST
+    @Path('test-compiler-options')
+    public async testCompilerOptions(payload: TestInterface): Promise<TestInterface> {
+        return { a: 'string', b: 123 };
+    }
+
+    @POST
+    @Path('test-form-param')
+    public testFormParam(@FormParam('id') id: string): string {
+        return id;
     }
 }
 
 class BaseService {
     @DELETE
     @Path(':id')
-    testDelete(@PathParam('id') id: string): Promise<void> {
+    public testDelete(@PathParam('id') id: string): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             resolve();
         });
@@ -105,7 +146,7 @@ export class PromiseService extends BaseService {
      */
     @swagger.Response<string>(401, 'Unauthorized')
     @GET
-    test(@QueryParam('testParam') test?: string): Promise<Person> {
+    public test(@QueryParam('testParam') test?: string): Promise<Person> {
         return new Promise<Person>((resolve, reject) => {
             resolve({ name: 'OK' });
         });
@@ -116,7 +157,7 @@ export class PromiseService extends BaseService {
     @swagger.Example<Person>({ name: 'Test Person' })
     @GET
     @Path(':id')
-    testGetSingle(@PathParam('id') id: string): Promise<Person> {
+    public testGetSingle(@PathParam('id') id: string): Promise<Person> {
         return new Promise<Person>((resolve, reject) => {
             resolve({ name: 'OK' });
         });
@@ -126,7 +167,7 @@ export class PromiseService extends BaseService {
     @swagger.Response<string>(401, 'Unauthorized')
     @swagger.Example<Person>({ name: 'Example Person' }) // NOTE: this is here to test that it doesn't overwrite the example in the @Response above
     @POST
-    testPost(obj: Person): Promise<Return.NewResource<Person>> {
+    public testPost(obj: Person): Promise<Return.NewResource<Person>> {
         return new Promise<Return.NewResource<Person>>((resolve, reject) => {
             resolve(new Return.NewResource<Person>('id', { name: 'OK' }));
         });
@@ -135,7 +176,7 @@ export class PromiseService extends BaseService {
     @GET
     @Path('myFile')
     @swagger.Produces('application/pdf')
-    testFile(@QueryParam('testParam') test?: string): Promise<Return.DownloadBinaryData> {
+    public testFile(@QueryParam('testParam') test?: string): Promise<Return.DownloadBinaryData> {
         return new Promise<Return.DownloadBinaryData>((resolve, reject) => {
             resolve(null);
         });
@@ -143,7 +184,7 @@ export class PromiseService extends BaseService {
 }
 
 export class BasicModel {
-    id: number;
+    public id: number;
 }
 
 export class BasicEndpoint<T extends BasicModel>  {
@@ -222,12 +263,13 @@ export class DerivedEndpoint2 {
     }
 }
 
+// tslint:disable-next-line: interface-over-type-literal
 export type SimpleHelloType = {
     /**
      * Description for greeting property
      */
     greeting: string;
-    arrayOfSomething: Something[];
+    arrayOfSomething: Array<Something>;
 
     /**
      * Description for profile
@@ -239,21 +281,32 @@ export type SimpleHelloType = {
         name: string
     };
 
-    comparePassword: (candidatePassword: string, cb: (err: any, isMatch: any) => {}) => void
+    comparePassword: (candidatePassword: string, cb: (err: any, isMatch: any) => {}) => void;
 };
 
-export type Something = {
-    someone: string,
-    kind: string
-};
+export interface Something {
+    id: UUID;
+    someone: string;
+    kind: string;
+}
+
+export type UUID = string;
 
 @Path('type')
 export class TypeEndpoint {
 
     @GET
     @Path(':param')
-    test(@PathParam('param') param: string): Promise<SimpleHelloType> {
+    public test(@PathParam('param') param: string): Promise<MyDatatype2> {
         return new Promise<MyDatatype2>((resolve, reject) => {
+            // content
+        });
+    }
+
+    @GET
+    @Path(':param/2')
+    public test2(@PathParam('param') param: string): Promise<SimpleHelloType> {
+        return new Promise<SimpleHelloType>((resolve, reject) => {
             // content
         });
     }
@@ -268,16 +321,16 @@ export class PrimitiveClassModel {
      * An integer
      */
     @swagger.IsInt
-    int?: number;
+    public int?: number;
 
     @swagger.IsLong
-    long?: number;
+    public long?: number;
 
     @swagger.IsFloat
-    float?: number;
+    public float?: number;
 
     @swagger.IsDouble
-    double?: number;
+    public double?: number;
 }
 
 export interface PrimitiveInterfaceModel {
@@ -308,25 +361,32 @@ export class PrimitiveEndpoint {
 
     @Path('/class')
     @GET
-    getClass(): PrimitiveClassModel {
+    public getClass(): PrimitiveClassModel {
         return new PrimitiveClassModel();
     }
 
     @Path('/interface')
     @GET
-    testInterface(): PrimitiveInterfaceModel {
+    public testInterface(): PrimitiveInterfaceModel {
         return {};
     }
 
     @Path(':id')
     @GET
-    getById(@PathParam('id') @swagger.IsLong id: number) {
+    public getById(@PathParam('id') @swagger.IsLong id: number) {
         // ...
+    }
+
+    @Path('/arrayNative')
+    @GET
+    // tslint:disable-next-line:array-type
+    public getArrayNative(): ResponseBody<string[]> {
+        return { data: ['hello', 'world'] };
     }
 
     @Path('/array')
     @GET
-    getArray(): ResponseBody<string[]> {
+    public getArray(): ResponseBody<Array<string>> {
         return { data: ['hello', 'world'] };
     }
 }
@@ -336,7 +396,7 @@ export class ParameterizedEndpoint {
 
     @Path('/test')
     @GET
-    test(@PathParam('objectId') objectId: string): PrimitiveClassModel {
+    public test(@PathParam('objectId') objectId: string): PrimitiveClassModel {
         return new PrimitiveClassModel();
     }
 
@@ -357,43 +417,62 @@ export abstract class Entity {
     /**
      * A numeric identifier
      */
-    id?: number;
+    public id?: number;
 }
 
 export class NamedEntity implements Entity {
-    id: number;
-    name: string;
+    public id: number;
+    public name: string;
 }
 
 @Path('abstract')
 export class AbstractEntityEndpoint {
     @GET
-    get(): NamedEntity {
+    public get(): NamedEntity {
         return new NamedEntity();
     }
 }
 
 @Path('secure')
-@swagger.Security('access_token')
+@Security(['ROLE_1', 'ROLE_2'], 'access_token')
 export class SecureEndpoint {
     @GET
-    get(): string {
+    public get(): string {
         return 'Access Granted';
     }
 
     @POST
-    @swagger.Security('user_email')
-    post(): string {
+    @Security([], 'user_email')
+    public post(): string {
         return 'Posted';
     }
 }
 
 @Path('supersecure')
-@swagger.Security('access_token')
-@swagger.Security('user_email')
+@Security('access_token')
+@Security('user_email')
+@Security()
 export class SuperSecureEndpoint {
     @GET
-    get(): string {
+    public get(): string {
         return 'Access Granted';
+    }
+}
+
+@Path('response')
+@swagger.Response<string>(400, 'The request format was incorrect.')
+@swagger.Response<string>(500, 'There was an unexpected error.')
+export class ResponseController {
+    @GET
+    public get(): string {
+        return '42';
+    }
+
+    @swagger.Response<string>(401, 'Unauthorized.')
+    @swagger.Response<string>(502, 'Internal server error.')
+    @GET
+    @Path('/test')
+    public test(): string {
+        return 'OK';
     }
 }

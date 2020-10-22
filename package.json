@@ -1,6 +1,6 @@
 {
   "name": "typescript-rest-swagger",
-  "version": "0.0.19",
+  "version": "1.1.5",
   "description": "Generate Swagger files from a typescript-rest project",
   "keywords": [
     "typescript",
@@ -19,64 +19,51 @@
     "build": "npm run clean && tsc",
     "clean": "rimraf dist",
     "lint": "tslint ./src/**/*.ts ./test/**/*.ts",
-    "format": "tsfmt -r",
-    "prepare": "npm run build",
-    "deploy": "npm version patch && npm publish",
-    "postversion": "git push origin master",
-    "swagger-gen": "node ./dist/cli.js -c ./test/data/swagger.json",
-    "pretest": "cross-env NODE_ENV=test npm build && npm run lint",
-    "test": "cross-env NODE_ENV=test mocha",
-    "test:coverage": "nyc npm test",
+    "lint:fix": "tslint --fix ./src/**/*.ts ./test/**/*.ts -t verbose",
+    "swagger-gen": "node ./dist/cli.js -c ./test/data/swagger.js",
+    "pretest": "cross-env NODE_ENV=test npm run build && npm run lint",
+    "test": "cross-env NODE_ENV=test jest --config ./test/jest.config.js",
+    "test:coverage": "cross-env NODE_ENV=test jest --config ./test/jest.config.js --coverage --coverageReporters=text-lcov",
     "tsc": "tsc"
-  },
-  "nyc": {
-    "include": [
-      "src/**/*.ts"
-    ],
-    "extension": [
-      ".ts"
-    ],
-    "require": [
-      "ts-node/register"
-    ],
-    "reporter": [
-      "text-summary",
-      "html"
-    ],
-    "sourceMap": true,
-    "instrument": true
   },
   "author": "Thiago da Rosa de Bustamante <trbustamante@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "argparse": "^1.0.10",
-    "lodash": "^4.17.10",
-    "merge": "^1.2.0",
-    "mkdirp": "^0.5.1",
+    "debug": "^4.2.0",
+    "fs-extra-promise": "^1.0.1",
+    "glob": "^7.1.6",
+    "lodash": "^4.17.20",
+    "merge": "^1.2.1",
+    "minimatch": "^3.0.4",
+    "mkdirp": "^1.0.4",
     "path": "^0.12.7",
-    "typescript": "^2.9.1",
-    "typescript-rest": "^1.5.3",
+    "swagger2openapi": "^6.2.3",
+    "typescript": "^3.9.7",
+    "typescript-rest": "^2.2.6",
     "yamljs": "^0.2.10"
   },
   "devDependencies": {
-    "@types/argparse": "^1.0.34",
-    "@types/chai": "^4.1.3",
-    "@types/lodash": "^4.14.109",
-    "@types/mkdirp": "^0.3.29",
-    "@types/mocha": "^2.2.48",
-    "@types/yamljs": "^0.2.30",
-    "chai": "^4.1.2",
-    "coveralls": "^3.0.1",
+    "@types/argparse": "^1.0.38",
+    "@types/debug": "^4.1.5",
+    "@types/fs-extra-promise": "^1.0.9",
+    "@types/glob": "^7.1.3",
+    "@types/jest": "^24.0.21",
+    "@types/lodash": "^4.14.161",
+    "@types/minimatch": "^3.0.3",
+    "@types/mkdirp": "^1.0.1",
+    "@types/yamljs": "^0.2.31",
+    "coveralls": "^3.1.0",
     "cross-env": "^4.0.0",
-    "istanbul": "^0.4.5",
-    "jsonata": "^1.5.4",
-    "mocha": "^5.2.0",
-    "nyc": "^12.0.2",
-    "rimraf": "^2.6.1",
+    "jest": "^26.4.2",
+    "jsonata": "^1.8.3",
+    "rimraf": "^2.7.1",
     "source-map-support": "^0.4.14",
-    "ts-node": "^3.3.0",
-    "tslint": "^5.10.0",
-    "typescript-formatter": "^5.1.3"
+    "ts-jest": "^26.4.0",
+    "ts-loader": "^5.3.3",
+    "ts-node": "^8.10.2",
+    "tslint": "^5.20.1",
+    "tslint-config-prettier": "^1.17.0"
   },
   "repository": {
     "type": "git",

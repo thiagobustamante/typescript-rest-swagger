@@ -8,15 +8,17 @@ This is a tool to generate swagger files from a [typescript-rest](https://github
 
 **Table of Contents** 
 
-- [Swagger for Typescript-Rest](#)
+- [Swagger for Typescript-rest](#swagger-for-typescript-rest)
   - [Installation](#installation)
   - [Usage](#usage)
     - [Swagger Decorators](#swagger-decorators)
       - [@Response](#response)
       - [@Example](#example)
       - [@Tags](#tags)
-      - [@Security](#security)
+      - [@Consumes](#consumes)
       - [@Produces](#produces)
+      - [@Hidden](#hidden)
+      - [@IsInt, @IsLong, @IsFloat, @IsDouble](#isint-islong-isfloat-isdouble)
     - [SwaggerConfig.json](#swaggerconfigjson)
 
 ## Installation
@@ -29,6 +31,9 @@ npm install typescript-rest-swagger -g
 
 ```bash
 swaggerGen -c ./swaggerConfig.json
+swaggerGen -c ./swaggerConfig.js #.js files are also allowed as config files
+swaggerGen -c ./swaggerConfig.json -t # load {cwd}/tsconfig.json
+swaggerGen -c ./swaggerConfig.json -p ./tsconfig.json # load custom tsconfig.json
 ```
 
 Where the [swaggerConfig.json](#swaggerconfigjson) file, contains settings about the swagger generation. For example:
@@ -41,6 +46,21 @@ Where the [swaggerConfig.json](#swaggerconfigjson) file, contains settings about
     }
 }
 ```
+
+Where the [tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) file contains compilerOptions. For example:
+
+```json
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        }
+    }
+}
+```
+
+For example above options are required for `swaggerGen` to understand relative imports like `import something from '@/something'`.
 
 ### Swagger Decorators
 
@@ -145,23 +165,21 @@ class PeopleService {
 }
 ```
 
-#### @Security
 
-Add a security constraint to method generated docs, referencing the security name from securityDefinitions.
-`@Security` can be used at the controller and method level; if defined on both, method security overwrites controller security.
-Multiple security schemes may be specified to require all of them.
+#### @Consumes 
+
+Document the consumes property in generated swagger docs
 
 ```typescript
 @Path('people')
+@Consumes('text/html')
 class PeopleService {
-  @Security('api_key')
-  @GET
-  getPeople(@Param('name') name: string) {
+  @PUT
+  createPeople(@Param('name') name: string, people: People) {
      // ...
   }
 }
 ```
-
 
 #### @Produces 
 
@@ -180,6 +198,22 @@ class PeopleService {
 
 A Default produces is already created in swagger documentation from the method return analisys. 
 You can use this decorator to override this default produces.
+
+#### @Hidden 
+
+Allow to hide some APIs from swagger docs (ex: test or dev APIs, etc ...).
+This decorator can be applied for the whole class or only a single method
+
+```typescript
+@Path('people')
+@Hidden()
+class PeopleService {
+  @GET
+  getPeople(@Param('name') name: string) {
+     // ...
+  }
+}
+```
 
 #### @IsInt, @IsLong, @IsFloat, @IsDouble
 
@@ -223,7 +257,8 @@ Property | Type | Description
 basePath | string | Base API path; e.g. the 'v1' in https://myapi.com/v1
 consumes | [string] | Default consumes property for the entire API
 description | string | API description; defaults to npm package description
-entryFile | string | The entry point to your API
+entryFile | string or string[] | The entry point to your API (it is possible to use glob patters)
+outputFormat | 'Swagger_2' or 'OpenApi_3' | Inform if the generated spec will be in swagger 2.0 format or i open api 3.0
 host | string | The hostname to be informed in the generated swagger file
 license | string | API license number; defaults to npm package license
 name | string | API name; defaults to npm package name
@@ -256,7 +291,8 @@ See an example:
 {
     "swagger": {
         "outputDirectory": "./dist",
-        "entryFile": "./tests/data/apis.ts",
+        "entryFile": "./controllers/*.ts",
+        "outputFormat": "openapi_3",
         "host": "localhost:3000",
         "version": "1.0",
         "name": "Typescript-rest Test API",
@@ -269,7 +305,34 @@ See an example:
                 "name": "access_token",
                 "in": "query"
             }
-        }
+        },
+        "ignore": [
+          "**/node_modules/**"
+        ]
     }
 }
+```
+
+or in yaml format:
+See an example:
+
+```yaml
+swagger:
+  outputDirectory: ./dist
+  entryFile: 
+    - ./controllers/*.ts
+  outputFormat: openapi_3
+  host: localhost:3000
+  version: 1.0
+  name: Typescript-rest Test API
+  description: A description
+  license: MIT
+  basePath: /v1
+  securityDefinitions:
+    api_key:
+      type: apiKey
+      name: access_token
+      in: query
+  ignore:
+    - /node_modules/**    
 ```
