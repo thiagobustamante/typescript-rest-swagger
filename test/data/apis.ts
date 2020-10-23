@@ -1,8 +1,9 @@
 'use strict';
 
 import {
-    Accept, DELETE, FormParam, GET, Path,
-    PathParam, POST, PUT, QueryParam,
+    Accept, DELETE, FileParam, FormParam, GET,
+    Path, PathParam, POST, PUT,
+    QueryParam,
     Return,
     Security
 } from 'typescript-rest';
@@ -402,25 +403,13 @@ export class ParameterizedEndpoint {
 
     @Path('/file')
     @POST
-    file(@FileParam('file') file: Express.Multer.File): PrimitiveClassModel {
+    public file(@FileParam('file') file: Express.Multer.File): PrimitiveClassModel {
         return new PrimitiveClassModel();
     }
 
     @Path('/stream')
     @POST
-    stream(@swagger.StreamFileParam('stream') file: Express.Multer.File): PrimitiveClassModel {
-        return new PrimitiveClassModel();
-    }
-
-    @Path('/file')
-    @POST
-    file(@FileParam('file') file: Express.Multer.File): PrimitiveClassModel {
-        return new PrimitiveClassModel();
-    }
-
-    @Path('/stream')
-    @POST
-    stream(@swagger.StreamFileParam('stream') file: Express.Multer.File): PrimitiveClassModel {
+    public stream(@swagger.StreamFileParam('stream') file: Express.Multer.File): PrimitiveClassModel {
         return new PrimitiveClassModel();
     }
 }
