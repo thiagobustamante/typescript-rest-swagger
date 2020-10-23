@@ -1,12 +1,14 @@
 language: node_js
 node_js:
-- '6'
-script: nyc npm test && nyc report --reporter=text-lcov | coveralls
+- '12'
+script: npm run build && npm run test:coverage | coveralls
 deploy:
   provider: npm
+  edge: true
   email: thiago@cruxframework.org
+  skip_cleanup: true
   api_key:
-    secure: h36KkxAMuHGXktDL1FB3rgl8s3cPLdSBpbBMN7A5XpXF3E7mMIPEEEfSQ5nfRc5wxmlseBZjyjhcXbEavluAGmBB+d3bBRz3ifqrwqT/DTPRdTMkMhqVKC7ywAzh+pU8qkmcX9TVMmYYJQhFIj7fWy0yr2DRoEEa6Ei4ZEDFH/hHOSzHmfJNZAoXuI7rZ1nJoQZ1UJsGERMNp+xdJdVY1jng33karymkl+zNrqxPPf+enfazxqo4+s5fQM/pAU64IEyj+JCpzYrXG9uu+1CDOVyp+G1bdVYohCJj1nUFqSpaKyYHTjO963ogVnMjMFlDlzy2C6jD6/q6f4dqWiG6W1EAau2VdJdfEVfOqiZ7djPYR8DP/qdLIBUdpcWJKOchL3+Y/S6vz25s/aGWmZrqBp1Lwmuod9vh+Wdfm96kWA9HQO6JIt+bsxa8RNstNnWlb8FCf9O48S/Jhjl5UTcgsSjxvXJe/5V0bqXSW6MNGwP89Y7mnDgV+r2zd/twuYOc020YBNHqdvywQJrMk1m+rP3MLJPgnzjfFrXUKmoL2JI9Nr73rce1U6E3D24KXdE43NmvulXve6DQ23Zc57U2DKNxlxvac+Jx6ksoQ3rYkWa9d3R3bYYD5e3HAn9D+QsJz+kTo8uVlH/9PjAAE4TyhJkQY+XikIVfa36dFmAXeos=
+    secure: JdM7eESWBSHdBOcOggIU89iJRQW1zE86GtBuJs3IbUvezDMlNIhVZNzv0sFPU9wJi5xr7FWROcZYaNz5ud6WHMof5ZKW4H5Wb91l4iaUaAt2u0ZzavA7htMV4GHl01Z3ZeDHpDCB92ag/zbweRS+D1RMAK0KeWEoZi0Cb+Zu1XglmCGHLH6C7SuSEbTgIPsHVzKn9+/BHpEV4yxl0JvH2eHxg0mPgSofTi7qTTl2fLqVRv1YFPHrO//vTGWmtiN4uTw/pH72YpfV0ua8JIFvlleTGmeRmPDne6sYoyn33mtRdYqsGndL4+DDNpnbDjwRfa5Q2dEzjmFpjj+qeJU67h/eAicMDvVJKC/yrxZ1l3l7kIoXbeP/AG/kFK7XqaP8WA+u0T5UOAk2A+/3t9UKeq33vfGcFwOgd/j/ubNPMNTGJu0vyLJlLCI6+YZFKnu2lwSeJM2Wz+u1R2jnVCN8sC/s7Wwz4s0uGiG9kcJAkh/cTotcf92UyNP6vhHALqy6xB2tT/Wm0vVlNAJG1mGGXShOyX2Q+Kn2bggrRZAqP6HkQjDddVqbFl9xjeJPFaAbq7yYyRtqTzqmySfqMT+lP30F9NKQYmgRMsusTxxPuqfmPhyUzeXxeDMdqAbUB2l5AfdDt9128l51qmci7mI56Soa6/ivaLO8GkZSzs41lEo=
   on:
     tags: true
     repo: thiagobustamante/typescript-rest-swagger

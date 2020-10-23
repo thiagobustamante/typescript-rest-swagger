@@ -1,16 +1,18 @@
-import * as ts from 'typescript';
-import { Controller } from './metadataGenerator';
-import { getSuperClass } from './resolveType';
-import { MethodGenerator } from './methodGenerator';
-import { getDecorators, getDecoratorTextValue } from '../utils/decoratorUtils';
-import {normalizePath} from '../utils/pathUtils';
 import * as _ from 'lodash';
+import * as ts from 'typescript';
+import { getDecoratorTextValue, isDecorator } from '../utils/decoratorUtils';
+import { normalizePath } from '../utils/pathUtils';
+import { EndpointGenerator } from './endpointGenerator';
+import { Controller } from './metadataGenerator';
+import { MethodGenerator } from './methodGenerator';
+import { getSuperClass } from './resolveType';
 
-export class ControllerGenerator {
+export class ControllerGenerator extends EndpointGenerator<ts.ClassDeclaration> {
     private readonly pathValue: string | undefined;
     private genMethods: Set<string> = new Set<string>();
 
-    constructor(private readonly node: ts.ClassDeclaration) {
+    constructor(node: ts.ClassDeclaration) {
+        super(node, 'controllers');
         this.pathValue = normalizePath(getDecoratorTextValue(node, decorator => decorator.text === 'Path'));
     }
 
@@ -23,21 +25,30 @@ export class ControllerGenerator {
         if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
 
         const sourceFile = this.node.parent.getSourceFile();
+        this.debugger('Generating Metadata for controller %s', this.getCurrentLocation());
+        this.debugger('Controller path: %s', this.pathValue);
 
-        return {
-            consumes: this.getDecoratorValues('Accept'),
+        const controllerMetadata = {
+            consumes: this.getDecoratorValues('Consumes'),
             location: sourceFile.fileName,
             methods: this.buildMethods(),
-            name: this.node.name.text,
+            name: this.getCurrentLocation(),
             path: this.pathValue || '',
-            produces: this.getDecoratorValues('Produces'),
-            security: this.getMethodSecurity(),
-            tags: this.getDecoratorValues('Tags')
+            produces: (this.getDecoratorValues('Produces') ? this.getDecoratorValues('Produces') : this.getDecoratorValues('Accept')),
+            responses: this.getResponses(),
+            security: this.getSecurity(),
+            tags: this.getDecoratorValues('Tags'),
         };
+        this.debugger('Generated Metadata for controller %s: %j', this.getCurrentLocation(), controllerMetadata);
+        return controllerMetadata;
+    }
+
+    protected getCurrentLocation(): string {
+        return (this.node as ts.ClassDeclaration).name.text;
     }
 
     private buildMethods() {
-        let result: any[] = [];
+        let result: Array<any> = [];
         let targetClass: any = {
             type: this.node,
             typeArguments: null
@@ -53,6 +64,7 @@ export class ControllerGenerator {
     private buildMethodsForClass(node: ts.ClassDeclaration, genericTypeMap?: Map<String, ts.TypeNode>) {
         return node.members
             .filter(m => (m.kind === ts.SyntaxKind.MethodDeclaration))
+            .filter(m => !isDecorator(m, decorator => 'Hidden' === decorator.text))
             .map((m: ts.MethodDeclaration) => new MethodGenerator(m, this.pathValue || '', genericTypeMap))
             .filter(generator => {
                 if (generator.isValid() && !this.genMethods.has(generator.getMethodName())) {
@@ -62,32 +74,5 @@ export class ControllerGenerator {
                 return false;
             })
             .map(generator => generator.generate());
-    }
-
-    private getDecoratorValues(decoratorName: string) {
-        if (!this.node.parent) { throw new Error('Controller node doesn\'t have a valid parent source file.'); }
-        if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
-
-        const decorators = getDecorators(this.node, decorator => decorator.text === decoratorName);
-        if (!decorators || !decorators.length) { return []; }
-        if (decorators.length > 1) {
-            throw new Error(`Only one ${decoratorName} decorator allowed in '${this.node.name.text}' controller.`);
-        }
-
-        const d = decorators[0];
-        return d.arguments;
-    }
-
-    private getMethodSecurity() {
-        if (!this.node.parent) { throw new Error('Controller node doesn\'t have a valid parent source file.'); }
-        if (!this.node.name) { throw new Error('Controller node doesn\'t have a valid name.'); }
-
-        const securityDecorators = getDecorators(this.node, decorator => decorator.text === 'Security');
-        if (!securityDecorators || !securityDecorators.length) { return undefined; }
-
-        return securityDecorators.map(d => ({
-            name: d.arguments[0],
-            scopes: d.arguments[1] ? (d.arguments[1] as any).elements.map((e: any) => e.text) : undefined
-        }));
     }
 }

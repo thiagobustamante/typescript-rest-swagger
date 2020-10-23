@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
 
 export function getJSDocDescription(node: ts.Node) {
-    const jsDocs = (node as any).jsDoc as ts.JSDoc[];
+    const jsDocs = (node as any).jsDoc as Array<ts.JSDoc>;
     if (!jsDocs || !jsDocs.length) { return ''; }
 
     return jsDocs[0].comment || '';
@@ -10,7 +10,7 @@ export function getJSDocDescription(node: ts.Node) {
 export function getJSDocTag(node: ts.Node, tagName: string) {
     const tags = getJSDocTags(node, tagName);
     if (!tags || !tags.length) {
-        return;
+        return undefined;
     }
     return tags[0].comment;
 }
@@ -29,17 +29,17 @@ function getJSDocTags(node: ts.Node, tagName: string) {
 
 export function getFirstMatchingJSDocTagName(node: ts.Node, isMatching: (t: ts.JSDocTag) => boolean) {
     const tags = getMatchingJSDocTags(node, isMatching);
-    if (!tags || !tags.length) { return; }
+    if (!tags || !tags.length) { return undefined; }
 
     return tags[0].tagName.text;
 }
 
 function getMatchingJSDocTags(node: ts.Node, isMatching: (t: ts.JSDocTag) => boolean) {
-    const jsDocs = (node as any).jsDoc as ts.JSDoc[];
-    if (!jsDocs || !jsDocs.length) { return; }
+    const jsDocs = (node as any).jsDoc as Array<ts.JSDoc>;
+    if (!jsDocs || !jsDocs.length) { return undefined; }
 
     const jsDoc = jsDocs[0];
-    if (!jsDoc.tags) { return; }
+    if (!jsDoc.tags) { return undefined; }
 
     return jsDoc.tags.filter(isMatching);
 }

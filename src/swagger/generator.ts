@@ -1,50 +1,59 @@
-import { SwaggerConfig } from '../config';
+import * as debug from 'debug';
+import * as fs from 'fs';
+import * as _ from 'lodash';
+import * as mkdirp from 'mkdirp';
+import * as pathUtil from 'path';
+import * as YAML from 'yamljs';
+import { Specification, SwaggerConfig } from '../config';
 import {
-    Metadata, Type, ArrayType, ObjectType, ReferenceType, EnumerateType,
-    Property, Method, Parameter, ResponseType
+    ArrayType, EnumerateType, Metadata, Method, ObjectType, Parameter,
+    Property, ReferenceType, ResponseType, Type
 } from '../metadata/metadataGenerator';
 import { Swagger } from './swagger';
-import * as fs from 'fs';
-import * as mkdirp from 'mkdirp';
-import * as YAML from 'yamljs';
-import * as pathUtil from 'path';
-import * as _ from 'lodash';
 
 export class SpecGenerator {
+    private debugger = debug('typescript-rest-swagger:spec-generator');
+
     constructor(private readonly metadata: Metadata, private readonly config: SwaggerConfig) { }
 
-    public generate(swaggerDirs: string | string[], yaml: boolean): Promise<void> {
+    public async generate(): Promise<void> {
+        this.debugger('Generating swagger files.');
+        this.debugger('Swagger Config: %j', this.config);
+        this.debugger('Services Metadata: %j', this.metadata);
+        let spec: any = this.getSwaggerSpec();
+        if (this.config.outputFormat === Specification.OpenApi_3) {
+            spec = await this.convertToOpenApiSpec(spec);
+        }
         return new Promise<void>((resolve, reject) => {
-            if (!_.isArray(swaggerDirs)) {
-                swaggerDirs = [swaggerDirs];
-            }
-            const spec = this.getSpec();
+            const swaggerDirs = _.castArray(this.config.outputDirectory);
+            this.debugger('Saving specs to folders: %j', swaggerDirs);
             swaggerDirs.forEach(swaggerDir => {
-                mkdirp(swaggerDir, (dirErr: any) => {
-                    if (dirErr) {
-                        throw dirErr;
-                    }
+                mkdirp(swaggerDir).then(() => {
+                    this.debugger('Saving specs json file to folder: %j', swaggerDir);
                     fs.writeFile(`${swaggerDir}/swagger.json`, JSON.stringify(spec, null, '\t'), (err: any) => {
                         if (err) {
-                            reject(err);
+                            return reject(err);
                         }
-                        if (yaml) {
-                            fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec ,1000), (errYaml: any) => {
+                        if (this.config.yaml) {
+                            this.debugger('Saving specs yaml file to folder: %j', swaggerDir);
+                            fs.writeFile(`${swaggerDir}/swagger.yaml`, YAML.stringify(spec, 1000), (errYaml: any) => {
                                 if (errYaml) {
-                                    reject(errYaml);
+                                    return reject(errYaml);
                                 }
+                                this.debugger('Generated files saved to folder: %j', swaggerDir);
                                 resolve();
                             });
                         } else {
+                            this.debugger('Generated files saved to folder: %j', swaggerDir);
                             resolve();
                         }
                     });
-                });
+                }).catch(reject);
             });
         });
     }
 
-    public getSpec() {
+    public getSwaggerSpec() {
         let spec: Swagger.Spec = {
             basePath: this.config.basePath,
             definitions: this.buildDefinitions(),
@@ -69,13 +78,33 @@ export class SpecGenerator {
             spec = require('merge').recursive(spec, this.config.spec);
         }
 
+        this.debugger('Generated specs: %j', spec);
         return spec;
     }
+
+    public async getOpenApiSpec() {
+        return await this.convertToOpenApiSpec(this.getSwaggerSpec());
+    }
+
+    private async convertToOpenApiSpec(spec: Swagger.Spec) {
+        this.debugger('Converting specs to openapi 3.0');
+        const converter = require('swagger2openapi');
+        const options = {
+            patch: true,
+            warnOnly: true
+        };
+        const openapi = await converter.convertObj(spec, options);
+        this.debugger('Converted to openapi 3.0: %j', openapi);
+        return openapi.openapi;
+    }
+
 
     private buildDefinitions() {
         const definitions: { [definitionsName: string]: Swagger.Schema } = {};
         Object.keys(this.metadata.referenceTypes).map(typeName => {
+            this.debugger('Generating definition for type: %s', typeName);
             const referenceType = this.metadata.referenceTypes[typeName];
+            this.debugger('Metadata for referenced Type: %j', referenceType);
             definitions[referenceType.typeName] = {
                 description: referenceType.description,
                 properties: this.buildProperties(referenceType.properties),
@@ -88,6 +117,7 @@ export class SpecGenerator {
             if (referenceType.additionalProperties) {
                 definitions[referenceType.typeName].additionalProperties = this.buildAdditionalProperties(referenceType.additionalProperties);
             }
+            this.debugger('Generated Definition for type %s: %j', typeName, definitions[referenceType.typeName]);
         });
 
         return definitions;
@@ -96,26 +126,33 @@ export class SpecGenerator {
     private buildPaths() {
         const paths: { [pathName: string]: Swagger.Path } = {};
 
+        this.debugger('Generating paths declarations');
         this.metadata.controllers.forEach(controller => {
+            this.debugger('Generating paths for controller: %s', controller.name);
             controller.methods.forEach(method => {
+                this.debugger('Generating paths for method: %s', method.name);
                 const path = pathUtil.posix.join('/', (controller.path ? controller.path : ''), method.path);
                 paths[path] = paths[path] || {};
                 method.consumes = _.union(controller.consumes, method.consumes);
                 method.produces = _.union(controller.produces, method.produces);
                 method.tags = _.union(controller.tags, method.tags);
                 method.security = method.security || controller.security;
-
-                this.buildPathMethod(controller.name, method, paths[path]);
+                method.responses = _.union(controller.responses, method.responses);
+                const pathObject: any = paths[path];
+                pathObject[method.method] = this.buildPathMethod(controller.name, method);
+                this.debugger('Generated path for method %s: %j', method.name, pathObject[method.method]);
             });
         });
 
         return paths;
     }
 
-    private buildPathMethod(controllerName: string, method: Method, pathObject: any) {
-        const pathMethod: any = pathObject[method.method] = this.buildOperation(controllerName, method);
+    private buildPathMethod(controllerName: string, method: Method) {
+        const pathMethod: any = this.buildOperation(controllerName, method);
         pathMethod.description = method.description;
-        pathMethod.summary = method.summary;
+        if (method.summary) {
+            pathMethod.summary = method.summary;
+        }
 
         if (method.deprecated) { pathMethod.deprecated = method.deprecated; }
         if (method.tags.length) { pathMethod.tags = method.tags; }
@@ -153,6 +190,7 @@ export class SpecGenerator {
         if (pathMethod.parameters.filter((p: Swagger.BaseParameter) => p.in === 'body').length > 1) {
             throw new Error('Only one body parameter allowed per controller method.');
         }
+        return pathMethod;
     }
 
     private handleMethodConsumes(method: Method, pathMethod: any) {
@@ -189,19 +227,17 @@ export class SpecGenerator {
         };
 
         const parameterType = this.getSwaggerType(parameter.type);
-        if (parameterType.$ref) {
+        if (parameterType.$ref || parameter.in === 'body') {
             swaggerParameter.schema = parameterType;
-        } else if (parameter.in === 'body') {
-            swaggerParameter.schema = { type: parameterType.type };
         } else {
             swaggerParameter.type = parameterType.type;
-        }
 
-        if (parameterType.items) {
-            swaggerParameter.items = parameterType.items;
+            if (parameterType.items) {
+                swaggerParameter.items = parameterType.items;
 
-            if (parameter.collectionFormat || this.config.collectionFormat) {
-                swaggerParameter.collectionFormat = parameter.collectionFormat || this.config.collectionFormat;
+                if (parameter.collectionFormat || this.config.collectionFormat) {
+                    swaggerParameter.collectionFormat = parameter.collectionFormat || this.config.collectionFormat;
+                }
             }
         }
 
@@ -209,10 +245,12 @@ export class SpecGenerator {
 
         if (parameter.default !== undefined) { swaggerParameter.default = parameter.default; }
 
+        if (parameterType.enum) { swaggerParameter.enum = parameterType.enum; }
+
         return swaggerParameter;
     }
 
-    private buildProperties(properties: Property[]) {
+    private buildProperties(properties: Array<Property>) {
         const swaggerProperties: { [propertyName: string]: Swagger.Schema } = {};
 
         properties.forEach(property => {
@@ -226,7 +264,7 @@ export class SpecGenerator {
         return swaggerProperties;
     }
 
-    private buildAdditionalProperties(properties: Property[]) {
+    private buildAdditionalProperties(properties: Array<Property>) {
         const swaggerAdditionalProperties: { [ref: string]: string } = {};
 
         properties.forEach(property => {
@@ -320,7 +358,7 @@ export class SpecGenerator {
             binary: { type: 'string', format: 'binary' },
             boolean: { type: 'boolean' },
             buffer: { type: 'file' },
-//            buffer: { type: 'string', format: 'base64' },
+            //            buffer: { type: 'string', format: 'base64' },
             byte: { type: 'string', format: 'byte' },
             date: { type: 'string', format: 'date' },
             datetime: { type: 'string', format: 'date-time' },
@@ -346,7 +384,19 @@ export class SpecGenerator {
     }
 
     private getSwaggerTypeForEnumType(enumType: EnumerateType): Swagger.Schema {
-        return { type: 'string', enum: enumType.enumMembers.map(member => member as string) as [string] };
+        function getDerivedTypeFromValues(values: Array<any>): string {
+            return values.reduce((derivedType: string, item: any) => {
+                const currentType = typeof item;
+                derivedType = derivedType && derivedType !== currentType ? 'string' : currentType;
+                return derivedType;
+            }, null);
+        }
+
+        const enumValues = enumType.enumMembers.map(member => member as string) as [string];
+        return {
+            enum: enumType.enumMembers.map(member => member as string) as [string],
+            type: getDerivedTypeFromValues(enumValues),
+        };
     }
 
     private getSwaggerTypeForReferenceType(referenceType: ReferenceType): Swagger.Schema {

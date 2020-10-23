@@ -62,23 +62,28 @@ export function Example<T>(example: T): any {
  * ```
  * @param values a list of tags
  */
-export function Tags(...values: string[]): any {
+export function Tags(...values: Array<string>): any {
   return () => { return; };
 }
 
 /**
- * Add a security constraint to method generated docs.
- * @param {name} security name from securityDefinitions
- * @param {scopes} security scopes from securityDefinitions
+ * Document the method or class comsumes property in generated swagger docs
  */
-export function Security(name: string, scopes?: string[]): any {
+export function Consumes(...values: Array<string>): any {
   return () => { return; };
 }
 
 /**
  * Document the method or class produces property in generated swagger docs
  */
-export function Produces(...values: string[]): any {
+export function Produces(...values: Array<string>): any {
+  return () => { return; };
+}
+
+/**
+ * Document the method or class produces property in generated swagger docs
+ */
+export function Hidden(): any {
   return () => { return; };
 }
 
