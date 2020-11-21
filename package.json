@@ -38,7 +38,7 @@
     "minimatch": "^3.0.4",
     "mkdirp": "^1.0.4",
     "path": "^0.12.7",
-    "swagger2openapi": "^6.2.3",
+    "swagger2openapi": "^7.0.4",
     "typescript": "^3.9.7",
     "typescript-rest": "^2.2.6",
     "yamljs": "^0.2.10"
