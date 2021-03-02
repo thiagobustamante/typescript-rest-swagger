@@ -34,7 +34,7 @@
     "fs-extra-promise": "^1.0.1",
     "glob": "^7.1.6",
     "lodash": "^4.17.20",
-    "merge": "^1.2.1",
+    "merge": "^2.1.1",
     "minimatch": "^3.0.4",
     "mkdirp": "^1.0.4",
     "path": "^0.12.7",
