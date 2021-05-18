@@ -357,7 +357,7 @@ export class SpecGenerator {
         const typeMap: { [name: string]: Swagger.Schema } = {
             binary: { type: 'string', format: 'binary' },
             boolean: { type: 'boolean' },
-            buffer: { type: 'file' },
+            buffer: { type: 'string', format: 'binary' },
             //            buffer: { type: 'string', format: 'base64' },
             byte: { type: 'string', format: 'byte' },
             date: { type: 'string', format: 'date' },

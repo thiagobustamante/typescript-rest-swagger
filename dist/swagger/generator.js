@@ -414,7 +414,7 @@ var SpecGenerator = /** @class */ (function () {
         var typeMap = {
             binary: { type: 'string', format: 'binary' },
             boolean: { type: 'boolean' },
-            buffer: { type: 'file' },
+            buffer: { type: 'string', format: 'binary' },
             //            buffer: { type: 'string', format: 'base64' },
             byte: { type: 'string', format: 'byte' },
             date: { type: 'string', format: 'date' },
