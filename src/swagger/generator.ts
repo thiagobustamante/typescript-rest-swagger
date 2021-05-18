@@ -363,7 +363,7 @@ export class SpecGenerator {
             date: { type: 'string', format: 'date' },
             datetime: { type: 'string', format: 'date-time' },
             double: { type: 'number', format: 'double' },
-            file: { type: 'file' },
+            file: { type: 'string', format: 'binary' },
             float: { type: 'number', format: 'float' },
             integer: { type: 'integer', format: 'int32' },
             long: { type: 'integer', format: 'int64' },
