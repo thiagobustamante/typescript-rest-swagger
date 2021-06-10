@@ -40,7 +40,7 @@
     "path": "^0.12.7",
     "swagger2openapi": "^6.2.3",
     "typescript": "^3.9.7",
-    "typescript-rest": "^2.2.6",
+    "typescript-rest": "^3.0.3",
     "yamljs": "^0.2.10"
   },
   "devDependencies": {
