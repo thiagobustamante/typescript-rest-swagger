@@ -4,7 +4,7 @@ export function getJSDocDescription(node: ts.Node) {
     const jsDocs = (node as any).jsDoc as Array<ts.JSDoc>;
     if (!jsDocs || !jsDocs.length) { return ''; }
 
-    return jsDocs[0].comment || '';
+    return jsDocs[0].comment as string || '';
 }
 
 export function getJSDocTag(node: ts.Node, tagName: string) {
@@ -12,7 +12,7 @@ export function getJSDocTag(node: ts.Node, tagName: string) {
     if (!tags || !tags.length) {
         return undefined;
     }
-    return tags[0].comment;
+    return tags[0].comment as string;
 }
 
 export function isExistJSDocTag(node: ts.Node, tagName: string) {
