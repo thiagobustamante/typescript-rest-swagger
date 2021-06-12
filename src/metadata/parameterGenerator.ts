@@ -37,6 +37,7 @@ export class ParameterGenerator {
             case 'ContextNext':
             case 'ContextLanguage':
             case 'ContextAccept':
+            case 'ContextRequestProperty':
                 return this.getContextParameter(this.parameter);
             default:
                 return this.getBodyParameter(this.parameter);
@@ -255,7 +256,7 @@ export class ParameterGenerator {
         return ['HeaderParam', 'QueryParam', 'Param', 'FileParam',
                 'PathParam', 'FilesParam', 'FormParam', 'CookieParam',
                 'Context', 'ContextRequest', 'ContextResponse', 'ContextNext',
-                'ContextLanguage', 'ContextAccept'].some(d => d === decoratorName);
+                'ContextLanguage', 'ContextAccept', 'ContextRequestProperty'].some(d => d === decoratorName);
     }
 
     private supportPathDataType(parameterType: Type) {
