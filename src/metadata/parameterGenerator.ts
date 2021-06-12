@@ -31,6 +31,10 @@ export class ParameterGenerator {
                 return this.getFileParameter(this.parameter);
             case 'FilesParam':
                 return this.getFilesParameter(this.parameter);
+            case 'StreamFileParam':
+                return this.getFileParameter(this.parameter);
+            case 'StreamFilesParam':
+                return this.getFilesParameter(this.parameter);
             case 'Context':
             case 'ContextRequest':
             case 'ContextResponse':
@@ -89,7 +93,7 @@ export class ParameterGenerator {
         return {
             description: this.getParameterDescription(parameter),
             in: 'formData',
-            name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FileParam') || parameterName,
+            name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FileParam' || ident.text === 'StreamFileParam') || parameterName,
             parameterName: parameterName,
             required: !parameter.questionToken,
             type: { typeName: 'file' }
@@ -106,7 +110,7 @@ export class ParameterGenerator {
         return {
             description: this.getParameterDescription(parameter),
             in: 'formData',
-            name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FilesParam') || parameterName,
+            name: getDecoratorTextValue(this.parameter, ident => ident.text === 'FilesParam' || ident.text === 'StreamFilesParam') || parameterName,
             parameterName: parameterName,
             required: !parameter.questionToken,
             type: { typeName: 'file' }
@@ -255,7 +259,7 @@ export class ParameterGenerator {
         return ['HeaderParam', 'QueryParam', 'Param', 'FileParam',
                 'PathParam', 'FilesParam', 'FormParam', 'CookieParam',
                 'Context', 'ContextRequest', 'ContextResponse', 'ContextNext',
-                'ContextLanguage', 'ContextAccept'].some(d => d === decoratorName);
+                'ContextLanguage', 'ContextAccept', 'StreamFileParam', 'StreamFilesParam'].some(d => d === decoratorName);
     }
 
     private supportPathDataType(parameterType: Type) {
