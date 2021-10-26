@@ -136,7 +136,7 @@ export class SpecGenerator {
                 method.consumes = _.union(controller.consumes, method.consumes);
                 method.produces = _.union(controller.produces, method.produces);
                 method.tags = _.union(controller.tags, method.tags);
-                method.security = method.security || controller.security;
+                method.security = method.security || { ...controller }.security;
                 method.responses = _.union(controller.responses, method.responses);
                 const pathObject: any = paths[path];
                 pathObject[method.method] = this.buildPathMethod(controller.name, method);
