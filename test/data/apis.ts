@@ -26,9 +26,17 @@ interface Address {
     street: string;
 }
 
+/**
+ * Represents a person object
+ */
 interface Person {
     name: string;
     address?: Address;
+}
+
+interface Page<T> {
+    items: Array<T>;
+    total: number;
 }
 
 enum TestEnum {
@@ -462,5 +470,63 @@ export class ResponseController {
     @Path('/test')
     public test(): string {
         return 'OK';
+    }
+}
+
+export type TestTuple = [idx: number, value: string];
+
+@Path('complex')
+export class ComplexTypeController {
+    @GET
+    public getTuple(): TestTuple {
+        return [0, "test"];
+    }
+}
+
+@Path('partial')
+export class PartialTypeController {
+    @GET
+    public getPartial(): Partial<Person> {
+        return {
+            name: "Doe"
+        };
+    }
+}
+
+@Path('omit')
+export class OmitTypeController {
+    @GET
+    public getOmit(): Omit<Person, "address"> {
+        return {
+            name: "Test name"
+        };
+    }
+}
+
+@Path('pick')
+export class PickTypeController {
+    @GET
+    public getPick(): Pick<Person, "address"> {
+        return {
+            address: {
+                street: "Test str."
+            }
+        };
+    }
+}
+
+@Path('generic')
+export class GenericsController {
+    @GET
+    public getGeneric(): Page<Person> {
+        return {
+            items: [{
+                name: "User 1",
+                address: {
+                    street: "Str 1"
+                }
+            }],
+            total: 1
+        };
     }
 }

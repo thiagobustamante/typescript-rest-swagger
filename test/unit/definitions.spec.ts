@@ -420,6 +420,70 @@ describe('Definition generation', () => {
     });
   });
 
+  xdescribe('ComplexTypeController', () => {
+    it('should support type Tuple', async () => {
+      const expression = jsonata('paths."/complex".get.responses."200".schema."$ref"');
+      expect(expression.evaluate(spec)).toEqual('#/definitions/TestTuple');
+
+      const definitionExpression = jsonata('definitions.TestTuple');
+      const myTypeDefinition = definitionExpression.evaluate(spec);
+      expect(myTypeDefinition.type).toEqual('object');
+      expect(Object.keys(myTypeDefinition.properties)).toEqual(['idx[0]', 'value[1]']);
+    });
+  });
+
+  xdescribe('PartialTypeController', () => {
+    it('should support type Partial', async () => {
+      const expression = jsonata('paths."/partial".get.responses."200".schema."$ref"');
+      expect(expression.evaluate(spec)).toEqual('#/definitions/PartialPerson');
+
+      const definitionExpression = jsonata('definitions.PartialPerson');
+      const myTypeDefinition = definitionExpression.evaluate(spec);
+      expect(myTypeDefinition.type).toEqual('object');
+      expect(Object.keys(myTypeDefinition.properties)).toEqual(['name', 'address']);
+    });
+  });
+
+  describe('PickTypeController', () => {
+    it('should support type Pick', async () => {
+      const expression = jsonata('paths."/pick".get.responses."200".schema."$ref"');
+      expect(expression.evaluate(spec)).toEqual('#/definitions/Pick');
+
+      const definitionExpression = jsonata('definitions.Pick');
+      const myTypeDefinition = definitionExpression.evaluate(spec);
+      expect(myTypeDefinition.type).toEqual('object');
+      // TODO properly handle Pick
+      // expect(Object.keys(myTypeDefinition.properties)).toEqual(['address']);
+    });
+  });
+
+  describe('OmitTypeController', () => {
+    it('should support type Omit', async () => {
+      const expression = jsonata('paths."/omit".get.responses."200".schema."$ref"');
+      expect(expression.evaluate(spec)).toEqual('#/definitions/Omit');
+
+      const definitionExpression = jsonata('definitions.Omit');
+      const myTypeDefinition = definitionExpression.evaluate(spec);
+      expect(myTypeDefinition.type).toEqual('object');
+      // TODO properly handle Omit
+      // expect(Object.keys(myTypeDefinition.properties)).toEqual(['name']);
+    });
+  });
+
+  describe('GenericTypeController', () => {
+    it('should support generics', async () => {
+      const expression = jsonata('paths."/generic".get.responses."200".schema."$ref"');
+      expect(expression.evaluate(spec)).toEqual('#/definitions/PagePerson');
+
+      const definitionExpression = jsonata('definitions.PagePerson');
+      const genericTypeDefinition = definitionExpression.evaluate(spec);
+      expect(genericTypeDefinition.type).toEqual('object');
+      expect(Object.keys(genericTypeDefinition.properties)).toEqual(['items', 'total']);
+
+      expect(genericTypeDefinition.properties.items.items.$ref).toEqual('#/definitions/Person');
+    });
+  });
+
   describe('TestUnionType', () => {
     it('should support union types', () => {
       const expression = jsonata('paths."/unionTypes".post.parameters[0]');

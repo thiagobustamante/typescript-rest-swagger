@@ -486,11 +486,29 @@ function getModelTypeProperties(node: any, genericTypes?: Array<ts.TypeNode>): A
                     }
                 }
 
+                let genericTypesMap: Map<string, ts.TypeNode>;
+
+                if (genericTypes) {
+                    const res: any = {};
+
+                    genericTypes.reduce((map, type) => {
+                        if (type.kind === ts.SyntaxKind.TypeReference) {
+                            res[`T`] = type;
+                        }
+
+                        return map;
+                    }, res);
+
+                    if (Object.keys(res).length) {
+                        genericTypesMap = new Map(Object.entries(res));
+                    }
+                }
+
                 return {
                     description: getNodeDescription(propertyDeclaration),
                     name: identifier.text,
                     required: !propertyDeclaration.questionToken,
-                    type: resolveType(aType)
+                    type: resolveType(aType, genericTypesMap)
                 };
             });
     }
@@ -503,7 +521,39 @@ function getModelTypeProperties(node: any, genericTypes?: Array<ts.TypeNode>): A
             : [];
     }
 
+    if (node.kind === ts.SyntaxKind.TupleType) {
+        const typeDeclaration = node as ts.TupleTypeNode;
+
+        return typeDeclaration.elements.map(function (element: any, idx: number) {
+            return {
+                description: `[${idx}]` + getNodeDescription(element),
+                name: element.name.escapedText,
+                required: !element.questionToken,
+                type: resolveType(element.type)
+            };
+        });
+    }
+
+    // handle Pick, Partial, Omit
+    if (node.kind === ts.SyntaxKind.MappedType) {
+        // partial
+        if (genericTypes) {
+            const targetType = resolveType(genericTypes[0]) as ReferenceType;
+
+            return targetType.properties.map((p) => ({
+                ...p,
+                required: false, // all fields in Partial are optional
+            }));
+        }
+
+        return [];
+    }
+
     const classDeclaration = node as ts.ClassDeclaration;
+
+    if (!classDeclaration.members) {
+        return [];
+    }
 
     let properties = classDeclaration.members.filter((member: any) => {
         if (member.kind !== ts.SyntaxKind.PropertyDeclaration) { return false; }
