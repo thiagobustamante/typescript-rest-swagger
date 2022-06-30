@@ -490,7 +490,8 @@ function getModelTypeProperties(node: any, genericTypes?: Array<ts.TypeNode>): A
                     description: getNodeDescription(propertyDeclaration),
                     name: identifier.text,
                     required: !propertyDeclaration.questionToken,
-                    type: resolveType(aType)
+                    type: resolveType(aType),
+                    example: getNodeExample(propertyDeclaration)
                 };
             });
     }
@@ -527,7 +528,8 @@ function getModelTypeProperties(node: any, genericTypes?: Array<ts.TypeNode>): A
                 description: getNodeDescription(declaration),
                 name: identifier.text,
                 required: !declaration.questionToken,
-                type: resolveType(resolveTypeParameter(declaration.type, classDeclaration, genericTypes))
+                type: resolveType(resolveTypeParameter(declaration.type, classDeclaration, genericTypes)),
+                example: getNodeExample(declaration)
             };
         });
 }
@@ -633,6 +635,24 @@ function getNodeDescription(node: UsableDeclaration | ts.PropertyDeclaration | t
     }
 
     return '';
+}
+
+
+function getNodeExample(node: UsableDeclaration | ts.PropertyDeclaration | ts.ParameterDeclaration): string | number | undefined {
+    const symbol = MetadataGenerator.current.typeChecker.getSymbolAtLocation(node.name as ts.Node);
+
+    if (symbol) {
+        const examples = symbol
+            .getJsDocTags(MetadataGenerator.current.typeChecker)
+            .filter(tag => tag.name === "example")
+
+        if (examples.length) {
+            const latestExample = examples[examples.length - 1];
+            return eval(ts.displayPartsToString(latestExample.text));
+        }
+    }
+
+    return undefined;
 }
 
 function getSubClassGenericTypes(genericTypeMap?: Map<String, ts.TypeNode>, typeArguments?: Array<ts.TypeNode>) {

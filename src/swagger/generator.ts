@@ -258,6 +258,7 @@ export class SpecGenerator {
             if (!swaggerType.$ref) {
                 swaggerType.description = property.description;
             }
+            swaggerType.example = property.example;
             swaggerProperties[property.name] = swaggerType;
         });
 
