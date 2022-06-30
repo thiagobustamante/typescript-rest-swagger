@@ -204,6 +204,7 @@ export interface Property {
     name: string;
     type: Type;
     required: boolean;
+    example?: string | number;
 }
 
 export interface ResponseData {

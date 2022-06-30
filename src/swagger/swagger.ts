@@ -145,7 +145,7 @@ export namespace Swagger {
         readOnly?: boolean;
         xml?: XML;
         externalDocs?: ExternalDocs;
-        example?: { [exampleName: string]: Example };
+        example?: { [exampleName: string]: Example } | string | number;
         required?: Array<string>;
     }
 
