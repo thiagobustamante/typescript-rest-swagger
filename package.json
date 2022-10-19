@@ -35,7 +35,7 @@
     "glob": "^7.1.7",
     "lodash": "^4.17.21",
     "merge": "^2.1.1",
-    "minimatch": "^3.0.4",
+    "minimatch": "^3.0.5",
     "mkdirp": "^1.0.4",
     "path": "^0.12.7",
     "swagger2openapi": "^7.0.6",
