@@ -1,11 +1,19 @@
 'use strict';
-
+/**
+ * Express allows path constraints like :id(\\d+). OpenAPI path params are
+ * named segments only ({id}). Strip the constraint when converting to Swagger.
+ */
+const EXPRESS_PARAM_REGEX_SUFFIX = /\([^)]*\)$/;
 export function normalizePath(path?: string) {
-    if (!path) {
-        return path;
+  if (!path) {
+    return path;
+  }
+  const parts = path.split('/').map((part) => {
+    if (!part.startsWith(':')) {
+      return part;
     }
-
-    let parts = path.split('/');
-    parts = parts.map(part => part.startsWith(':')?`{${part.slice(1)}}`:part);
-    return parts.join('/');
+    const paramName = part.slice(1).replace(EXPRESS_PARAM_REGEX_SUFFIX, '');
+    return `{${paramName}}`;
+  });
+  return parts.join('/');
 }
